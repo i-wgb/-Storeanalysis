@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Raio-X da Loja + Plano Tray · Time de Vendas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#0F1D2E; --ink-2:#3D4F62; --muted:#6B7C8D;
+    --line:#E4EAF0; --line-2:#EEF2F6;
+    --bg:#F4F7FA; --surface:#FFFFFF; --surface-2:#F8FAFC;
+    --teal:#0FB6A0; --teal-deep:#0A8676; --teal-soft:#E3F7F2;
+    --gold:#E19A2E; --gold-soft:#FBF1DD; --gold-line:#F0DCAF;
+    --red:#C0554F; --red-soft:#FDF4F3; --red-line:#F2D6D3;
+    --miss:#B9C4CE;
+    --shadow:0 1px 2px rgba(15,29,46,.04), 0 8px 28px rgba(15,29,46,.06);
+    --shadow-lg:0 12px 40px rgba(15,29,46,.12);
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
+  h1,h2,h3,h4{font-family:'Space Grotesk','Inter',sans-serif}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+  .topbar{background:var(--ink);color:#fff;padding:14px 0}
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:600}
+  .brand .dot{width:34px;height:34px;border-radius:9px;background:var(--teal);display:grid;place-items:center;flex:none}
+  .brand .dot svg{width:19px;height:19px}
+  .brand small{display:block;font-weight:400;font-size:12px;color:#9FB0BF;letter-spacing:.02em}
+  .brand b{font-family:'Space Grotesk';font-size:16px;letter-spacing:-.01em}
+  .topbar .tag{font-size:12px;color:#9FB0BF;border:1px solid #26384A;border-radius:999px;padding:5px 12px}
+  .hero{padding:34px 0 8px}
+  .hero h1{font-size:clamp(26px,3.4vw,40px);line-height:1.08;letter-spacing:-.02em;margin:0 0 10px;max-width:19ch}
+  .hero h1 .u{color:var(--teal-deep)}
+  .hero p.lead{color:var(--ink-2);font-size:16px;max-width:66ch;margin:0}
+  .note{margin-top:16px;background:#FFF9EC;border:1px solid #F1E2BE;color:#8A6A1E;border-radius:12px;padding:12px 15px;font-size:13px;display:flex;gap:10px;align-items:flex-start}
+  .note svg{flex:none;margin-top:1px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:18px}
+  .panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .panel-head .eyebrow{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .fields{display:grid;gap:14px}
+  @media(min-width:820px){.fields{grid-template-columns:1fr 1fr}}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field label{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  .field .tip{font-size:12px;color:var(--muted)}
+  .inp,select.inp{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font:inherit;font-size:14px;color:var(--ink);background:var(--surface-2);transition:border .15s,box-shadow .15s}
+  .inp::placeholder{color:#9AA8B5}
+  .inp:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(15,182,160,.15);background:#fff}
+  textarea.paste{display:none;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:12.5px;color:var(--ink-2);background:var(--surface-2);min-height:70px;resize:vertical;width:100%}
+  textarea.paste.on{display:block}
+  .panel-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+  .btn{font:inherit;font-weight:600;border-radius:10px;padding:12px 20px;cursor:pointer;border:1px solid transparent;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+  .btn-primary{background:var(--teal);color:#fff;box-shadow:0 6px 16px rgba(15,182,160,.28)}
+  .btn-primary:hover{background:var(--teal-deep)}
+  .btn-primary:disabled{background:#AFC9C4;box-shadow:none;cursor:progress}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink-2)}
+  .btn-ghost:hover{border-color:var(--teal);color:var(--teal-deep)}
+  .hint{font-size:12.5px;color:var(--muted)}
+  .toggle{display:inline-flex;align-items:center;gap:9px;font-size:13px;color:var(--ink-2);cursor:pointer;user-select:none}
+  .toggle input{display:none}
+  .toggle .sw{width:38px;height:22px;border-radius:999px;background:#D5DEE7;position:relative;transition:.18s;flex:none}
+  .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.18s}
+  .toggle input:checked + .sw{background:var(--teal)}
+  .toggle input:checked + .sw::after{transform:translateX(16px)}
+  .status{margin-top:18px;display:none;flex-direction:column;gap:8px}
+  .status.on{display:flex}
+  .stat-line{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
+  .spin{width:15px;height:15px;border:2px solid var(--teal-soft);border-top-color:var(--teal);border-radius:50%;animation:sp .7s linear infinite;flex:none}
+  .ok{color:var(--teal-deep)} .err{color:var(--red)}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .alert{margin-top:16px;background:var(--red-soft);border:1px solid var(--red-line);color:#9A423C;border-radius:12px;padding:14px 16px;font-size:14px;display:none}
+  .alert.on{display:block}
+  #results{display:none} #results.on{display:block}
+  .section{margin-top:34px}
+  .sec-title{display:flex;align-items:center;gap:10px;margin:0 0 4px;flex-wrap:wrap}
+  .sec-title h2{font-size:20px;letter-spacing:-.01em;margin:0}
+  .sec-title .kicker{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-deep);background:var(--teal-soft);padding:4px 9px;border-radius:6px}
+  .sec-sub{color:var(--muted);font-size:13.5px;margin:2px 0 16px;max-width:80ch}
+
+  /* ---- diagnóstico (elemento assinatura) ---- */
+  .xray{background:linear-gradient(120deg,#12283C,#0F1D2E);color:#fff;border-radius:20px;padding:26px 28px;box-shadow:var(--shadow-lg);position:relative;overflow:hidden}
+  .xray::after{content:"";position:absolute;right:-70px;top:-70px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(15,182,160,.30),transparent 70%)}
+  .xray .crown{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .xray h2{font-size:clamp(21px,3vw,28px);margin:0 0 10px;letter-spacing:-.02em;position:relative;z-index:1}
+  .xray h2 .plat{color:var(--gold)}
+  .xray p{margin:0;color:#C6D2DD;max-width:78ch;font-size:15px;position:relative;z-index:1}
+  .xray-grid{display:grid;gap:22px;margin-top:20px;position:relative;z-index:1}
+  @media(min-width:860px){.xray-grid{grid-template-columns:220px 1fr;align-items:center}}
+  .gauge{display:flex;align-items:center;gap:14px}
+  .gauge svg{flex:none}
+  .gauge text{font-family:'Space Grotesk';fill:#fff}
+  .gauge .gl{font-size:12px;color:#9FB0BF;line-height:1.35}
+  .gauge .gl b{display:block;font-family:'Space Grotesk';font-size:14px;color:#fff}
+  .axes{display:flex;flex-direction:column;gap:9px}
+  .axis{display:grid;grid-template-columns:150px 1fr 42px;align-items:center;gap:10px;font-size:12.5px;color:#C6D2DD}
+  .axis .bar{height:8px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}
+  .axis .bar i{display:block;height:100%;border-radius:99px;background:var(--teal)}
+  .axis .bar i.mid{background:var(--gold)} .axis .bar i.low{background:#D9736A}
+  .axis .val{font-family:'Space Grotesk';font-weight:600;color:#fff;text-align:right}
+  @media(max-width:560px){.axis{grid-template-columns:118px 1fr 38px;font-size:11.5px}}
+
+  .cards{display:grid;gap:16px}
+  @media(min-width:720px){.cards.c2{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:960px){.cards.c3{grid-template-columns:repeat(3,1fr)}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px}
+  .card h4{margin:0 0 4px;font-size:15.5px;letter-spacing:-.01em}
+  .card .ck{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+  .kv{display:flex;flex-direction:column;gap:7px;font-size:13.5px}
+  .kv .line{display:flex;justify-content:space-between;gap:12px;align-items:baseline;border-bottom:1px dashed var(--line-2);padding-bottom:6px}
+  .kv .line:last-child{border-bottom:none;padding-bottom:0}
+  .kv .k{color:var(--muted)} .kv .v{font-weight:600;color:var(--ink);text-align:right}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{font-size:12px;font-weight:500;padding:5px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:5px;border:1px solid var(--line)}
+  .chip.y{background:var(--teal-soft);color:var(--teal-deep);border-color:#BCE9E0}
+  .chip.n{background:var(--surface-2);color:var(--miss)}
+  .chip.w{background:var(--gold-soft);color:#8A6A1E;border-color:var(--gold-line)}
+  .blk{margin-top:14px}
+  .blk .h{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .blk ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .blk li{display:flex;gap:8px;font-size:13px;color:var(--ink-2);line-height:1.45}
+  .blk li .m{flex:none;margin-top:1px}
+  .chk{color:var(--teal);font-weight:700}
+  .dash{color:var(--miss)}
+  .warnm{color:#C0703F;font-weight:700}
+  .ev{font-size:12px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--line);border-radius:8px;padding:8px 10px;margin-top:10px;word-break:break-word}
+  .metrics{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .metric{background:var(--surface-2);border:1px solid var(--line-2);border-radius:10px;padding:8px 11px;min-width:78px}
+  .metric b{display:block;font-family:'Space Grotesk';font-size:15px;line-height:1.1;color:var(--ink)}
+  .metric span{font-size:10.5px;color:var(--muted);letter-spacing:.02em}
+
+  /* pains */
+  .pain{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+  .pain h4{margin:0 0 8px;font-size:16px;letter-spacing:-.01em}
+  .pain .why{font-size:13px;color:var(--muted);margin-bottom:10px}
+  .pain .fix{font-size:13.5px;color:var(--ink-2);background:var(--teal-soft);border-radius:9px;padding:10px 12px;line-height:1.5}
+  .pain .fix b{color:var(--teal-deep)}
+
+  /* tabela recursos do segmento */
+  .tbl-wrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+  .tbl-scroll{overflow-x:auto}
+  table{border-collapse:collapse;width:100%;min-width:560px}
+  thead th{background:var(--surface-2);text-align:left;font-size:12px;color:var(--muted);font-weight:600;padding:13px 16px;border-bottom:1px solid var(--line)}
+  thead th.mid{text-align:center}
+  tbody td{padding:11px 16px;border-bottom:1px solid var(--line-2);font-size:13.5px;color:var(--ink-2);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:var(--surface-2)}
+  td.mk{text-align:center;width:130px;white-space:nowrap}
+  td.rec b{color:var(--ink);font-weight:600;display:block;font-size:13.5px}
+  td.rec span{font-size:12px;color:var(--muted)}
+  .tag-s{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:999px;display:inline-block}
+  .tag-s.y{background:var(--teal-soft);color:var(--teal-deep)}
+  .tag-s.n{background:#F6F1F0;color:#B06A63}
+  .tag-s.w{background:var(--gold-soft);color:#8A6A1E}
+
+  /* plano */
+  .plan{background:linear-gradient(135deg,#0FB6A0,#0A8676);color:#fff;border-radius:20px;padding:26px 28px;box-shadow:0 12px 34px rgba(10,134,118,.28);position:relative;overflow:hidden}
+  .plan .lab{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#BDF0E7;margin-bottom:10px}
+  .plan h3{margin:0;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em}
+  .plan .price{font-family:'Space Grotesk';font-size:26px;font-weight:600;margin-top:6px}
+  .plan .price small{font-family:'Inter';font-size:13px;font-weight:500;color:#BDF0E7}
+  .plan .sub{color:#D5F4EE;font-size:14.5px;margin-top:8px;max-width:70ch}
+  .plan-grid{display:grid;gap:14px;margin-top:20px}
+  @media(min-width:760px){.plan-grid{grid-template-columns:repeat(2,1fr)}}
+  .plan-box{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:14px 16px}
+  .plan-box .h{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#BDF0E7;margin-bottom:8px}
+  .plan-box ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+  .plan-box li{display:flex;gap:8px;font-size:13px;line-height:1.45;color:#EAFBF7}
+  .plan-src{font-size:12px;color:#BDF0E7;margin-top:14px;word-break:break-all}
+  .benef{display:grid;gap:14px}
+  @media(min-width:760px){.benef{grid-template-columns:repeat(2,1fr)}}
+  .benef .b{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
+  .benef .b h4{margin:0 0 6px;font-size:15px}
+  .benef .b p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+  .benef .b .porque{margin-top:8px;font-size:13px;color:var(--teal-deep);background:var(--teal-soft);border-radius:8px;padding:8px 10px}
+
+  /* argumentos */
+  .arg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow);position:relative}
+  .arg .h{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);margin-bottom:9px}
+  .arg p{margin:0;font-size:14.5px;line-height:1.6;color:var(--ink);max-width:78ch}
+  .arg .copy{position:absolute;top:14px;right:14px;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-2);font:inherit;font-weight:600;font-size:12px;padding:6px 11px;border-radius:8px;cursor:pointer}
+  .arg .copy:hover{border-color:var(--teal);color:var(--teal-deep)}
+
+  /* guia */
+  .guide{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:24px 26px}
+  .guide .gnote{font-size:12.5px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--line);border-radius:9px;padding:9px 12px;margin-bottom:20px;display:flex;gap:8px;align-items:flex-start}
+  .gstep{display:flex;gap:16px;padding-bottom:20px;position:relative}
+  .gstep:not(:last-child)::before{content:"";position:absolute;left:15px;top:34px;bottom:0;width:2px;background:var(--line)}
+  .gstep .n{flex:none;width:32px;height:32px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'Space Grotesk';font-weight:700;font-size:14px;z-index:1}
+  .gstep.warn .n{background:#C0703F}
+  .gstep .body{flex:1;min-width:0}
+  .gstep h4{margin:5px 0 8px;font-size:15.5px;letter-spacing:-.01em}
+  .gstep ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+  .gstep li{display:flex;gap:9px;font-size:13.5px;color:var(--ink-2);line-height:1.5}
+  .gstep li .m{flex:none;margin-top:2px;color:var(--teal)}
+  .gstep.warn li .m{color:#C0703F}
+  .say{background:var(--teal-soft);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:9px 12px;font-size:13px;color:var(--teal-deep);margin-top:9px;font-style:italic}
+
+  .concl{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow)}
+  .concl .tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .concl h3{margin:0 0 10px;font-size:20px;letter-spacing:-.01em}
+  .concl p{margin:0;font-size:15px;color:var(--ink-2);line-height:1.6;max-width:82ch}
+  .final-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  .foot{color:var(--muted);font-size:12.5px;text-align:center;padding:38px 20px 30px;max-width:78ch;margin:0 auto;line-height:1.6}
+  .modal{position:fixed;inset:0;background:rgba(15,29,46,.55);backdrop-filter:blur(3px);display:none;place-items:center;z-index:60;padding:20px}
+  .modal.on{display:grid}
+  .modal-card{background:#fff;border-radius:18px;box-shadow:0 24px 60px rgba(15,29,46,.3);padding:26px;width:100%;max-width:420px}
+  .modal-card h3{margin:0 0 6px;font-size:19px;letter-spacing:-.01em}
+  .modal-card .msub{font-size:13.5px;color:var(--muted);margin:0 0 18px;line-height:1.5}
+  .modal-err{font-size:13px;color:var(--red);background:var(--red-soft);border:1px solid var(--red-line);border-radius:9px;padding:9px 11px;margin-bottom:12px;display:none}
+  .modal-err.on{display:block}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:6px}
+  .mfield{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .mfield label{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><div class="wrap">
+  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja + Plano Tray</b><small>Prospecção de lojistas fora da plataforma · Time de Vendas</small></span></div>
+  <span class="tag">Roda no navegador · sem instalação</span>
+</div></header>
+<main class="wrap">
+  <section class="hero">
+    <h1>Analise a loja do prospect e mostre <span class="u">o que ele ganha migrando</span> para a Tray.</h1>
+    <p class="lead">Cole o endereço da loja atual e o link do plano que você vai indicar. A ferramenta identifica a plataforma em uso, mapeia experiência de compra, performance, SEO, marketing e perfil do negócio, aponta as dores prováveis e monta o discurso ligando cada dor a um recurso do plano — com guia de reunião e PDF assinado para enviar depois.</p>
+    <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8912E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span>A leitura das páginas usa um relay público, porque o navegador não acessa outros sites diretamente. Se um link não carregar, clique em analisar de novo ou ative o modo de colar código-fonte. Tudo o que aparece aqui é lido da página pública no momento da análise.</span></div>
+
+    <div class="panel">
+      <div class="panel-head"><span class="eyebrow">Dados da análise</span><span class="hint">Leva de 10 a 40 segundos</span></div>
+      <div class="fields">
+        <div class="field">
+          <label for="loja-url">Endereço da loja do lojista</label>
+          <input class="inp" id="loja-url" type="url" placeholder="https://www.lojadocliente.com.br" />
+          <span class="tip">Use a página inicial. É de lá que sai a maior parte do diagnóstico.</span>
+          <textarea class="paste" id="loja-paste" placeholder="Modo manual: abra a loja, use Ctrl+U (código-fonte), Ctrl+A, Ctrl+C e cole aqui."></textarea>
+        </div>
+        <div class="field">
+          <label for="plano-url">Link do plano da Tray</label>
+          <input class="inp" id="plano-url" type="url" value="https://www.tray.com.br/planos-precos" />
+          <span class="tip">Página de planos ou a landing do plano específico.</span>
+          <textarea class="paste" id="plano-paste" placeholder="Modo manual: cole aqui o código-fonte da página do plano."></textarea>
+        </div>
+        <div class="field">
+          <label for="plano-sel">Plano que você vai indicar</label>
+          <select class="inp" id="plano-sel"></select>
+          <span class="tip">A ferramenta sugere um plano pelo porte da loja. Você pode trocar.</span>
+        </div>
+        <div class="field">
+          <label for="obs">Observações da prospecção <span style="text-transform:none;font-weight:500;color:#9AA8B5">(opcional)</span></label>
+          <input class="inp" id="obs" type="text" placeholder="Ex.: indicação do Marcelo, vende muito por Instagram" />
+          <span class="tip">Entra no PDF, logo abaixo dos dados da loja.</span>
+        </div>
+      </div>
+      <div class="panel-actions">
+        <button class="btn btn-primary" id="run-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Analisar loja</button>
+        <button class="btn btn-ghost" id="ex-btn">Preencher com exemplo</button>
+        <label class="toggle"><input type="checkbox" id="deep-toggle" checked/><span class="sw"></span>Ler sitemap e robots (mais preciso)</label>
+        <label class="toggle"><input type="checkbox" id="manual-toggle"/><span class="sw"></span>Colar conteúdo manualmente</label>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Lojas muito grandes às vezes bloqueiam a leitura automática. Nesse caso, ative o modo de colar conteúdo.</p>
+      <div class="status" id="status"></div>
+      <div class="alert" id="alert"></div>
+    </div>
+  </section>
+  <section id="results"></section>
+</main>
+
+<div class="modal" id="pdf-modal">
+  <div class="modal-card">
+    <h3>Gerar PDF para o cliente</h3>
+    <p class="msub">Seus dados entram na assinatura do documento e no rodapé de todas as páginas, para o lojista saber com quem falar.</p>
+    <div class="modal-err" id="v-err"></div>
+    <div class="mfield"><label for="v-nome">Seu nome</label><input class="inp" id="v-nome" type="text" placeholder="Ex.: Ana Souza" autocomplete="name"/></div>
+    <div class="mfield"><label for="v-fone">Seu telefone</label><input class="inp" id="v-fone" type="tel" placeholder="(11) 99999-9999" autocomplete="tel"/></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="v-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="v-go">Gerar PDF</button>
+    </div>
+  </div>
+</div>
+
+<p class="foot">O diagnóstico é montado a partir do que está visível no código público da loja no momento da análise. Sinais que dependem do painel do lojista — como recuperação de carrinho, ERP e taxas contratadas — aparecem como “confirmar na reunião”. Valores e limites dos planos são lidos da página da Tray; confirme sempre a tabela vigente antes de fechar.</p>
+
+<script>
+/* =========================================================
+   Raio-X da Loja + Plano Tray — arquivo único, sem build.
+   Blocos: 1) utilitários  2) bases de conhecimento
+           3) leitura das páginas  4) análise da loja
+           5) plano e argumentos  6) render  7) PDF
+   ========================================================= */
+
+/* ---------- 1. utilitários ---------- */
+const PROXIES=[
+  u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
+  u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),
+  u=>"https://corsproxy.io/?url="+encodeURIComponent(u)
+];
+function deaccent(s){ return (s||"").normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function norm(s){ return deaccent((s||"").toLowerCase()).replace(/\s+/g,' ').trim(); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function normUrl(u){ u=(u||"").trim(); if(!u) return ""; if(!/^https?:\/\//i.test(u)) u="https://"+u.replace(/^\/+/,''); return u; }
+function hostOf(u){ try{ return new URL(u).host.replace(/^www\./,''); }catch(e){ return (u||'').replace(/^https?:\/\//,'').split('/')[0]; } }
+function originOf(u){ try{ const x=new URL(u); return x.origin; }catch(e){ return ''; } }
+function shortUrl(u){ return (u||'').replace(/^https?:\/\//,'').replace(/\/$/,''); }
+function listPt(a){ a=(a||[]).filter(Boolean); if(!a.length) return ''; if(a.length===1) return a[0]; return a.slice(0,-1).join(', ')+' e '+a[a.length-1]; }
+function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):s; }
+function lower1(s){ return s? s.charAt(0).toLowerCase()+s.slice(1):s; }
+function brl(n){ return 'R$ '+(Number(n)||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function maskFone(v){ const d=(v||'').replace(/\D/g,'').slice(0,11); if(!d) return ''; if(d.length<3) return '('+d; if(d.length<=6) return '('+d.slice(0,2)+') '+d.slice(2); if(d.length<=10) return '('+d.slice(0,2)+') '+d.slice(2,6)+'-'+d.slice(6); return '('+d.slice(0,2)+') '+d.slice(2,7)+'-'+d.slice(7); }
+function pct(n){ return Math.max(0,Math.min(100,Math.round(n))); }
+
+/* ---------- 2. bases de conhecimento ---------- */
+/* 2.1 plataformas: assinaturas + dores típicas usadas no discurso */
+const PLATAFORMAS=[
+ {id:'tray',nome:'Tray',rx:[/commercesuite\.com\.br/i,/tray\.com\.br/i,/traycommerce/i],
+  dores:['Loja já está na Tray — a conversa aqui é de upgrade de plano, tema ou apps, não de migração.']},
+ {id:'shopify',nome:'Shopify',rx:[/cdn\.shopify\.com/i,/myshopify\.com/i,/Shopify\.theme/i,/shopify-features/i],
+  dores:['Taxa adicional sobre as vendas quando não usa o gateway da própria plataforma.','Mensalidade e apps cobrados em dólar, com variação cambial e IOF.','Integração com marketplaces e ERPs brasileiros depende de apps de terceiros, com custo mensal somado.','Emissão de nota fiscal, boleto e Pix exigem aplicativos extras.','Suporte em português com horário e canais limitados.']},
+ {id:'nuvemshop',nome:'Nuvemshop',rx:[/nuvemshop/i,/tiendanube/i,/nuvemshop\.com\.br/i],
+  dores:['Recursos de crescimento (marketplaces, automações, relatórios) chegam via apps pagos, inflando o custo total.','Limite de personalização do checkout e do tema conforme o plano.','Cobrança de taxa por venda em parte dos planos.']},
+ {id:'lojaintegrada',nome:'Loja Integrada',rx:[/lojaintegrada/i,/awsli\.com\.br/i,/cdn\.awsli/i],
+  dores:['Recursos essenciais ficam bloqueados nos planos de entrada e crescem em degraus.','Personalização e acesso ao código-fonte limitados.','Suporte concentrado em ticket, sem canal humano rápido.','Integrações com ERP e marketplaces mais restritas conforme o plano.']},
+ {id:'woocommerce',nome:'WooCommerce (WordPress)',rx:[/woocommerce/i,/wp-content/i,/wp-json/i,/wordpress/i],
+  dores:['Loja depende de hospedagem, plugins e atualizações que ficam por conta do lojista.','Cada recurso novo vira mais um plugin, com custo, conflito e risco de quebrar a loja.','Sem suporte oficial: quando cai, o lojista depende de um freelancer ou agência.','Performance e segurança variam conforme o servidor contratado.','Escalar em datas de pico (Black Friday) exige infraestrutura contratada à parte.']},
+ {id:'wix',nome:'Wix',rx:[/wixstatic\.com/i,/wix\.com/i,/_wixCIDX/i,/parastorage\.com/i],
+  dores:['Ferramenta pensada para site institucional, não para operação de e-commerce em volume.','SEO e URLs com menos controle, o que trava o crescimento orgânico.','Integrações com marketplaces, ERPs e transportadoras brasileiras muito limitadas.','Gestão de estoque, variações e pedidos pouco preparada para catálogo grande.']},
+ {id:'vtex',nome:'VTEX',rx:[/vtexassets\.com/i,/vtexcommercestable/i,/vtex\.com\.br/i,/vtex-/i],
+  dores:['Custo total alto para o porte da operação: licença, comissão sobre GMV e time técnico.','Qualquer alteração depende de agência ou desenvolvedor, o que encarece e atrasa.','Complexidade de painel maior do que a operação precisa.']},
+ {id:'magento',nome:'Magento / Adobe Commerce',rx:[/Magento_/i,/\/static\/version/i,/mage\/cookies/i,/magento/i],
+  dores:['Manutenção cara: servidor dedicado, desenvolvedor especializado e atualizações constantes.','Prazo longo para qualquer mudança simples de loja.','Custo fixo alto mesmo em meses de venda baixa.']},
+ {id:'bagy',nome:'Bagy',rx:[/bagy\.com\.br/i,/cdn\.bagy/i],
+  dores:['Ecossistema de integrações e apps menor, o que limita marketplaces e ERPs.','Recursos avançados de venda e relatórios restritos aos planos superiores.']},
+ {id:'yampi',nome:'Yampi',rx:[/yampi\.com\.br/i,/yampi\.io/i,/catalog\.yampi/i],
+  dores:['Cobrança de taxa por pedido além da mensalidade.','Foco em checkout: gestão de catálogo, estoque e marketplaces é mais limitada.']},
+ {id:'cartpanda',nome:'CartPanda',rx:[/cartpanda/i],dores:['Taxa por pedido somada à mensalidade.','Estrutura voltada a campanhas, com menos recursos de operação e catálogo.']},
+ {id:'prestashop',nome:'PrestaShop',rx:[/prestashop/i],dores:['Módulos pagos e manutenção técnica por conta do lojista.','Sem suporte oficial em português para a operação.']},
+ {id:'opencart',nome:'OpenCart',rx:[/catalog\/view\/theme/i,/opencart/i],dores:['Plataforma antiga, com poucos módulos atualizados no mercado brasileiro.','Segurança e atualizações dependem do desenvolvedor do lojista.']},
+ {id:'wbuy',nome:'WBuy',rx:[/wbuy\.com\.br/i,/wbuy\.co/i],dores:['Menos parceiros e apps disponíveis para crescer.','Personalização de tema e checkout limitada.']},
+ {id:'vnda',nome:'Vnda',rx:[/vnda\.com\.br/i,/vndastatic/i],dores:['Mudanças de layout e recursos dependem do time da plataforma ou de agência.']},
+ {id:'irroba',nome:'Irroba',rx:[/irroba/i],dores:['Ecossistema de integrações menor que o das grandes plataformas.']},
+ {id:'wake',nome:'Wake / Fbits',rx:[/fbitsstatic/i,/wake\.tech/i],dores:['Contrato e custo pensados para operação enterprise, pesados para o porte médio.']},
+ {id:'linx',nome:'Linx Commerce',rx:[/linximpulse/i,/linx\.com\.br/i],dores:['Custo e complexidade de operação altos.','Dependência de fila de atendimento para mudanças simples.']},
+ {id:'shopee',nome:'Loja em marketplace (sem site próprio)',rx:[/shopee\.com\.br\/shop/i,/mercadoshops/i],
+  dores:['Sem loja própria, o lojista não é dono da vitrine nem da base de clientes.','Comissão do marketplace corrói a margem de toda venda.','Sem domínio e sem SEO próprio, não constrói tráfego que fique.']},
+ {id:'webflow',nome:'Webflow',rx:[/website-files\.com/i,/webflow/i],dores:['E-commerce limitado: meios de pagamento, frete e nota fiscal brasileiros ficam de fora.','Catálogo e estoque com pouca profundidade.']},
+ {id:'squarespace',nome:'Squarespace',rx:[/squarespace/i,/sqspcdn/i],dores:['Estrutura estrangeira: pagamento, frete e nota fiscal do Brasil ficam de fora.','Integração com marketplaces nacionais inexistente.']}
+];
+
+/* 2.2 planos da Tray — referência interna, atualizada pela leitura da página */
+const PLANOS=[
+ {id:'start',nome:'Start',preco:'R$ 19/mês (anual)',faixa:1,produtos:'Produtos ilimitados',
+  indicado:'quem está começando e precisa profissionalizar a vitrine com investimento baixo',
+  limite:'Limite de vendas de R$ 10.000 por mês',
+  destaques:['Produtos ilimitados','Tarifa grátis nas vendas com Tray Pagamentos','SSL grátis','Live Shop nativa','Integração com marketplaces','Suporte via ticket','Relatórios avançados','1 usuário']},
+ {id:'basico',nome:'Básico',preco:'R$ 49/mês (anual) · R$ 59/mês (mensal)',faixa:2,produtos:'Até 100 produtos',
+  indicado:'quem já fez as primeiras vendas e quer profissionalizar a operação',
+  limite:'Sem limite de faturamento',
+  destaques:['Sem limite de vendas','Usuários ilimitados','Integração com marketplaces','SSL grátis','Recuperação de carrinho abandonado','Cupom e desconto progressivo','Suporte via ticket']},
+ {id:'crescimento',nome:'Crescimento',preco:'R$ 85/mês (anual) · R$ 99/mês (mensal)',faixa:3,produtos:'Até 500 produtos',
+  indicado:'lojas que já vendem todo mês e querem acelerar com mais autonomia',
+  limite:'Sem limite de faturamento · tarifa reduzida por venda',
+  destaques:['Tudo do Básico','Edição de HTML e CSS da loja','Inclusão de pedido manual','Relatórios avançados','Suporte via ticket e chat','Integração com marketplaces','Dropshipping AliExpress']},
+ {id:'expansao',nome:'Expansão',preco:'R$ 189/mês (anual) · R$ 199/mês (mensal)',faixa:4,produtos:'Até 1.000 produtos',
+  indicado:'operações estruturadas, com equipe e catálogo em crescimento',
+  limite:'Sem limite de faturamento · tarifa menor por venda',
+  destaques:['Tudo do Crescimento','Acesso e download do código-fonte','Live Shop nativa e grátis','Suporte por ticket, chat, telefone e WhatsApp','Apoio de implantação avançado','Módulo B2B disponível','R$ 200 de cashback em temas']},
+ {id:'avancado',nome:'Avançado',preco:'R$ 399/mês (anual) · R$ 449/mês (mensal)',faixa:5,produtos:'Até 2.500 produtos',
+  indicado:'operações que precisam de escala, multiestoque e menor tarifa por venda',
+  limite:'Sem limite de faturamento · menor tarifa por venda da tabela padrão',
+  destaques:['Tudo do Expansão','Módulo Multi Estoques grátis','Clube de assinatura','Suporte completo com WhatsApp','Apoio de implantação premium','R$ 200 de cashback em temas']},
+ {id:'ultra',nome:'Ultra',preco:'Sob consulta',faixa:6,produtos:'Produtos ilimitados',
+  indicado:'operações de grande porte que precisam de infraestrutura dedicada e time de apoio',
+  limite:'Condições comerciais sob consulta',
+  destaques:['Todos os recursos da plataforma','Infraestrutura dedicada','Módulo B2B e atacado grátis','Módulo Multi Estoques grátis','Especialista de e-commerce dedicado','Migração e implantação assistidas','Atendimento prioritário']}
+];
+
+/* 2.3 recursos da Tray usados no discurso: o que é, por que importa */
+const TRAY_RECURSOS={
+ checkout:{nome:'Checkout transparente próprio',porque:'O cliente termina a compra dentro da loja, sem ser jogado para outro site — é onde a maior parte da desistência acontece.'},
+ pix:{nome:'Pix e boleto nativos',porque:'Meios de pagamento que o brasileiro usa todo dia já vêm configurados, sem app extra nem taxa de terceiro.'},
+ carrinho:{nome:'Recuperação de carrinho abandonado',porque:'Cada carrinho abandonado é uma venda que já estava quase fechada; o resgate automático traz parte dela de volta sem esforço.'},
+ marketplaces:{nome:'Integração nativa com marketplaces',porque:'Mercado Livre, Shopee, Amazon, Magalu e outros no mesmo painel: um estoque, um lugar para gerir pedidos.'},
+ frete:{nome:'Tray Envios',porque:'Frete negociado em escala, mais barato que o balcão, com etiqueta e rastreio dentro do painel.'},
+ nota:{nome:'Emissor de notas fiscais',porque:'A nota sai junto com o pedido, sem sistema paralelo e sem digitação manual.'},
+ apps:{nome:'Loja de aplicativos e integrações',porque:'ERP, atendimento, avaliações e automações de mercado já integrados, sem desenvolvimento sob medida.'},
+ temas:{nome:'Loja de Temas',porque:'Layout profissional pronto para o segmento, instalado sem depender de agência.'},
+ seo:{nome:'SEO configurável em toda a loja',porque:'Título, descrição, URL e redirecionamento sob controle do lojista — tráfego orgânico é a venda que não precisa de anúncio.'},
+ suporte:{nome:'Suporte humano em português',porque:'Loja parada é faturamento parado; ter alguém do outro lado muda o tamanho do prejuízo.'},
+ relatorios:{nome:'Relatórios avançados',porque:'Saber o que vende, para quem e por qual canal é o que permite investir com critério.'},
+ app:{nome:'Aplicativo de gestão',porque:'O lojista acompanha pedidos e estoque do celular, inclusive com leitor de código de barras.'},
+ whatsapp:{nome:'WhatsApp Business integrado',porque:'A conversa que já acontece no WhatsApp passa a virar pedido rastreado dentro da loja.'},
+ codigo:{nome:'Acesso ao código-fonte (HTML, CSS e JS)',porque:'Liberdade para personalizar a loja sem trocar de plataforma quando o negócio crescer.'},
+ multiestoque:{nome:'Multi estoques',porque:'Loja física e centro de distribuição no mesmo sistema, sem venda de produto que já acabou.'},
+ assinatura:{nome:'Clube de assinatura',porque:'Receita recorrente previsível em segmentos de recompra.'},
+ b2b:{nome:'Módulo B2B e atacado',porque:'Tabela de preço por cliente e pedido mínimo para quem também vende para revenda.'},
+ liveshop:{nome:'Live Shop nativa',porque:'Transmite ao vivo e vende na mesma tela, sem ferramenta de terceiro.'},
+ escola:{nome:'Escola de E-commerce',porque:'O time do lojista aprende a operar sem depender de consultoria paga.'}
+};
+
+/* 2.4 recursos essenciais por segmento — o que checar na loja do prospect */
+const RECURSOS_BASE=[
+ {n:'Pix como meio de pagamento',rx:/\bpix\b/i,tray:'Nativo',porque:'Pix já responde por boa parte das vendas online e cai na conta na hora.'},
+ {n:'Parcelamento visível na vitrine',rx:/\d{1,2}\s*x\s*(de\s*)?r\$|sem juros|parcel/i,tray:'Nativo',porque:'Mostrar a parcela na vitrine aumenta a chance de o cliente considerar o produto.'},
+ {n:'Cálculo de frete antes do carrinho',rx:/calcular frete|simular frete|calcule o frete|consultar frete|\bcep\b/i,tray:'Nativo',porque:'Frete escondido até o fim é o principal motivo de abandono de carrinho no Brasil.'},
+ {n:'Frete grátis com regra clara',rx:/frete gr[áa]tis/i,tray:'Nativo',porque:'Regra de frete grátis por valor puxa o ticket médio para cima.'},
+ {n:'Cupom de desconto',rx:/cupom|c[óo]digo de desconto/i,tray:'Nativo',porque:'Cupom é a ferramenta mais rápida para destravar a primeira compra e reativar cliente parado.'},
+ {n:'Avaliações de clientes no produto',rx:/avalia[çc][ãa]o|avalia[çc][õo]es|trustvox|yourviews|review|opini[õa]o de quem comprou/i,tray:'Nativo + apps',porque:'Prova social decide a compra de quem não conhece a marca.'},
+ {n:'Recuperação de carrinho abandonado',rx:null,tray:'Nativo',porque:'Traz de volta a venda que já estava quase fechada, sem custo de mídia.'},
+ {n:'Busca com sugestão de produtos',rx:/autocomplete|sugest|typeahead|search-suggest|busca r[áa]pida/i,tray:'Nativo + apps',porque:'Quem usa a busca compra mais; se a busca falha, a visita acaba ali.'},
+ {n:'Filtros de categoria',rx:/filtro|filtrar|refine|facet/i,tray:'Nativo',porque:'Sem filtro, catálogo grande vira labirinto e o cliente desiste.'},
+ {n:'Atendimento por WhatsApp na loja',rx:/wa\.me|api\.whatsapp|whatsapp/i,tray:'Nativo',porque:'No Brasil, boa parte da dúvida vira venda pelo WhatsApp — e o pedido precisa voltar para a loja.'},
+ {n:'Captura de e-mail / newsletter',rx:/newsletter|cadastre[- ]se|receba novidades|assine.{0,20}e-?mail/i,tray:'Nativo',porque:'Base própria é o único canal de venda que não depende de leilão de anúncio.'},
+ {n:'Venda também em marketplaces',rx:/mercadolivre|mercado livre|shopee|amazon\.com\.br|magazineluiza|magalu|americanas|shein/i,tray:'Nativo',porque:'Marketplace traz volume; integrar no mesmo painel evita estoque furado e erro de preço.'},
+ {n:'Blog ou conteúdo próprio',rx:/\/blog|\/noticias|\/dicas/i,tray:'Nativo',porque:'Conteúdo alimenta o tráfego orgânico, que sustenta a venda quando a verba de anúncio cai.'},
+ {n:'Selo de segurança e políticas visíveis',rx:/site blindado|selo|certificado ssl|pol[íi]tica de (privacidade|troca)|trocas e devolu/i,tray:'Nativo',porque:'Loja nova só vende se parecer segura à primeira vista.'}
+];
+const SEGMENTOS=[
+ {id:'moda',nome:'Moda e acessórios',rx:/moda|roupa|vestido|camiseta|calça|jeans|blusa|saia|lingerie|cal[çc]ado|t[êe]nis|sapato|bolsa|acess[óo]rio/i,
+  perfil:'lojas de moda com catálogo grande, giro rápido e forte peso do celular',
+  extras:[{n:'Variações de tamanho e cor com estoque próprio',rx:/tamanho|variac|variação|selecione a cor|grade/i,tray:'Nativo',porque:'Sem grade correta, a loja vende o que não tem e perde o cliente na troca.'},
+    {n:'Tabela de medidas no produto',rx:/tabela de medidas|guia de tamanhos|medidas/i,tray:'Nativo',porque:'Dúvida de tamanho é a maior causa de troca e de carrinho abandonado na moda.'},
+    {n:'Filtro por tamanho e cor',rx:/filtrar por tamanho|filtro.{0,15}(tamanho|cor)|size|cor:/i,tray:'Nativo',porque:'Cliente de moda busca pelo que serve nele, não pelo nome do produto.'},
+    {n:'Zoom nas fotos do produto',rx:/zoom|magnif|lightbox/i,tray:'Nativo',porque:'Na moda, a foto é o produto; detalhe de tecido e acabamento vende.'},
+    {n:'Compre junto / look completo',rx:/compre junto|leve junto|complete o look|combina com/i,tray:'Nativo',porque:'Ticket médio sobe quando a loja monta a segunda peça para o cliente.'},
+    {n:'Política de troca em destaque',rx:/troca gr[áa]tis|primeira troca|pol[íi]tica de troca/i,tray:'Nativo',porque:'Troca fácil tira o medo de comprar roupa sem provar.'}]},
+ {id:'beleza',nome:'Cosméticos, saúde e beleza',rx:/cosm[ée]tic|beleza|maquiagem|perfum|skincare|cabelo|shampoo|dermat|sa[úu]de|suplement/i,
+  perfil:'lojas de beleza que vivem de recompra, kit e ticket médio crescente',
+  extras:[{n:'Kits e combos',rx:/kit|combo|leve \d+/i,tray:'Nativo',porque:'Kit é o jeito mais direto de subir ticket médio em beleza.'},
+    {n:'Recompra ou assinatura',rx:/assinatura|clube|recorr[êe]ncia|recompra/i,tray:'Nativo (Clube de assinatura)',porque:'Produto que acaba todo mês gera receita previsível quando vira assinatura.'},
+    {n:'Brinde ou amostra por faixa de valor',rx:/brinde|amostra|ganhe/i,tray:'Nativo',porque:'Brinde por faixa empurra o carrinho para o próximo degrau de valor.'},
+    {n:'Ficha com ingredientes e modo de uso',rx:/ingredientes|composi[çc][ãa]o|modo de uso|como usar/i,tray:'Nativo (abas de produto)',porque:'Em beleza, a decisão passa por ingrediente e indicação de pele/cabelo.'},
+    {n:'Programa de fidelidade ou pontos',rx:/fidelidade|pontos|cashback/i,tray:'Apps',porque:'Fidelidade reduz o custo de trazer o mesmo cliente de volta.'}]},
+ {id:'joias',nome:'Joias e semijoias',rx:/joia|j[óo]ia|semijoia|prata 925|ouro 18k|folheado|alian[çc]a|rel[óo]gio/i,
+  perfil:'marcas que vendem por desejo e precisam de vitrine premium e confiança',
+  extras:[{n:'Zoom de alta resolução',rx:/zoom|magnif|alta resolu/i,tray:'Nativo',porque:'Sem tocar na peça, o cliente compra pelo detalhe da foto.'},
+    {n:'Garantia e certificado da peça',rx:/garantia|certificado|banho|antial[ée]rgic/i,tray:'Nativo (abas de produto)',porque:'Garantia explícita é o que sustenta preço em joia vendida online.'},
+    {n:'Embalagem para presente',rx:/embalagem|presente|caixinha|gift/i,tray:'Nativo',porque:'Boa parte da venda de joia é presente; a embalagem faz parte do produto.'},
+    {n:'Parcelamento longo em destaque',rx:/\d{1,2}\s*x\s*(de\s*)?r\$|sem juros/i,tray:'Nativo',porque:'Ticket alto só converte quando a parcela aparece antes do preço cheio.'},
+    {n:'Personalização ou gravação',rx:/personaliz|gravac|gravação|grave/i,tray:'Nativo',porque:'Peça personalizada tem margem maior e quase não tem concorrência de preço.'}]},
+ {id:'eletronicos',nome:'Eletrônicos, games e informática',rx:/eletr[ôo]nic|inform[áa]tica|notebook|celular|smartphone|games?|console|hardware|acess[óo]rios? de pc/i,
+  perfil:'lojas com comparação de preço agressiva, onde ficha técnica e prazo decidem',
+  extras:[{n:'Ficha técnica completa em abas',rx:/ficha t[ée]cnica|especifica[çc][õo]es|caracter[íi]sticas t[ée]cnicas/i,tray:'Nativo',porque:'Nesse segmento o cliente compara especificação por especificação antes de decidir.'},
+    {n:'Prazo de entrega visível no produto',rx:/prazo de entrega|receba at[ée]|entrega em/i,tray:'Nativo',porque:'Quem compra eletrônico compara prazo tanto quanto preço.'},
+    {n:'Garantia estendida ou seguro',rx:/garantia estendida|seguro|garantia de \d/i,tray:'Apps',porque:'Serviço agregado é margem extra sem custo de aquisição.'},
+    {n:'Produtos relacionados e acessórios',rx:/relacionados|quem viu|acess[óo]rios para|leve tamb[ée]m/i,tray:'Nativo',porque:'O acessório é onde está a margem que o produto principal não tem.'},
+    {n:'Avaliações com nota média',rx:/nota m[ée]dia|estrelas|\d[.,]\d de 5/i,tray:'Nativo + apps',porque:'Sem avaliação, a loja perde para o marketplace que tem milhares delas.'}]},
+ {id:'casa',nome:'Casa, móveis e decoração',rx:/decora[çc][ãa]o|m[óo]vel|m[óo]veis|sof[áa]|cozinha|cama, mesa|enxoval|utilidades dom/i,
+  perfil:'lojas com produto volumoso, foto ambientada e frete que pesa na decisão',
+  extras:[{n:'Medidas e dimensões no produto',rx:/dimens[õo]es|medidas|altura.{0,10}largura|\d+\s?cm/i,tray:'Nativo',porque:'Móvel comprado sem medida certa vira devolução cara.'},
+    {n:'Fotos do produto ambientado',rx:/ambiente|ambientad|inspira[çc][ãa]o|galeria/i,tray:'Nativo',porque:'O cliente compra a cena, não o objeto isolado no fundo branco.'},
+    {n:'Frete calculado por peso e volume',rx:/frete|cubagem|volume|transportadora/i,tray:'Nativo (Tray Envios)',porque:'Produto volumoso com frete errado come toda a margem do pedido.'},
+    {n:'Compra por ambiente ou coleção',rx:/por ambiente|sala|quarto|cole[çc][ãa]o/i,tray:'Nativo',porque:'Navegar por ambiente puxa mais de um item por pedido.'},
+    {n:'Montagem ou instalação como serviço',rx:/montagem|instala[çc][ãa]o|montador/i,tray:'Nativo (produto de serviço)',porque:'Serviço agregado diferencia de marketplace e aumenta o ticket.'}]},
+ {id:'alimentos',nome:'Alimentos e bebidas',rx:/aliment|bebida|vinho|cerveja|caf[ée]|doce|choco|conveni[êe]ncia|mercearia|hortifruti/i,
+  perfil:'operações com entrega local, recompra alta e prazo curto de validade',
+  extras:[{n:'Entrega por região ou raio de CEP',rx:/entrega.{0,20}(regi[ãa]o|cidade|bairro)|consultar cep|raio de entrega/i,tray:'Nativo',porque:'Alimento vende para quem está perto; entregar fora do raio destrói a margem.'},
+    {n:'Pedido mínimo',rx:/pedido m[íi]nimo|valor m[íi]nimo/i,tray:'Nativo',porque:'Sem pedido mínimo, a entrega custa mais que o lucro do pedido.'},
+    {n:'Agendamento de entrega',rx:/agendar|agendamento|escolha o dia/i,tray:'Apps',porque:'Perecível exige alguém em casa na hora certa.'},
+    {n:'Kits e cestas',rx:/kit|cesta|combo/i,tray:'Nativo',porque:'Cesta é o produto de maior ticket e maior margem do segmento.'},
+    {n:'Clube ou assinatura',rx:/clube|assinatura|recorr/i,tray:'Nativo (Clube de assinatura)',porque:'Recorrência estabiliza o caixa de quem vende produto de consumo.'}]},
+ {id:'pet',nome:'Pet shop',rx:/pet|ra[çc][ãa]o|c[ãa]es|cachorro|gato|aqu[áa]rio|veterin/i,
+  perfil:'lojas de recompra previsível, com frete pesado e cliente fiel',
+  extras:[{n:'Filtro por porte, idade e espécie',rx:/porte|filhote|adulto|c[ãa]es|gatos/i,tray:'Nativo',porque:'Quem compra ração busca pelo animal, não pela marca.'},
+    {n:'Assinatura de recompra',rx:/assinatura|recorr[êe]ncia|clube/i,tray:'Nativo (Clube de assinatura)',porque:'Ração acaba em data previsível; a assinatura garante o pedido antes do concorrente.'},
+    {n:'Frete para produto pesado',rx:/frete|transportadora|entrega/i,tray:'Nativo (Tray Envios)',porque:'Saco de ração é peso puro: frete mal calculado zera o lucro.'},
+    {n:'Kits e leve mais',rx:/kit|combo|leve \d/i,tray:'Nativo',porque:'Aumentar o volume por pedido dilui o custo de entrega.'},
+    {n:'Lembrete de recompra por e-mail',rx:/lembrete|receba novidades|newsletter/i,tray:'Nativo (e-mail marketing)',porque:'Avisar na hora certa é mais barato que reconquistar o cliente depois.'}]},
+ {id:'esporte',nome:'Esporte e lazer',rx:/esporte|fitness|academia|suplemento|bike|ciclismo|corrida|camping|pesca/i,
+  perfil:'lojas com produto técnico, cliente que pesquisa e compra por modalidade',
+  extras:[{n:'Filtro por modalidade e tamanho',rx:/modalidade|tamanho|filtro/i,tray:'Nativo',porque:'O cliente chega pela prática que faz, não pela categoria da loja.'},
+    {n:'Tabela de medidas e especificações',rx:/tabela de medidas|especifica[çc][õo]es|ficha t[ée]cnica/i,tray:'Nativo',porque:'Produto técnico errado volta como troca.'},
+    {n:'Kits e combos de treino',rx:/kit|combo/i,tray:'Nativo',porque:'Combos sobem o ticket sem novo custo de aquisição.'},
+    {n:'Avaliações de quem usa',rx:/avalia|review|coment[áa]rio/i,tray:'Nativo + apps',porque:'Recomendação de outro praticante vale mais que descrição do fabricante.'}]},
+ {id:'infantil',nome:'Bebês e crianças',rx:/beb[êe]|infantil|crian[çc]a|enxoval|brinquedo|maternidade/i,
+  perfil:'lojas com compra emocional, presente e forte peso de segurança e confiança',
+  extras:[{n:'Filtro por idade e tamanho',rx:/idade|meses|anos|tamanho/i,tray:'Nativo',porque:'A mãe compra pela fase do filho, não pela categoria.'},
+    {n:'Lista de presentes ou chá de bebê',rx:/lista de presente|ch[áa] de beb[êe]|lista de nascimento/i,tray:'Apps',porque:'Lista de presente traz vários compradores novos por uma única cliente.'},
+    {n:'Selo de segurança e certificação',rx:/certifica[çc][ãa]o|inmetro|seguran[çc]a/i,tray:'Nativo (abas de produto)',porque:'Segurança do produto infantil é o primeiro filtro da mãe.'},
+    {n:'Embalagem para presente',rx:/embalagem|presente/i,tray:'Nativo',porque:'Boa parte da venda é presente; embalar faz parte da entrega.'}]},
+ {id:'automotivo',nome:'Automotivo e peças',rx:/automotiv|autope[çc]a|pneu|motor|carro|moto|acess[óo]rios automotivos/i,
+  perfil:'lojas em que a compatibilidade da peça decide a venda e a devolução',
+  extras:[{n:'Busca por veículo, ano e modelo',rx:/por ve[íi]culo|montadora|modelo|ano\/modelo|aplica[çc][ãa]o/i,tray:'Nativo + apps',porque:'Peça errada é devolução certa; a busca por aplicação evita o prejuízo.'},
+    {n:'Código da peça e equivalência',rx:/c[óo]digo da pe[çc]a|refer[êe]ncia|oem|sku/i,tray:'Nativo',porque:'O mecânico busca pelo código, não pelo nome comercial.'},
+    {n:'Ficha de compatibilidade',rx:/compat[íi]vel|aplica[çc][ãa]o|serve em/i,tray:'Nativo (abas de produto)',porque:'Compatibilidade explícita reduz pergunta pré-venda e troca.'},
+    {n:'Frete para item pesado',rx:/frete|transportadora/i,tray:'Nativo (Tray Envios)',porque:'Peça pesada com frete mal calculado inviabiliza a venda.'}]},
+ {id:'geral',nome:'Varejo geral',rx:/.^/,perfil:'lojas que querem estruturar a operação e escalar as vendas',
+  extras:[{n:'Produtos relacionados na página',rx:/relacionados|quem viu|voc[êe] tamb[ée]m pode gostar/i,tray:'Nativo',porque:'Mais itens por pedido é o jeito mais barato de crescer faturamento.'},
+    {n:'Vitrine de mais vendidos',rx:/mais vendidos|destaques|best ?sellers/i,tray:'Nativo',porque:'Curadoria encurta a decisão de quem chega sem saber o que quer.'},
+    {n:'Página de categoria organizada',rx:/categorias?|departamento/i,tray:'Nativo',porque:'Categoria bem montada é o que transforma visita em navegação.'}]}
+];
+
+/* 2.5 sinais rastreados no código da loja */
+const SINAIS={
+ analytics:[['Google Analytics 4',/gtag\(|googletagmanager\.com\/gtag|G-[A-Z0-9]{8,}/i],['Google Tag Manager',/googletagmanager\.com\/gtm|GTM-[A-Z0-9]{5,}/i],['Meta Pixel',/fbq\(|connect\.facebook\.net|facebook.{0,10}pixel/i],['Google Ads',/AW-\d{6,}|googleadservices|gtag\/js\?id=AW/i],['TikTok Pixel',/tiktok.{0,15}pixel|ttq\.|analytics\.tiktok/i],['Pinterest Tag',/pintrk|pinterest.{0,10}tag/i],['Hotjar / Clarity',/hotjar|clarity\.ms/i],['RD Station',/rdstation|rd-?station/i],['Klaviyo / e-mail mkt',/klaviyo|mailchimp|activecampaign|dinamize/i]],
+ atendimento:[['WhatsApp',/wa\.me|api\.whatsapp|whatsapp/i],['Chat online',/jivochat|tawk\.to|zendesk|crisp\.chat|octadesk|movidesk|olark|intercom|zenvia/i],['Chatbot',/chatbot|bot de atendimento|blip\.ai|take\.net/i],['Telefone / SAC visível',/\(\d{2}\)\s?\d{4,5}-?\d{4}|0800/i]],
+ prova:[['Avaliações de produto',/trustvox|yourviews|avalia[çc][õo]es|review|estrelas/i],['Depoimentos',/depoiment|o que dizem|clientes satisfeit/i],['Selo de segurança',/site blindado|selo|ssl|seguran[çc]a|google safe/i],['Reclame Aqui',/reclame ?aqui/i],['CNPJ no rodapé',/cnpj/i],['Política de troca e devolução',/troca e devolu|pol[íi]tica de troca|devolu[çc][ãa]o/i]],
+ canais:[['Instagram',/instagram\.com/i],['Facebook',/facebook\.com/i],['TikTok',/tiktok\.com/i],['YouTube',/youtube\.com|youtu\.be/i],['Pinterest',/pinterest\./i],['Mercado Livre',/mercadolivre|mercadolibre/i],['Shopee',/shopee\.com/i],['Amazon',/amazon\.com\.br/i],['Magalu',/magazineluiza|magalu/i],['Shein / TikTok Shop',/shein\.com|tiktok ?shop/i]],
+ pagamento:[['Visa',/\bvisa\b/i],['Mastercard',/mastercard|master card/i],['Elo',/\belo\b/i],['American Express',/amex|american express/i],['Hipercard',/hipercard/i],['Pix',/\bpix\b/i],['Boleto',/boleto/i],['PayPal',/paypal/i],['Mercado Pago',/mercado ?pago/i],['PagSeguro / PagBank',/pagseguro|pagbank/i],['PicPay',/picpay/i]],
+ frete:[['Cálculo de frete por CEP',/calcular frete|simular frete|informe seu cep|consultar frete/i],['Frete grátis',/frete gr[áa]tis/i],['Correios',/correios|sedex|pac\b/i],['Transportadora',/jadlog|loggi|total express|azul cargo|braspress/i],['Melhor Envio / gateway de frete',/melhor ?envio|frenet|kangu|superfrete/i],['Retirada na loja',/retirar na loja|retirada na loja|retire na loja/i]]
+};
+
+/* ---------- 3. leitura das páginas ---------- */
+async function fetchText(url,timeout=15000){
+  let lastErr=null;
+  for(const build of PROXIES){
+    try{
+      const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeout);
+      const res=await fetch(build(url),{signal:ctl.signal}); clearTimeout(t);
+      if(!res.ok){ lastErr=new Error('HTTP '+res.status); continue; }
+      const txt=await res.text();
+      if(txt&&txt.length>300) return txt;
+      lastErr=new Error('resposta curta');
+    }catch(e){ lastErr=e; }
+  }
+  throw lastErr||new Error('falha na leitura');
+}
+async function sondar(origin){
+  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false};
+  if(!origin) return out;
+  let sitemapUrl=origin+'/sitemap.xml';
+  try{
+    const rb=await fetchText(origin+'/robots.txt',9000);
+    if(rb&&/user-agent/i.test(rb)){ out.robots=true;
+      const m=rb.match(/sitemap:\s*(\S+)/i); if(m) sitemapUrl=m[1].trim(); }
+  }catch(e){}
+  try{
+    let xml=await fetchText(sitemapUrl,12000);
+    if(/<sitemapindex/i.test(xml)){
+      const locs=[...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
+      out.sitemap=locs.length>0; out.sitemapUrl=sitemapUrl;
+      const alvo=locs.find(l=>/produt|product/i.test(l))||locs[0];
+      if(alvo){ try{ xml=await fetchText(alvo,12000); }catch(e){ xml=''; } }
+    } else if(/<urlset/i.test(xml)){ out.sitemap=true; out.sitemapUrl=sitemapUrl; }
+    const locs=[...(xml||'').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
+    out.urls=locs.length;
+    out.produtos=locs.filter(l=>/\/(produto|produtos|product|products|p)\//i.test(l)).length;
+    out.categorias=locs.filter(l=>/\/(categoria|categorias|category|collections?|departamento)\//i.test(l)).length;
+    out.blog=locs.some(l=>/\/blog|\/noticias|\/dicas/i.test(l));
+  }catch(e){}
+  return out;
+}
+
+/* ---------- 4. análise da loja ---------- */
+function detectPlataforma(html,url){
+  const alvo=html+' '+url;
+  const achados=[];
+  PLATAFORMAS.forEach(p=>{
+    const hits=p.rx.filter(r=>r.test(alvo));
+    if(hits.length) achados.push({p,peso:hits.length,ev:hits.map(r=>String(r).replace(/^\/|\/i$/g,'')).slice(0,3)});
+  });
+  const gen=(html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i)||[])[1]||'';
+  const pw=(html.match(/(?:powered by|desenvolvido por|criado por)[^<>"']{0,45}/gi)||[]).slice(0,2).map(s=>s.replace(/\s+/g,' ').trim());
+  if(!achados.length){
+    return {id:'desconhecida',nome:gen?('Não identificada · generator: '+gen.slice(0,40)):'Não identificada automaticamente',
+      confianca:'baixa',evidencias:[...pw,gen?('meta generator: '+gen):''].filter(Boolean),
+      dores:['Não foi possível identificar a plataforma pelo código — pergunte ao lojista na reunião. Costuma indicar site feito sob medida ou plataforma pequena, o que concentra o risco em um único fornecedor.']};
+  }
+  achados.sort((a,b)=>b.peso-a.peso);
+  const top=achados[0];
+  return {id:top.p.id,nome:top.p.nome,confianca:top.peso>=2?'alta':'média',
+    evidencias:[...top.ev.map(e=>'assinatura no código: '+e),...pw,gen?('meta generator: '+gen):''].filter(Boolean).slice(0,5),
+    dores:top.p.dores,outras:achados.slice(1,3).map(a=>a.p.nome)};
+}
+function tempoNaPlataforma(html){
+  const anos=[...html.matchAll(/(?:©|&copy;|copyright)[^<]{0,40}?(19|20)\d{2}/gi)].map(m=>parseInt((m[0].match(/(19|20)\d{2}/)||[])[0],10)).filter(Boolean);
+  const desde=(html.match(/desde\s+((?:19|20)\d{2})/i)||[])[1];
+  const anoAtual=new Date().getFullYear();
+  const cands=anos.concat(desde?[parseInt(desde,10)]:[]).filter(a=>a>=1998&&a<=anoAtual);
+  if(!cands.length) return {texto:'Não identificado no código da loja',anos:null};
+  const min=Math.min(...cands), dif=anoAtual-min;
+  if(dif<=0) return {texto:'Marca de '+min+' no rodapé — loja possivelmente recente',anos:0};
+  return {texto:'Rodapé indica atividade desde '+min+' (cerca de '+dif+' ano'+(dif>1?'s':'')+' de operação)',anos:dif};
+}
+function acharSinais(html,grupo){
+  return SINAIS[grupo].map(([nome,rx])=>({nome,ok:rx.test(html)}));
+}
+function precos(texto){
+  const vals=[...texto.matchAll(/R\$\s*([\d.]{1,9}),(\d{2})/g)].map(m=>parseFloat(m[1].replace(/\./g,'')+'.'+m[2])).filter(v=>v>=5&&v<=200000);
+  if(vals.length<3) return {n:vals.length,min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0,mediana:vals.length?vals[0]:0,ok:vals.length>0};
+  const s=vals.slice().sort((a,b)=>a-b);
+  return {n:vals.length,min:s[0],max:s[s.length-1],mediana:s[Math.floor(s.length/2)],ok:true};
+}
+function detectarSegmento(texto){
+  let best={seg:SEGMENTOS[SEGMENTOS.length-1],hits:0};
+  SEGMENTOS.forEach(s=>{
+    if(s.id==='geral') return;
+    const hits=(texto.match(new RegExp(s.rx.source,'gi'))||[]).length;
+    if(hits>best.hits) best={seg:s,hits};
+  });
+  return {seg:best.seg,confianca:best.hits>=6?'alta':best.hits>=2?'média':'baixa',hits:best.hits};
+}
+function analisarLoja(html,url,extras){
+  const dom=new DOMParser().parseFromString(html,'text/html');
+  const texto=(dom.body?dom.body.textContent:html).replace(/\s+/g,' ');
+  const meta=n=>{ const el=dom.querySelector('meta[property="'+n+'"],meta[name="'+n+'"]'); return el?(el.getAttribute('content')||'').trim():''; };
+  const titulo=(dom.querySelector('title')?dom.querySelector('title').textContent:'').trim();
+  const nomeLoja=(meta('og:site_name')||titulo.split(/[|\-–—]/)[0]||hostOf(url)).trim().slice(0,60);
+  const L={url,host:hostOf(url),origin:originOf(url),nomeLoja,titulo,extras:extras||{}};
+
+  L.plataforma=detectPlataforma(html,url);
+  L.tempo=tempoNaPlataforma(html);
+
+  /* estrutura e experiência */
+  const links=[...dom.querySelectorAll('a[href]')];
+  const navLinks=[...dom.querySelectorAll('nav a[href], header a[href], [class*="menu"] a[href]')];
+  L.exp={
+    busca:/type=["']search|name=["']q["']|name=["'](busca|search|palavra)|placeholder=["'][^"']*(buscar|pesquis)/i.test(html),
+    filtros:/filtro|filtrar|refine|facet|ordenar por/i.test(html),
+    menuMobile:/menu-mobile|mobile-menu|hamburger|navbar-toggle|menu-hamb|drawer/i.test(html),
+    submenu:/submenu|sub-menu|dropdown|megamenu|mega-menu/i.test(html),
+    carrinhoLateral:/carrinho-lateral|side-?cart|mini-?cart|cart-drawer/i.test(html),
+    contaCliente:/minha conta|meus pedidos|entrar\b|login/i.test(html),
+    itensMenu:[...new Set(navLinks.map(a=>(a.textContent||'').replace(/\s+/g,' ').trim()).filter(t=>t.length>2&&t.length<28))].slice(0,12),
+    linksTotais:links.length,
+    pagamentos:acharSinais(html,'pagamento'),
+    frete:acharSinais(html,'frete'),
+    checkoutExterno:(html.match(/(mercadopago|pagseguro|yampi|cartpanda|kirvano|hotmart|checkout\.[a-z0-9-]+\.com)/i)||[])[1]||''
+  };
+  /* performance e técnico */
+  const scripts=(html.match(/<script\b/gi)||[]).length;
+  const imgs=(html.match(/<img\b/gi)||[]).length;
+  const pesoKb=Math.round(html.length/1024);
+  const dominios=new Set((html.match(/https?:\/\/([a-z0-9.-]+)/gi)||[]).map(u=>u.replace(/^https?:\/\//i,'').split('/')[0].toLowerCase()));
+  L.tec={
+    https:/^https:/i.test(url)||/^https:/i.test(L.origin),
+    viewport:/name=["']viewport["']/i.test(html),
+    lazy:/loading=["']lazy["']|lazyload/i.test(html),
+    webp:/\.webp/i.test(html),
+    pwa:/rel=["']manifest["']|serviceworker|service-worker/i.test(html),
+    appLoja:/apps\.apple\.com|play\.google\.com\/store/i.test(html),
+    scripts,imagens:imgs,pesoKb,dominios:dominios.size,
+    velocidade: pesoKb<350&&scripts<25?'rápida': pesoKb>1200||scripts>45?'lenta':'mediana'
+  };
+  /* SEO e conteúdo */
+  const h1=[...dom.querySelectorAll('h1')].length;
+  const jsonld=[...html.matchAll(/"@type"\s*:\s*"([A-Za-z]+)"/g)].map(m=>m[1]);
+  L.seo={
+    titulo:titulo, tituloOk:titulo.length>=20&&titulo.length<=70,
+    descricao:meta('description'), descricaoOk:(meta('description')||'').length>=70,
+    canonical:!!dom.querySelector('link[rel="canonical"]'),
+    og:!!(meta('og:title')&&meta('og:image')),
+    h1, h1Ok:h1===1,
+    schema:[...new Set(jsonld)].slice(0,5),
+    urlsAmigaveis:!/\?(id|produto_id|cat|p)=\d/i.test(html),
+    blog:/\/blog|\/noticias|\/dicas/i.test(html)||!!(extras&&extras.blog),
+    robots:!!(extras&&extras.robots),
+    sitemap:!!(extras&&extras.sitemap),
+    produtosEstimados:(extras&&extras.produtos)||0,
+    categoriasEstimadas:(extras&&extras.categorias)||0,
+    urlsSitemap:(extras&&extras.urls)||0
+  };
+  if(!L.seo.produtosEstimados){
+    const blocos=(html.match(/class="[^"]*(product|produto)[^"]*"/gi)||[]).length;
+    const linksProd=links.filter(a=>/\/(produto|product|p)\//i.test(a.getAttribute('href')||'')).length;
+    L.seo.produtosEstimados=Math.max(linksProd,Math.round(blocos/4));
+    L.seo.produtosFonte='home';
+  } else L.seo.produtosFonte='sitemap';
+  /* marketing e integrações */
+  L.mkt={analytics:acharSinais(html,'analytics'),atendimento:acharSinais(html,'atendimento'),prova:acharSinais(html,'prova'),canais:acharSinais(html,'canais')};
+  /* perfil do negócio */
+  const seg=detectarSegmento(texto.slice(0,20000)+' '+titulo+' '+meta('description'));
+  const pr=precos(texto);
+  const prods=L.seo.produtosEstimados;
+  let porte='pequena', porteTxt='';
+  const sinaisPro=L.mkt.analytics.filter(s=>s.ok).length + L.mkt.canais.filter(s=>s.ok).length;
+  if(prods>=2000||['vtex','magento','linx','wake'].includes(L.plataforma.id)) porte='grande';
+  else if(prods>=300||sinaisPro>=8) porte='média';
+  if(porte==='pequena') porteTxt='Operação enxuta: catálogo pequeno e poucos sinais de mídia paga. Provável time de 1 a 3 pessoas.';
+  if(porte==='média') porteTxt='Operação estruturada: catálogo relevante e presença de mídia e canais. Costuma ter alguém dedicado ao e-commerce.';
+  if(porte==='grande') porteTxt='Operação de porte: catálogo extenso e stack técnica robusta. Decisão passa por mais de uma pessoa.';
+  L.perfil={segmento:seg.seg,segConf:seg.confianca,precos:pr,produtos:prods,porte,porteTxt,
+    ticket: pr.ok? (pr.mediana<80?'baixo':pr.mediana<300?'médio':pr.mediana<1000?'alto':'muito alto'):'não estimado'};
+  /* recursos essenciais do segmento */
+  const lista=RECURSOS_BASE.concat(L.perfil.segmento.extras||[]);
+  L.recursos=lista.map(r=>({nome:r.n,tray:r.tray,porque:r.porque,
+    estado: !r.rx? 'checar' : (r.rx.test(html)?'sim':'nao')}));
+  /* placar */
+  L.score=montarScore(L);
+  return L;
+}
+function montarScore(L){
+  const b=v=>v?1:0;
+  const eixos=[];
+  eixos.push({nome:'Base técnica',valor:pct(100*(b(L.tec.https)+b(L.tec.viewport)+b(L.tec.lazy)+b(L.tec.webp)+b(L.tec.pwa||L.tec.appLoja)+b(L.plataforma.id!=='desconhecida'))/6)});
+  const e=L.exp;
+  eixos.push({nome:'Experiência de compra',valor:pct(100*(b(e.busca)+b(e.filtros)+b(e.menuMobile)+b(e.submenu)+b(e.carrinhoLateral)+b(e.contaCliente)+b(e.pagamentos.filter(p=>p.ok).length>=4)+b(e.pagamentos.some(p=>p.nome==='Pix'&&p.ok))+b(e.frete.filter(f=>f.ok).length>=2))/9)});
+  eixos.push({nome:'Performance',valor:pct(100*(b(L.tec.velocidade==='rápida')*2+b(L.tec.velocidade!=='lenta')+b(L.tec.lazy)+b(L.tec.pesoKb<800)+b(L.tec.scripts<35))/6)});
+  const s=L.seo;
+  eixos.push({nome:'SEO e conteúdo',valor:pct(100*(b(s.tituloOk)+b(s.descricaoOk)+b(s.canonical)+b(s.og)+b(s.h1Ok)+b(s.urlsAmigaveis)+b(s.blog)+b(s.sitemap)+b(s.robots)+b(s.schema.length>0))/10)});
+  const m=L.mkt, sat=(n,alvo)=>Math.min(1,n/alvo);
+  eixos.push({nome:'Marketing e mídia',valor:pct(100*(sat(m.analytics.filter(x=>x.ok).length,4)*0.6+sat(m.canais.filter(x=>x.ok).length,4)*0.4))});
+  eixos.push({nome:'Confiança e atendimento',valor:pct(100*(sat(m.prova.filter(x=>x.ok).length,4)*0.65+sat(m.atendimento.filter(x=>x.ok).length,2)*0.35))});
+  const total=pct(eixos.reduce((a,x)=>a+x.valor,0)/eixos.length);
+  return {eixos,total,rotulo: total>=75?'madura':total>=55?'em evolução':total>=35?'com lacunas':'no básico'};
+}
+
+/* ---------- 5. plano da Tray, dores e argumentos ---------- */
+function planoPorUrl(url){
+  const n=norm(url);
+  const achado=PLANOS.find(p=>new RegExp('(^|[^a-z])'+norm(p.nome)+'([^a-z]|$)').test(n));
+  return achado?achado.id:'';
+}
+function sugerirPlano(L){
+  const p=L.perfil.produtos, porte=L.perfil.porte;
+  if(porte==='grande'||p>2500) return 'ultra';
+  if(p>1000) return 'avancado';
+  if(p>500) return 'expansao';
+  if(p>100) return 'crescimento';
+  if(p>0) return 'basico';
+  return porte==='média'?'crescimento':'basico';
+}
+function analisarPlano(html,url,planoId){
+  const base=PLANOS.find(p=>p.id===planoId)||PLANOS[2];
+  const out={id:base.id,nome:base.nome,preco:base.preco,precoFonte:'referência interna',produtos:base.produtos,
+    limite:base.limite,indicado:base.indicado,destaques:base.destaques.slice(),url:url||'',lido:false};
+  if(!html) return out;
+  try{
+    const dom=new DOMParser().parseFromString(html,'text/html');
+    const alvo=norm(base.nome);
+    let bloco=null;
+    const cands=[...dom.querySelectorAll('h1,h2,h3,h4,h5,div,span,strong,p')].filter(el=>norm(el.textContent)===alvo&&el.children.length<=1);
+    for(const el of cands){
+      let node=el;
+      for(let i=0;i<7&&node;i++){
+        node=node.parentElement;
+        if(!node) break;
+        const t=node.textContent||'';
+        if(node.querySelectorAll('li').length>=3&&/R\$/.test(t)&&t.length<4000){ bloco=node; break; }
+      }
+      if(bloco) break;
+    }
+    if(bloco){
+      const t=bloco.textContent.replace(/\s+/g,' ');
+      const mp=t.match(/R\$\s?[\d.]+(,\d{2})?\s*\/?\s*m[êe]s/i);
+      if(mp){ out.preco=mp[0].replace(/\s+/g,' ').trim(); out.precoFonte='lido da página'; }
+      const itens=[...bloco.querySelectorAll('li')].map(li=>li.textContent.replace(/\s+/g,' ').trim())
+        .filter(x=>x.length>=3&&x.length<=95);
+      const vistos=new Set(); const limpos=[];
+      itens.forEach(x=>{ const k=norm(x); if(k&&!vistos.has(k)){ vistos.add(k); limpos.push(x); } });
+      if(limpos.length>=3){ out.destaques=limpos.slice(0,16); out.lido=true; }
+      const mprod=t.match(/(produtos ilimitados|ilimitados|\d[\d.]*\s*produtos)/i);
+      if(mprod) out.produtos=cap(mprod[0].toLowerCase());
+      const mlim=t.match(/limite de vendas[^.]{0,40}/i);
+      if(mlim) out.limite=cap(mlim[0].trim());
+    }
+  }catch(e){}
+  return out;
+}
+function recursosDoPlano(plano,L){
+  const R=TRAY_RECURSOS, add=[], usados=new Set();
+  const put=k=>{ if(R[k]&&!usados.has(k)){ usados.add(k); add.push({chave:k,...R[k]}); } };
+  if(L.exp.checkoutExterno||!L.exp.pagamentos.find(p=>p.nome==='Pix'&&p.ok)) put('checkout');
+  if(!L.exp.pagamentos.find(p=>p.nome==='Pix'&&p.ok)) put('pix');
+  put('carrinho');
+  if(!L.mkt.canais.filter(c=>/Mercado Livre|Shopee|Amazon|Magalu/.test(c.nome)).some(c=>c.ok)) put('marketplaces');
+  if(L.exp.frete.filter(f=>f.ok).length<3) put('frete');
+  put('nota');
+  if(!L.mkt.atendimento.find(a=>a.nome==='WhatsApp'&&a.ok)) put('whatsapp');
+  if(L.score.eixos.find(x=>x.nome==='SEO e conteúdo').valor<70) put('seo');
+  if(['woocommerce','wix','magento','prestashop','opencart','desconhecida'].includes(L.plataforma.id)) put('suporte');
+  if(L.score.eixos.find(x=>x.nome==='Confiança e atendimento').valor<70) put('temas');
+  if(['expansao','avancado','ultra'].includes(plano.id)) put('codigo');
+  if(['avancado','ultra'].includes(plano.id)&&/beleza|pet|alimentos/.test(L.perfil.segmento.id)) put('assinatura');
+  if(plano.id==='ultra') put('b2b');
+  if(['avancado','ultra'].includes(plano.id)) put('multiestoque');
+  put('apps'); put('relatorios'); put('app'); put('liveshop'); put('escola');
+  return add.slice(0,10);
+}
+function frase1(t){ const s=String(t||'').split('. ')[0].replace(/\.$/,''); return s.length>96?s.slice(0,93).replace(/\s\S*$/,'')+'…':s; }
+function montarDores(L,plano){
+  const dores=[];
+  const eixo=n=>L.score.eixos.find(x=>x.nome===n).valor;
+  const pushDor=(t,curto,ev,fixKeys,fixTexto)=>{
+    const recs=fixKeys.map(k=>TRAY_RECURSOS[k]).filter(Boolean);
+    dores.push({titulo:t,curto:curto,evidencia:ev,solucao:fixTexto,recursos:recs.map(r=>r.nome)});
+  };
+  (L.plataforma.dores||[]).slice(0,2).forEach(d=>{
+    dores.push({titulo:frase1(d),curto:lower1(frase1(d).replace(/^(A\s+)?[Ll]oja\s+/,'')),
+      evidencia:'Plataforma identificada no código da loja: '+L.plataforma.nome+' (confiança '+L.plataforma.confianca+').'+(frase1(d)===d?'':' '+d),
+      solucao:'Na Tray esse ponto é resolvido dentro da própria plataforma, sem plugin de terceiro, sem custo somado por fora da mensalidade e com suporte humano em português quando a loja precisar.',
+      recursos:[TRAY_RECURSOS.apps.nome,TRAY_RECURSOS.suporte.nome]});
+  });
+  if(L.exp.checkoutExterno) pushDor('O cliente sai da loja para pagar','o cliente sai da loja na hora de pagar',
+    'Encontramos sinais de checkout externo ('+L.exp.checkoutExterno+') no código da loja.',
+    ['checkout','pix'],'O checkout transparente da Tray mantém o cliente na loja até o fim. Menos redirecionamento é menos desistência, e o lojista para de pagar taxa para dois intermediários.');
+  if(!L.exp.pagamentos.find(p=>p.nome==='Pix'&&p.ok)) pushDor('Pix não aparece como meio de pagamento','o Pix não aparece na vitrine',
+    'Não localizamos Pix entre os meios de pagamento exibidos na página inicial.',
+    ['pix','checkout'],'Pix e boleto já vêm nativos na Tray, com recebimento rápido e sem depender de aplicativo extra.');
+  if(!L.exp.frete.find(f=>/C[áa]lculo de frete/i.test(f.nome)&&f.ok)){
+    const temFrete=L.exp.frete.filter(f=>f.ok).map(f=>f.nome);
+    pushDor('O frete só aparece no fim da compra','o frete só aparece no fim da compra',
+      temFrete.length?('A loja mostra '+listPt(temFrete.map(lower1))+', mas não oferece cálculo de frete por CEP antes do carrinho.')
+                     :'Não localizamos cálculo de frete nem regra de frete grátis nas páginas públicas.',
+      ['frete'],'Com o Tray Envios o frete é calculado já na página do produto, com valor negociado em escala, etiqueta e rastreio emitidos no próprio painel.');
+  }
+  if(L.tec.velocidade==='lenta') pushDor('Loja pesada, principalmente no celular','a loja abre devagar no celular',
+    'Página inicial com cerca de '+L.tec.pesoKb+' KB de HTML, '+L.tec.scripts+' scripts e '+L.tec.dominios+' domínios externos.',
+    ['temas','apps'],'Os temas da Tray já vêm otimizados e a infraestrutura é dimensionada para pico de venda — o lojista não precisa contratar servidor nem desenvolvedor para aguentar a Black Friday.');
+  if(eixo('SEO e conteúdo')<55) pushDor('A loja depende de anúncio para receber visita','a loja depende de anúncio para receber visita',
+    'Faltam itens básicos de SEO na página inicial'+(L.seo.sitemap?'':' e não localizamos sitemap')+'.',
+    ['seo','apps'],'Na Tray o lojista controla título, descrição, URL e redirecionamento de toda a loja, o que abre o caminho da venda orgânica — a visita que não custa mídia.');
+  if(!L.mkt.canais.filter(c=>/Mercado Livre|Shopee|Amazon|Magalu/.test(c.nome)).some(c=>c.ok)) pushDor('Só existe um canal de venda','a loja vende em um canal só',
+    'Não encontramos ligação da loja com marketplaces.',
+    ['marketplaces','relatorios'],'A integração nativa coloca a loja no Mercado Livre, Shopee, Amazon e Magalu com um estoque só, sem planilha e sem risco de vender o que já acabou.');
+  if(eixo('Confiança e atendimento')<55) pushDor('A loja não passa segurança para quem não conhece a marca','a loja não passa segurança para quem chega de fora',
+    'Poucos sinais de prova social: avaliações, selos e políticas pouco visíveis na página inicial.',
+    ['temas','apps'],'Avaliação de produto, selo de segurança e páginas de política já vêm no tema, e os apps de review integram em minutos.');
+  if(!L.mkt.analytics.filter(a=>a.ok).length) pushDor('A operação vende sem medir','a operação vende sem medir de onde vem a venda',
+    'Nenhuma ferramenta de medição identificada no código (Analytics, Tag Manager ou pixel).',
+    ['relatorios'],'Os relatórios avançados da Tray, somados a GA4, Tag Manager e Merchant Center integrados, mostram de onde vem cada venda.');
+  if(L.perfil.produtos>=200&&!L.exp.filtros) pushDor('Catálogo grande sem filtro para navegar','o catálogo é grande e não tem filtro',
+    'Cerca de '+L.perfil.produtos+' produtos e nenhum sistema de filtro identificado.',
+    ['temas'],'Filtro por categoria, atributo e faixa de preço é nativo — em catálogo grande, é a diferença entre achar o produto e sair da loja.');
+  if(!L.mkt.atendimento.find(a=>a.nome==='WhatsApp'&&a.ok)) pushDor('O atendimento acontece fora da loja','o atendimento acontece fora da loja',
+    'Não encontramos botão de WhatsApp nem chat na página inicial.',
+    ['whatsapp'],'O WhatsApp Business integrado mantém a conversa ligada ao pedido, sem perder o histórico e sem depender da memória de quem atende.');
+  const vistos=new Set();
+  return dores.filter(d=>{ const k=norm(d.titulo); if(vistos.has(k)) return false; vistos.add(k); return true; }).slice(0,5);
+}
+function montarArgumentos(L,plano,dores){
+  const seg=L.perfil.segmento.nome.toLowerCase();
+  const plat=L.plataforma.id==='desconhecida'?'a plataforma atual':L.plataforma.nome;
+  const dor1=dores[0]?(dores[0].curto||lower1(dores[0].titulo)):'os gargalos que a gente viu na loja';
+  const dor2=dores[1]?(dores[1].curto||lower1(dores[1].titulo)):'';
+  const A=[];
+  A.push({h:'Abertura da reunião',t:'Antes de vir conversar, eu abri a sua loja e olhei com calma. Ela está em '+plat+', o visual está '+(L.score.total>=55?'bem resolvido':'funcional')+' e dá para ver que tem gente cuidando. O que eu quero te mostrar hoje não é um site novo: é onde a sua loja está deixando venda passar, e o que a Tray resolve disso já no primeiro mês.'});
+  A.push({h:'Dor principal',t:'O ponto que mais me chamou atenção: '+cap(dor1)+'.'+(dor2?' Junto com isso: '+cap(dor2)+'.':'')+' Isso não é detalhe técnico: é o cliente que já estava com o produto escolhido e desistiu no meio do caminho. Cada ponto desses vale faturamento todo mês, e nenhum deles depende de você investir mais em anúncio.'});
+  A.push({h:'Por que a Tray',t:'A Tray é plataforma brasileira, feita para a operação daqui: checkout transparente, Pix e boleto nativos, nota fiscal, frete negociado com o Tray Envios e integração direta com Mercado Livre, Shopee, Amazon e Magalu — tudo no mesmo painel e no mesmo plano. Você para de somar plugin, app e taxa de terceiro para chegar no básico, e passa a ter suporte humano em português quando a loja precisar.'});
+  A.push({h:'O plano indicado',t:'Para o tamanho da sua operação, o plano '+plano.nome+' é o que faz sentido: '+plano.produtos.toLowerCase()+', '+lower1(plano.limite||'sem limite de faturamento')+', e '+listPt(plano.destaques.slice(0,3).map(lower1))+'. É '+plano.preco+' — menos do que custa uma única venda perdida por semana em uma loja de '+seg+'.'});
+  A.push({h:'Fechamento',t:'Minha proposta é simples: eu deixo com você este diagnóstico por escrito, com tudo o que a gente olhou e o que muda na Tray. Se fizer sentido, a gente já agenda a migração — nossa equipe apoia a importação de produtos, clientes e categorias, e a loja entra no ar sem parar de vender. Que dia da semana que vem funciona melhor para você?'});
+  const pitch='Analisei a sua loja antes da nossa conversa. Ela roda em '+plat+' e o ponto que mais pesa hoje: '+cap(dor1)+'. Na Tray, com o plano '+plano.nome+' ('+plano.preco+'), isso é resolvido com '+listPt((dores[0]?dores[0].recursos:['checkout transparente','recuperação de carrinho abandonado']).slice(0,2).map(lower1))+'. Junto vêm integração nativa com marketplaces, frete negociado pelo Tray Envios e uma plataforma brasileira que já resolve o básico sem app de terceiro — a mesma operação que você já tem, sem os gargalos que custam venda todo mês.';
+  return {blocos:A,pitch};
+}
+function montarGuia(L,plano,dores){
+  const plat=L.plataforma.id==='desconhecida'?'a plataforma atual':L.plataforma.nome;
+  const dor1=dores[0]?(dores[0].curto||lower1(dores[0].titulo)):'o gargalo principal';
+  const seg=L.perfil.segmento.nome;
+  const steps=[];
+  steps.push({n:1,t:'Chegue com o diagnóstico pronto, mas comece perguntando',b:[
+    'Abra dizendo que você olhou a loja antes da reunião. Isso muda a conversa de vendedor para consultor em dez segundos.',
+    'Pergunte primeiro: "o que hoje mais te incomoda na sua loja?" — e cale a boca. A resposta dele define qual das dores deste relatório você vai puxar.',
+    'Confirme três números com ele: quantos produtos tem, quanto das visitas vem do celular e quanto ele fatura por mês. Servem para validar o plano indicado.'],
+    say:'"Dei uma olhada na sua loja antes de vir. Antes de eu te mostrar o que vi, me conta: o que você sente que está travando as vendas hoje?"'});
+  steps.push({n:2,t:'Mostre a loja dele antes de mostrar a Tray',b:[
+    'Abra a loja do cliente na tela, no celular se possível. Ele precisa ver o problema, não ouvir sobre ele.',
+    'Aponte um gargalo concreto. Hoje o mais forte é este: '+dor1+'. Um só, o mais doloroso.',
+    'Não faça tour completo pelo diagnóstico. O relatório é o apoio; a conversa é sobre o negócio dele.']});
+  steps.push({n:3,t:'Ligue cada dor a dinheiro, nunca a recurso',b:[
+    'Traduza: checkout externo = cliente que desiste na hora de pagar. Sem filtro = cliente que não acha o produto e sai.',
+    'Use a conta dele: "se você recupera 2 carrinhos por dia, com o seu ticket, isso dá quanto no mês?" Deixe ele fazer a conta em voz alta.',
+    'Só depois da conta é que entra o nome do recurso da Tray. Recurso sem consequência é jargão.']});
+  steps.push({n:4,t:'Apresente o plano '+plano.nome+' como consequência, não como oferta',b:[
+    'Diga por que esse plano e não outro: '+plano.produtos.toLowerCase()+', '+lower1(plano.indicado)+'.',
+    'Mostre no máximo 4 recursos do plano — os que resolvem as dores que ele confirmou. O resto vai no PDF.',
+    'Preço é o último assunto do bloco. Sempre depois do valor, nunca antes.']});
+  steps.push({n:5,t:'Onde NÃO se alongar',warn:true,b:[
+    'Não leia a lista de recursos do plano em voz alta. Cansa e dilui o que importa — ela está no PDF.',
+    'Não entre em detalhe de migração técnica, API, layout ou código nesta reunião. Isso é conversa de implantação, e assusta quem não é técnico.',
+    'Não fale mal de '+plat+'. Diga que ela atendeu até aqui e que a operação dele cresceu além do que ela entrega. Quem escolheu a plataforma atual foi ele.',
+    'Não prometa número de conversão nem posição no Google. Fale de recurso e de consequência provável, nunca de garantia.',
+    'Não mostre a tabela completa de planos. Comparar seis planos na frente do cliente transfere a decisão para ele — e trava.']});
+  steps.push({n:6,t:'Adapte ao segmento: '+seg,b:[
+    'A loja é de '+seg.toLowerCase()+'. Use os recursos essenciais desse segmento marcados como ausentes no relatório — são os argumentos mais específicos que você tem.',
+    'Fale a língua da operação dele: '+(L.perfil.segmento.perfil||'o dia a dia da loja')+'.',
+    'Se ele já vende em marketplace, o gancho é integração e estoque único. Se não vende, o gancho é canal novo sem custo de mídia.']});
+  steps.push({n:7,t:'Objeções que vão aparecer',b:[
+    '"Migrar dá trabalho" → explique o apoio de implantação e a importação por planilha ou ERP. Traga o prazo real, não o melhor caso.',
+    '"Está caro" → volte para a conta que ele mesmo fez no passo 3. Compare a mensalidade com uma venda perdida, não com a mensalidade atual.',
+    '"Minha loja funciona" → concorde. Pergunte quanto ela deixa de vender, não o que ela deixa de fazer.',
+    '"Vou pensar" → ofereça o PDF na hora e proponha data para retomar. Sem data marcada, a conversa esfria em 48 horas.',
+    '"Já tenho um desenvolvedor" → ótimo, ele continua: na Tray há acesso a HTML, CSS e JS nos planos a partir do Crescimento e documentação aberta.']});
+  steps.push({n:8,t:'Fechamento e próximo passo',b:[
+    'Recapitule em uma frase: a dor que ele confirmou, o recurso que resolve e o plano.',
+    'Confirme o encaixe em voz alta: "faz sentido para o que você me falou no começo?"',
+    'Proponha um passo pequeno e concreto: enviar o PDF hoje, agendar a migração ou marcar uma segunda conversa com data.',
+    'Envie o PDF no fim da reunião, nunca no começo — se ele recebe antes, para de ouvir e começa a ler.']});
+  return {steps};
+}
+
+/* ---------- 6. fluxo e render ---------- */
+let state={loja:null,plano:null,dores:[],args:null,guia:null};
+let vendedor={nome:'',fone:''};
+const statusEl=document.getElementById('status'),alertEl=document.getElementById('alert'),
+      runBtn=document.getElementById('run-btn'),resultsEl=document.getElementById('results'),
+      manualToggle=document.getElementById('manual-toggle'),deepToggle=document.getElementById('deep-toggle'),
+      planoSel=document.getElementById('plano-sel');
+
+planoSel.innerHTML='<option value="auto">Sugerir pelo porte da loja (recomendado)</option>'+
+  PLANOS.map(p=>'<option value="'+p.id+'">Plano '+p.nome+' — '+p.preco+'</option>').join('');
+manualToggle.addEventListener('change',()=>{ document.querySelectorAll('textarea.paste').forEach(t=>t.classList.toggle('on',manualToggle.checked)); });
+document.getElementById('ex-btn').addEventListener('click',()=>{
+  document.getElementById('loja-url').value='https://www.lojasrenner.com.br';
+  document.getElementById('plano-url').value='https://www.tray.com.br/planos-precos';
+  document.getElementById('obs').value='Exemplo para treinar a leitura do relatório';
+});
+function setStatus(lines){
+  statusEl.className='status on';
+  statusEl.innerHTML=lines.map(l=>{const i=l.s==='load'?'<span class="spin"></span>':l.s==='ok'?'<span class="ok">✓</span>':l.s==='err'?'<span class="err">✕</span>':'<span>•</span>';return '<div class="stat-line">'+i+'<span>'+esc(l.t)+'</span></div>';}).join('');
+}
+runBtn.addEventListener('click',run);
+async function run(){
+  alertEl.className='alert'; resultsEl.className=''; resultsEl.innerHTML='';
+  const lojaUrl=normUrl(document.getElementById('loja-url').value);
+  const lojaPaste=document.getElementById('loja-paste').value.trim();
+  const planoUrl=normUrl(document.getElementById('plano-url').value);
+  const planoPaste=document.getElementById('plano-paste').value.trim();
+  if(!lojaUrl&&!lojaPaste){ alertEl.className='alert on'; alertEl.textContent='Informe o endereço da loja do lojista para começar a análise.'; return; }
+  runBtn.disabled=true;
+  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Lendo o plano da Tray'},{s:'',t:'Montando diagnóstico e discurso'}];
+  setStatus(lines);
+  let loja=null;
+  try{
+    const html=(lojaPaste&&lojaPaste.length>500)?lojaPaste:await fetchText(lojaUrl);
+    lines[0]={s:'ok',t:'Loja lida: '+(shortUrl(lojaUrl)||'conteúdo colado')}; setStatus(lines);
+    let extras={};
+    if(deepToggle.checked&&lojaUrl){
+      lines[1]={s:'load',t:'Sondando sitemap e robots…'}; setStatus(lines);
+      extras=await sondar(originOf(lojaUrl));
+      lines[1]={s:extras.sitemap||extras.robots?'ok':'err',t:extras.sitemap?('Sitemap lido: '+extras.urls+' endereços, '+extras.produtos+' de produto'):(extras.robots?'robots.txt lido, sitemap não acessível':'Sitemap e robots não puderam ser lidos — seguindo só com a página inicial')};
+    } else lines[1]={s:'',t:'Sondagem de sitemap desativada'};
+    setStatus(lines);
+    loja=analisarLoja(html,lojaUrl||('https://'+(hostOf(lojaUrl)||'loja')),extras);
+  }catch(err){
+    lines[0]={s:'err',t:'Não consegui ler a loja. Tente de novo ou use o modo de colar conteúdo.'}; setStatus(lines);
+    alertEl.className='alert on'; alertEl.textContent='Não consegui ler a loja pelo relay público. Clique em analisar de novo, ou ative "Colar conteúdo manualmente" e cole o código-fonte da página inicial.';
+    runBtn.disabled=false; return;
+  }
+  lines[2]={s:'load',t:'Lendo o plano da Tray…'}; setStatus(lines);
+  let planoHtml='';
+  try{ planoHtml=(planoPaste&&planoPaste.length>500)?planoPaste:(planoUrl?await fetchText(planoUrl,14000):''); }catch(e){}
+  let planoId=planoSel.value;
+  if(planoId==='auto') planoId=planoPorUrl(planoUrl)||sugerirPlano(loja);
+  const plano=analisarPlano(planoHtml,planoUrl,planoId);
+  plano.sugerido=(planoSel.value==='auto');
+  lines[2]={s:plano.lido?'ok':'err',t:plano.lido?('Plano '+plano.nome+' lido da página'):('Plano '+plano.nome+' montado com a base interna — confirme os valores na página da Tray')};
+  lines[3]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
+  try{
+    const dores=montarDores(loja,plano);
+    state={loja,plano,dores,args:montarArgumentos(loja,plano,dores),guia:montarGuia(loja,plano,dores),
+      obs:document.getElementById('obs').value.trim()};
+    statusEl.className='status'; statusEl.innerHTML='';
+    render(); resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){ alertEl.className='alert on'; alertEl.textContent='Erro ao montar a análise: '+(err.message||err); }
+  runBtn.disabled=false;
+}
+function gauge(v){
+  const r=38,c=2*Math.PI*r,off=c*(1-v/100);
+  const col=v>=70?'#0FB6A0':v>=45?'#E19A2E':'#D9736A';
+  return '<svg width="94" height="94" viewBox="0 0 94 94"><circle cx="47" cy="47" r="'+r+'" fill="none" stroke="rgba(255,255,255,.16)" stroke-width="9"/><circle cx="47" cy="47" r="'+r+'" fill="none" stroke="'+col+'" stroke-width="9" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 47 47)"/><text x="47" y="54" text-anchor="middle" font-size="25" font-weight="700">'+v+'</text></svg>';
+}
+function chipsHtml(arr){ return '<div class="chips">'+arr.map(s=>'<span class="chip '+(s.ok?'y':'n')+'">'+(s.ok?'✓':'·')+' '+esc(s.nome)+'</span>').join('')+'</div>'; }
+function render(){
+  const L=state.loja,P=state.plano,D=state.dores,A=state.args,h=[];
+  /* diagnóstico */
+  const eixos=L.score.eixos.map(e=>'<div class="axis"><span>'+esc(e.nome)+'</span><span class="bar"><i class="'+(e.valor>=70?'':e.valor>=45?'mid':'low')+'" style="width:'+e.valor+'%"></i></span><span class="val">'+e.valor+'</span></div>').join('');
+  const resumo='Loja de '+L.perfil.segmento.nome.toLowerCase()+', porte '+L.perfil.porte+', rodando em '+L.plataforma.nome+
+    (L.perfil.produtos?' com cerca de '+L.perfil.produtos+' produtos':'')+'. '+
+    'A maturidade digital está '+L.score.rotulo+' ('+L.score.total+' de 100): '+
+    listPt(L.score.eixos.filter(e=>e.valor<50).map(e=>e.nome.toLowerCase()))+
+    (L.score.eixos.some(e=>e.valor<50)?' são as frentes mais frágeis.':' nenhuma frente está crítica — o argumento aqui é custo, integração e suporte.');
+  if(L.plataforma.id==='tray'){
+    h.push('<div class="section"><div class="alert on" style="margin-top:0"><b>Atenção:</b> esta loja já roda na Tray. O relatório continua útil como diagnóstico, mas a conversa aqui é de upgrade de plano, tema ou aplicativos — não de migração.</div></div>');
+  }
+  h.push('<div class="section"><div class="xray"><div class="crown"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Raio-X da loja</div>'+
+    '<h2>'+esc(L.nomeLoja)+' está em <span class="plat">'+esc(L.plataforma.nome)+'</span></h2><p>'+esc(resumo)+'</p>'+
+    '<div class="xray-grid"><div class="gauge">'+gauge(L.score.total)+'<div class="gl"><b>'+L.score.total+'/100</b>maturidade digital<br/>da loja hoje</div></div><div class="axes">'+eixos+'</div></div></div></div>');
+
+  /* 1. plataforma */
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">1 · Plataforma atual</span><h2>Onde a loja roda hoje</h2></div><p class="sec-sub">Identificação feita por assinaturas no código, CDN, scripts e rodapé.</p><div class="cards c2">'+
+   '<div class="card"><div class="ck">Plataforma identificada</div><h4>'+esc(L.plataforma.nome)+'</h4>'+
+   '<div class="kv" style="margin-top:10px"><div class="line"><span class="k">Confiança da identificação</span><span class="v">'+esc(L.plataforma.confianca)+'</span></div>'+
+   (L.plataforma.outras&&L.plataforma.outras.length?'<div class="line"><span class="k">Outros sinais</span><span class="v">'+esc(L.plataforma.outras.join(', '))+'</span></div>':'')+
+   '<div class="line"><span class="k">Tempo de operação</span><span class="v">'+esc(L.tempo.texto)+'</span></div></div>'+
+   (L.plataforma.evidencias.length?'<div class="ev"><b>Evidências:</b> '+esc(L.plataforma.evidencias.join(' · '))+'</div>':'')+'</div>'+
+   '<div class="card"><div class="ck">O que isso costuma significar</div><div class="blk"><ul>'+(L.plataforma.dores||[]).map(d=>'<li><span class="m warnm">!</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div></div></div></div>');
+
+  /* 2. experiência */
+  const e=L.exp;
+  const expChecks=[{nome:'Busca na loja',ok:e.busca},{nome:'Filtros de categoria',ok:e.filtros},{nome:'Menu mobile',ok:e.menuMobile},{nome:'Menu com submenu',ok:e.submenu},{nome:'Carrinho lateral',ok:e.carrinhoLateral},{nome:'Área do cliente',ok:e.contaCliente}];
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">2 · Experiência de compra</span><h2>Navegação, checkout, pagamento e frete</h2></div><p class="sec-sub">Sinais lidos da página inicial. O que depende de login ou do painel do lojista fica para confirmar ao vivo.</p><div class="cards c3">'+
+   '<div class="card"><div class="ck">Navegação</div>'+chipsHtml(expChecks)+
+   (e.itensMenu.length?'<div class="blk"><div class="h">Itens de menu encontrados</div><div class="chips">'+e.itensMenu.map(i=>'<span class="chip">'+esc(i)+'</span>').join('')+'</div></div>':'')+'</div>'+
+   '<div class="card"><div class="ck">Pagamento</div>'+chipsHtml(e.pagamentos)+
+   (e.checkoutExterno?'<div class="ev"><b>Atenção:</b> sinal de checkout externo ('+esc(e.checkoutExterno)+'). Confirme se o cliente sai da loja para pagar.</div>':'<div class="ev">Etapas do checkout não são legíveis sem colocar um produto no carrinho. Faça esse teste ao vivo com o lojista.</div>')+'</div>'+
+   '<div class="card"><div class="ck">Frete e entrega</div>'+chipsHtml(e.frete)+'</div></div></div>');
+
+  /* 3. performance */
+  const t=L.tec;
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">3 · Performance e técnico</span><h2>Como a loja carrega</h2></div><p class="sec-sub">Estimativas lidas do código da página inicial — servem para impressão geral, não substituem um teste de velocidade.</p><div class="cards c2">'+
+   '<div class="card"><div class="ck">Medidas da página inicial</div><div class="metrics">'+
+   '<div class="metric"><b>'+t.pesoKb+' KB</b><span>PESO DO HTML</span></div>'+
+   '<div class="metric"><b>'+t.scripts+'</b><span>SCRIPTS</span></div>'+
+   '<div class="metric"><b>~'+t.imagens+'</b><span>IMAGENS</span></div>'+
+   '<div class="metric"><b>'+t.dominios+'</b><span>DOMÍNIOS EXTERNOS</span></div>'+
+   '<div class="metric"><b>'+cap(t.velocidade)+'</b><span>VELOCIDADE APARENTE</span></div></div>'+
+   '<div class="ev">Muitos scripts e domínios externos são o sintoma clássico de loja remendada com plugins e apps — bom gancho para falar de plataforma completa.</div></div>'+
+   '<div class="card"><div class="ck">Checagens técnicas</div>'+chipsHtml([{nome:'HTTPS / SSL',ok:t.https},{nome:'Responsivo (viewport)',ok:t.viewport},{nome:'Carregamento lazy de imagens',ok:t.lazy},{nome:'Imagens em WebP',ok:t.webp},{nome:'PWA / service worker',ok:t.pwa},{nome:'Aplicativo próprio',ok:t.appLoja}])+'</div></div></div>');
+
+  /* 4. SEO */
+  const s=L.seo;
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">4 · SEO e conteúdo</span><h2>Como a loja é encontrada</h2></div><p class="sec-sub">Base do tráfego que não depende de anúncio pago.</p><div class="cards c2">'+
+   '<div class="card"><div class="ck">Itens de SEO</div>'+chipsHtml([{nome:'Título da página adequado',ok:s.tituloOk},{nome:'Meta descrição',ok:s.descricaoOk},{nome:'Canonical',ok:s.canonical},{nome:'Tags de compartilhamento (OG)',ok:s.og},{nome:'H1 único',ok:s.h1Ok},{nome:'URLs amigáveis',ok:s.urlsAmigaveis},{nome:'Dados estruturados',ok:s.schema.length>0},{nome:'robots.txt',ok:s.robots},{nome:'Sitemap',ok:s.sitemap},{nome:'Blog / conteúdo',ok:s.blog}])+
+   (s.titulo?'<div class="ev"><b>Título atual:</b> '+esc(s.titulo.slice(0,120))+'</div>':'')+'</div>'+
+   '<div class="card"><div class="ck">Volume estimado</div><div class="kv">'+
+   '<div class="line"><span class="k">Produtos</span><span class="v">'+(s.produtosEstimados||'não estimado')+(s.produtosFonte==='sitemap'?' (sitemap)':' (home)')+'</span></div>'+
+   '<div class="line"><span class="k">Categorias</span><span class="v">'+(s.categoriasEstimadas||'não estimado')+'</span></div>'+
+   '<div class="line"><span class="k">Endereços no sitemap</span><span class="v">'+(s.urlsSitemap||'—')+'</span></div>'+
+   '<div class="line"><span class="k">Dados estruturados</span><span class="v">'+(s.schema.length?esc(s.schema.join(', ')):'nenhum')+'</span></div></div>'+
+   '<div class="ev">Número de produtos é a base para indicar o plano certo. Confirme com o lojista: catálogo publicado nem sempre é o catálogo real.</div></div></div></div>');
+
+  /* 5. marketing */
+  const m=L.mkt;
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Pixels, atendimento, prova social e canais visíveis no código.</p><div class="cards c2">'+
+   '<div class="card"><div class="ck">Medição e mídia</div>'+chipsHtml(m.analytics)+'</div>'+
+   '<div class="card"><div class="ck">Atendimento</div>'+chipsHtml(m.atendimento)+'</div>'+
+   '<div class="card"><div class="ck">Prova social e confiança</div>'+chipsHtml(m.prova)+'</div>'+
+   '<div class="card"><div class="ck">Canais e marketplaces</div>'+chipsHtml(m.canais)+'</div></div></div>');
+
+  /* 6. perfil */
+  const p=L.perfil;
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">6 · Perfil do negócio</span><h2>Com quem você está falando</h2></div><div class="cards c2">'+
+   '<div class="card"><div class="ck">Segmento e ticket</div><h4>'+esc(p.segmento.nome)+'</h4><div class="kv" style="margin-top:10px">'+
+   '<div class="line"><span class="k">Confiança do segmento</span><span class="v">'+esc(p.segConf)+'</span></div>'+
+   '<div class="line"><span class="k">Faixa de preço na vitrine</span><span class="v">'+(p.precos.ok?brl(p.precos.min)+' a '+brl(p.precos.max):'não identificada')+'</span></div>'+
+   '<div class="line"><span class="k">Ticket aparente</span><span class="v">'+(p.precos.ok?brl(p.precos.mediana)+' · '+p.ticket:'não estimado')+'</span></div></div>'+
+   '<div class="ev">O ticket é a mediana dos preços exibidos na página inicial. Use como ordem de grandeza para a conta de venda perdida, não como número oficial.</div></div>'+
+   '<div class="card"><div class="ck">Porte da operação</div><h4>'+cap(p.porte)+'</h4><p style="font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.55">'+esc(p.porteTxt)+'</p>'+
+   '<div class="blk"><div class="h">Perfil típico do segmento</div><ul><li><span class="m chk">✓</span><span>'+esc(p.segmento.perfil)+'</span></li></ul></div></div></div></div>');
+
+  /* 7. recursos do segmento */
+  const rec=L.recursos;
+  const tag=st=>st==='sim'?'<span class="tag-s y">Usa hoje</span>':st==='nao'?'<span class="tag-s n">Não usa</span>':'<span class="tag-s w">Confirmar</span>';
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">7 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2></div><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
+   '<div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Recurso</th><th class="mid">Na loja hoje</th><th>Na Tray</th></tr></thead><tbody>'+
+   rec.map(r=>'<tr><td class="rec"><b>'+esc(r.nome)+'</b><span>'+esc(r.porque)+'</span></td><td class="mk">'+tag(r.estado)+'</td><td>'+esc(r.tray)+'</td></tr>').join('')+
+   '</tbody></table></div></div>'+
+   '<p class="sec-sub" style="margin-top:12px">'+rec.filter(r=>r.estado==='nao').length+' recursos essenciais não foram encontrados na loja · '+rec.filter(r=>r.estado==='sim').length+' já estão em uso · '+rec.filter(r=>r.estado==='checar').length+' a confirmar.</p></div>');
+
+  /* 8. dores */
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">8 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2></div><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
+   D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div>');
+
+  /* 9. plano */
+  const P2=state.plano, recsPlano=recursosDoPlano(P2,L);
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+(P2.lido?'Dados lidos da página do plano.':'Dados da base interna — confirme os valores vigentes na página da Tray.')+'</p>'+
+   '<div class="plan"><div class="lab">Plano recomendado</div><h3>'+esc(P2.nome)+'</h3><div class="price">'+esc(P2.preco)+' <small>· '+esc(P2.precoFonte)+'</small></div>'+
+   '<p class="sub">Indicado para '+esc(P2.indicado)+'. '+esc(P2.produtos)+'. '+esc(P2.limite||'')+'</p>'+
+   '<div class="plan-grid"><div class="plan-box"><div class="h">Recursos em destaque do plano</div><ul>'+P2.destaques.slice(0,10).map(d=>'<li><span>✓</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div>'+
+   '<div class="plan-box"><div class="h">O que muda na operação dele</div><ul>'+recsPlano.slice(0,8).map(r=>'<li><span>→</span><span>'+esc(r.nome)+'</span></li>').join('')+'</ul></div></div>'+
+   (P2.url?'<div class="plan-src">Fonte: '+esc(P2.url)+'</div>':'')+'</div>'+
+   '<div class="section" style="margin-top:18px"><div class="sec-title"><span class="kicker">Benefícios</span><h2>Por que cada recurso importa para esta loja</h2></div><div class="benef">'+
+   recsPlano.map(r=>'<div class="b"><h4>'+esc(r.nome)+'</h4><p>'+esc(r.porque)+'</p></div>').join('')+'</div></div></div>');
+
+  /* 10. argumentos */
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
+   A.blocos.map((b,i)=>'<div class="arg"><button class="copy" data-arg="'+i+'">Copiar</button><div class="h">'+esc(b.h)+'</div><p>'+esc(b.t)+'</p></div>').join('')+'</div>'+
+   '<div class="arg" style="margin-top:16px"><button class="copy" data-arg="pitch">Copiar</button><div class="h">Resumo em uma mensagem (WhatsApp)</div><p>'+esc(A.pitch)+'</p></div></div>');
+
+  /* 11. guia */
+  h.push(guiaHtml());
+
+  /* 12. conclusão + ações */
+  const concl='A loja '+L.nomeLoja+' opera em '+L.plataforma.nome+' com maturidade digital '+L.score.rotulo+' ('+L.score.total+'/100). '+
+    (D.length?'Os pontos mais críticos hoje: '+listPt(D.slice(0,3).map(d=>d.curto||lower1(d.titulo)))+'. ':'')+
+    'O plano '+P2.nome+' cobre esses pontos com recursos nativos, sem plugin de terceiro: '+listPt(recsPlano.slice(0,4).map(r=>lower1(r.nome)))+'. '+
+    'Para uma operação de '+L.perfil.segmento.nome.toLowerCase()+' de porte '+L.perfil.porte+', é a troca com menor risco e menor custo total.';
+  h.push('<div class="section"><div class="concl"><div class="tag">Conclusão</div><h3>Indicação: plano '+esc(P2.nome)+'</h3><p>'+esc(concl)+'</p></div>'+
+   '<div class="final-actions"><button class="btn btn-primary" id="pdf-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>Gerar PDF para o cliente</button>'+
+   '<button class="btn btn-ghost" id="copy-summary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar resumo</button></div></div>');
+  state.concl=concl; state.recsPlano=recsPlano;
+  resultsEl.innerHTML=h.join(''); resultsEl.className='on'; wireResults();
+}
+function guiaHtml(){
+  const g=state.guia; if(!g) return '';
+  const steps=g.steps.map(s=>'<div class="gstep '+(s.warn?'warn':'')+'"><div class="n">'+s.n+'</div><div class="body"><h4>'+esc(s.t)+'</h4><ul>'+s.b.map(x=>'<li><span class="m">'+(s.warn?'✕':'✓')+'</span><span>'+esc(x)+'</span></li>').join('')+'</ul>'+(s.say?'<div class="say">'+esc(s.say)+'</div>':'')+'</div></div>').join('');
+  return '<div class="section"><div class="sec-title"><span class="kicker">Só para o vendedor</span><h2>Guia da reunião</h2></div><p class="sec-sub">Como conduzir a conversa do primeiro contato ao próximo passo.</p><div class="guide"><div class="gnote"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;margin-top:1px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Uso interno. Esta seção <b>não</b> entra no PDF enviado ao cliente.</span></div>'+steps+'</div></div>';
+}
+function wireResults(){
+  document.querySelectorAll('.arg .copy').forEach(b=>b.addEventListener('click',()=>{
+    const k=b.getAttribute('data-arg');
+    const txt=k==='pitch'?state.args.pitch:state.args.blocos[+k].t;
+    copyText(txt,b,'Copiado ✓');
+  }));
+  const cs=document.getElementById('copy-summary'); if(cs) cs.addEventListener('click',()=>copyText(buildSummary(),cs,'Resumo copiado ✓'));
+  const pb=document.getElementById('pdf-btn'); if(pb) pb.addEventListener('click',openPdfModal);
+}
+function copyText(t,btn,ok){ navigator.clipboard.writeText(t).then(()=>{const o=btn.innerHTML;btn.innerHTML=ok;setTimeout(()=>btn.innerHTML=o,1600);}).catch(()=>{}); }
+function buildSummary(){
+  const L=state.loja,P=state.plano,D=state.dores,X=[];
+  X.push('RAIO-X DA LOJA — '+L.nomeLoja+' ('+L.host+')');
+  X.push('Plataforma atual: '+L.plataforma.nome+' · maturidade '+L.score.total+'/100 ('+L.score.rotulo+')');
+  X.push('Segmento: '+L.perfil.segmento.nome+' · porte '+L.perfil.porte+' · ~'+L.perfil.produtos+' produtos');
+  X.push('');
+  X.push('PLACAR POR FRENTE'); L.score.eixos.forEach(e=>X.push('- '+e.nome+': '+e.valor+'/100'));
+  X.push(''); X.push('DORES E GATILHOS');
+  D.forEach((d,i)=>X.push((i+1)+'. '+d.titulo+' — '+d.evidencia+' → '+d.solucao));
+  X.push(''); X.push('PLANO INDICADO: '+P.nome+' ('+P.preco+')');
+  X.push(P.produtos+' · '+(P.limite||''));
+  (state.recsPlano||[]).slice(0,6).forEach(r=>X.push('- '+r.nome));
+  X.push(''); X.push('CONCLUSÃO'); X.push(state.concl||'');
+  X.push(''); X.push('MENSAGEM PRONTA'); X.push(state.args.pitch);
+  return X.join('\n');
+}
+
+/* ---------- 7. modal de assinatura e PDF ---------- */
+const modal=document.getElementById('pdf-modal'),vNome=document.getElementById('v-nome'),vFone=document.getElementById('v-fone'),vErr=document.getElementById('v-err');
+function openPdfModal(){ vNome.value=vendedor.nome; vFone.value=vendedor.fone; vErr.className='modal-err'; modal.className='modal on'; setTimeout(()=>vNome.focus(),80); }
+function closePdfModal(){ modal.className='modal'; }
+document.getElementById('v-cancel').addEventListener('click',closePdfModal);
+modal.addEventListener('click',e=>{ if(e.target===modal) closePdfModal(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&modal.classList.contains('on')) closePdfModal(); });
+vFone.addEventListener('input',e=>{ e.target.value=maskFone(e.target.value); });
+[vNome,vFone].forEach(el=>el.addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('v-go').click(); }));
+document.getElementById('v-go').addEventListener('click',()=>{
+  const nome=vNome.value.trim(), fone=vFone.value.trim();
+  if(nome.length<2){ vErr.className='modal-err on'; vErr.textContent='Informe seu nome para assinar o documento.'; vNome.focus(); return; }
+  if(fone.replace(/\D/g,'').length<10){ vErr.className='modal-err on'; vErr.textContent='Informe um telefone válido com DDD.'; vFone.focus(); return; }
+  vendedor={nome,fone}; closePdfModal(); generatePDF();
+});
+function generatePDF(){
+  if(!window.jspdf){ alert('A biblioteca de PDF não carregou. Verifique a conexão e recarregue a página.'); return; }
+  try{
+    const jsPDF=window.jspdf.jsPDF, doc=new jsPDF({unit:'pt',format:'a4'});
+    const P={W:595.28,H:841.89,mL:48,mR:48,mT:54,mB:64},CW=P.W-P.mL-P.mR; let y=P.mT;
+    const L=state.loja,PL=state.plano,D=state.dores,recs=state.recsPlano||[];
+    const INK=[15,29,46],TEAL=[15,182,160],TEALd=[10,134,118],GOLD=[196,133,26],MUT=[107,124,141],LINE=[228,234,240],MISS=[150,164,178],WARN=[192,112,63];
+    const F=(s,z)=>{doc.setFont('helvetica',s);doc.setFontSize(z);};
+    const T=c=>doc.setTextColor(c[0],c[1],c[2]);
+    const Fl=c=>doc.setFillColor(c[0],c[1],c[2]);
+    const Dr=c=>doc.setDrawColor(c[0],c[1],c[2]);
+    const need=h=>{ if(y+h>P.H-P.mB){ doc.addPage(); y=P.mT; } };
+    const para=(t,z,c,st,lh)=>{ F(st||'normal',z); T(c||INK); const ls=doc.splitTextToSize(t||'',CW); const H=lh||z*1.4; ls.forEach(l=>{need(H);doc.text(l,P.mL,y);y+=H;}); };
+    const h2=t=>{ need(30); y+=8; F('bold',14); T(INK); doc.text(t,P.mL,y); y+=6; Dr(TEAL); doc.setLineWidth(2); doc.line(P.mL,y,P.mL+34,y); y+=15; };
+    const sub=(t,c)=>{ need(16); F('bold',9.5); T(c||TEALd); doc.text(t.toUpperCase(),P.mL,y); y+=13; };
+    const chk=(x,tp)=>{ Dr(TEAL); doc.setLineWidth(1.6); doc.line(x+1,tp+4.5,x+3.3,tp+7); doc.line(x+3.3,tp+7,x+7.6,tp+1.4); };
+    const crs=(x,tp)=>{ Dr(MISS); doc.setLineWidth(1.4); doc.line(x+1.6,tp+1.6,x+7,tp+7); doc.line(x+7,tp+1.6,x+1.6,tp+7); };
+    const qst=(x,tp)=>{ Fl([225,154,46]); doc.circle(x+4.4,tp+4.4,3.2,'F'); };
+    const bullets=(items,kind,ind)=>{ const z=9.5,lh=13.5,IND=ind||16; if(!items||!items.length){para('—',z,MUT);return;}
+      items.forEach(it=>{ F('normal',z); const ls=doc.splitTextToSize(it,CW-IND); need(lh*ls.length); const top=y-8;
+        if(kind==='check') chk(P.mL+2,top); else if(kind==='cross') crs(P.mL+2,top); else if(kind==='q') qst(P.mL+2,top);
+        else if(kind==='warn'){ Fl(WARN); doc.circle(P.mL+5,y-3,1.6,'F'); } else {Fl(TEAL);doc.circle(P.mL+5,y-3,1.6,'F');}
+        T(kind==='cross'?MUT:INK); F('normal',z); ls.forEach(l=>{doc.text(l,P.mL+IND,y);y+=lh;}); }); };
+    const kvline=(k,v)=>{ need(15); F('normal',9.5); T(MUT); doc.text(k,P.mL,y); F('bold',9.5); T(INK);
+      const ls=doc.splitTextToSize(String(v||'—'),CW-150); doc.text(ls[0],P.mL+150,y); y+=14;
+      if(ls.length>1){ ls.slice(1,3).forEach(l=>{need(13);doc.text(l,P.mL+150,y);y+=13;}); } };
+
+    /* capa */
+    Fl(INK); doc.rect(0,0,P.W,96,'F'); Fl(TEAL); doc.rect(0,96,P.W,3,'F');
+    T([255,255,255]); F('bold',19); doc.text('Diagnóstico da sua loja',P.mL,44);
+    F('normal',10.5); T([180,196,210]); doc.text('Análise técnica e comercial · preparada pela Tray',P.mL,64);
+    F('normal',10); doc.text(new Date().toLocaleDateString('pt-BR'),P.W-P.mR,44,{align:'right'});
+    y=126;
+    Fl([251,241,221]); doc.roundedRect(P.mL,y,CW,64,8,8,'F'); Dr([240,220,175]); doc.setLineWidth(1); doc.roundedRect(P.mL,y,CW,64,8,8,'S');
+    F('bold',9.5); T(GOLD); doc.text('LOJA ANALISADA',P.mL+16,y+21);
+    F('bold',15); T(INK); doc.text(doc.splitTextToSize(L.nomeLoja,CW-40)[0],P.mL+16,y+41);
+    F('normal',9.5); T(MUT); doc.text(L.host,P.mL+16,y+56); y+=82;
+    kvline('Plataforma atual',L.plataforma.nome+' (confiança '+L.plataforma.confianca+')');
+    kvline('Tempo de operação',L.tempo.texto);
+    kvline('Segmento',L.perfil.segmento.nome);
+    kvline('Porte estimado',cap(L.perfil.porte));
+    kvline('Produtos estimados',L.perfil.produtos||'não estimado');
+    kvline('Faixa de preço',L.perfil.precos.ok?(brl(L.perfil.precos.min)+' a '+brl(L.perfil.precos.max)+' · ticket aparente '+brl(L.perfil.precos.mediana)):'não identificada');
+    if(state.obs) kvline('Observações',state.obs);
+    y+=8;
+
+    /* placar */
+    h2('Maturidade digital da loja');
+    F('bold',30); T(INK); doc.text(String(L.score.total),P.mL,y+8);
+    F('normal',10.5); T(MUT); doc.text('de 100 · '+L.score.rotulo,P.mL+52,y+8); y+=26;
+    L.score.eixos.forEach(e=>{
+      need(20); F('normal',9); T(MUT); doc.text(e.nome,P.mL,y+8);
+      const bx=P.mL+150,bw=CW-190;
+      Fl([238,242,246]); doc.roundedRect(bx,y+2,bw,7,3.5,3.5,'F');
+      Fl(e.valor>=70?TEAL:e.valor>=45?[225,154,46]:[217,115,106]); doc.roundedRect(bx,y+2,Math.max(4,bw*e.valor/100),7,3.5,3.5,'F');
+      F('bold',9); T(INK); doc.text(String(e.valor),P.mL+CW,y+8,{align:'right'}); y+=17;
+    });
+    y+=10;
+
+    /* o que encontramos */
+    h2('O que encontramos na loja');
+    sub('Plataforma e base técnica');
+    bullets([
+      'Plataforma identificada: '+L.plataforma.nome+'.',
+      'Velocidade aparente da página inicial: '+L.tec.velocidade+' (~'+L.tec.pesoKb+' KB de HTML, '+L.tec.scripts+' scripts, '+L.tec.dominios+' domínios externos).',
+      (L.tec.https?'Certificado SSL ativo.':'Não identificamos certificado SSL ativo.'),
+      (L.tec.viewport?'Layout responsivo configurado para celular.':'Não identificamos configuração responsiva para celular.'),
+      (L.tec.appLoja||L.tec.pwa?'Há sinal de aplicativo ou PWA.':'Sem aplicativo próprio ou PWA identificado.')
+    ],'dot'); y+=4;
+    sub('Experiência de compra');
+    const pagOk=L.exp.pagamentos.filter(p=>p.ok).map(p=>p.nome), freteOk=L.exp.frete.filter(f=>f.ok).map(f=>f.nome);
+    bullets([
+      'Navegação: '+(listPt([L.exp.busca?'busca':'',L.exp.filtros?'filtros':'',L.exp.menuMobile?'menu mobile':'',L.exp.submenu?'submenu':'',L.exp.carrinhoLateral?'carrinho lateral':''].filter(Boolean))||'sem recursos de navegação identificados')+'.',
+      'Meios de pagamento exibidos: '+(pagOk.length?listPt(pagOk):'nenhum identificado na página inicial')+'.',
+      'Frete e entrega: '+(freteOk.length?listPt(freteOk):'nenhuma opção visível antes do carrinho')+'.',
+      (L.exp.checkoutExterno?'Há sinal de checkout externo ('+L.exp.checkoutExterno+'): o cliente sai da loja para pagar.':'As etapas do checkout precisam ser conferidas com um pedido de teste.')
+    ],'dot'); y+=4;
+    sub('SEO e conteúdo');
+    bullets([
+      'Itens de SEO presentes: '+(listPt([L.seo.tituloOk?'título':'',L.seo.descricaoOk?'meta descrição':'',L.seo.canonical?'canonical':'',L.seo.og?'tags de compartilhamento':'',L.seo.h1Ok?'H1 único':'',L.seo.urlsAmigaveis?'URLs amigáveis':'',L.seo.sitemap?'sitemap':'',L.seo.robots?'robots.txt':'',L.seo.blog?'blog':''].filter(Boolean))||'nenhum dos itens básicos')+'.',
+      'Volume estimado: '+(L.seo.produtosEstimados||'não estimado')+' produtos e '+(L.seo.categoriasEstimadas||'não estimado')+' categorias.'
+    ],'dot'); y+=4;
+    sub('Marketing e integrações');
+    const an=L.mkt.analytics.filter(a=>a.ok).map(a=>a.nome), cn=L.mkt.canais.filter(c=>c.ok).map(c=>c.nome), pv=L.mkt.prova.filter(p=>p.ok).map(p=>p.nome);
+    bullets([
+      'Medição e mídia: '+(an.length?listPt(an):'nenhuma ferramenta identificada')+'.',
+      'Canais e marketplaces: '+(cn.length?listPt(cn):'nenhum canal externo identificado')+'.',
+      'Prova social e confiança: '+(pv.length?listPt(pv):'poucos sinais na página inicial')+'.'
+    ],'dot');
+
+    /* recursos do segmento */
+    doc.addPage(); y=P.mT;
+    h2('Recursos essenciais para '+L.perfil.segmento.nome.toLowerCase());
+    para('Comparamos a sua loja com o que uma operação desse segmento precisa ter. Os itens marcados com o círculo dourado dependem do painel da loja e devem ser confirmados em conversa.',9.5,MUT,'normal',13); y+=8;
+    const sim=L.recursos.filter(r=>r.estado==='sim'), nao=L.recursos.filter(r=>r.estado==='nao'), chc=L.recursos.filter(r=>r.estado==='checar');
+    sub('Já em uso na loja ('+sim.length+')',TEALd); bullets(sim.map(r=>r.nome),'check'); y+=6;
+    sub('Não encontrados na loja ('+nao.length+')',[150,120,40]); bullets(nao.map(r=>r.nome+' — '+r.porque),'cross'); y+=6;
+    if(chc.length){ sub('A confirmar com o lojista ('+chc.length+')',GOLD); bullets(chc.map(r=>r.nome),'q'); }
+
+    /* dores */
+    h2('Onde a loja está perdendo venda hoje');
+    D.forEach((d,i)=>{
+      need(70); F('bold',11.5); T(INK); doc.text(doc.splitTextToSize((i+1)+'. '+d.titulo,CW)[0],P.mL,y); y+=15;
+      para(d.evidencia,9.5,MUT,'italic',13);
+      const ls=doc.splitTextToSize(d.solucao,CW-28); const bh=ls.length*13+20; need(bh+6);
+      Fl([227,247,242]); doc.roundedRect(P.mL,y-2,CW,bh,7,7,'F'); T(INK); F('normal',9.5);
+      let py=y+13; ls.forEach(l=>{doc.text(l,P.mL+14,py);py+=13;}); y+=bh+8;
+      if(d.recursos&&d.recursos.length){ F('bold',8.5); T(TEALd); need(13); doc.text('Recursos Tray: '+d.recursos.join(' · '),P.mL,y); y+=16; }
+    });
+
+    /* plano */
+    doc.addPage(); y=P.mT;
+    Fl([227,247,242]); doc.roundedRect(P.mL,y,CW,78,10,10,'F');
+    F('bold',9.5); T(TEALd); doc.text('PLANO INDICADO PARA A SUA LOJA',P.mL+18,y+24);
+    F('bold',20); T(INK); doc.text('Tray '+PL.nome,P.mL+18,y+50);
+    F('normal',11); T(TEALd); doc.text(PL.preco,P.mL+18,y+68); y+=96;
+    para('Indicado para '+PL.indicado+'. '+PL.produtos+'. '+(PL.limite||''),10.5,INK,'normal',15); y+=8;
+    sub('Recursos em destaque do plano',TEALd); bullets(PL.destaques.slice(0,14),'check'); y+=6;
+    sub('O que muda na operação da sua loja',TEALd);
+    recs.forEach(r=>{
+      need(34); F('bold',10); T(INK); const t1=doc.splitTextToSize(r.nome,CW); t1.slice(0,2).forEach(l=>{doc.text(l,P.mL,y);y+=13;});
+      F('normal',9.5); T(MUT); const t2=doc.splitTextToSize(r.porque,CW-14); t2.forEach(l=>{need(12);doc.text(l,P.mL+14,y);y+=12;}); y+=6;
+    });
+
+    /* conclusão + assinatura */
+    need(120); y+=6;
+    Fl([251,241,221]); const cls=doc.splitTextToSize(state.concl||'',CW-32); const ch=cls.length*14+46; need(ch);
+    doc.roundedRect(P.mL,y,CW,ch,9,9,'F'); Dr([240,220,175]); doc.roundedRect(P.mL,y,CW,ch,9,9,'S');
+    F('bold',9.5); T(GOLD); doc.text('CONCLUSÃO E PRÓXIMO PASSO',P.mL+16,y+22);
+    F('normal',10.5); T(INK); let cy=y+42; cls.forEach(l=>{doc.text(l,P.mL+16,cy);cy+=14;}); y+=ch+26;
+    need(110); Dr(LINE); doc.setLineWidth(1); doc.line(P.mL,y,P.mL+CW,y); y+=20;
+    F('bold',9); T(TEALd); doc.text('PREPARADO POR',P.mL,y);
+    F('normal',9); T(MUT); doc.text(new Date().toLocaleDateString('pt-BR'),P.W-P.mR,y,{align:'right'}); y+=19;
+    F('bold',13); T(INK); doc.text(vendedor.nome,P.mL,y); y+=16;
+    F('normal',10.5); T(MUT); doc.text(vendedor.fone,P.mL,y); y+=14;
+    F('normal',9.5); T(MUT); doc.text('Consultor(a) de vendas · Tray Plataforma de E-commerce',P.mL,y); y+=20;
+    F('normal',8); T(MUT);
+    doc.text(doc.splitTextToSize('Diagnóstico montado a partir das informações públicas da loja em '+new Date().toLocaleDateString('pt-BR')+'. Valores e limites do plano estão sujeitos à tabela vigente da Tray no momento da contratação.',CW),P.mL,y);
+    const pc=doc.getNumberOfPages();
+    for(let p=1;p<=pc;p++){ doc.setPage(p); F('normal',8); T(MUT);
+      doc.text('Diagnóstico '+L.host+' · '+vendedor.nome+' · '+vendedor.fone,P.mL,P.H-22);
+      doc.text(p+'/'+pc,P.W-P.mR,P.H-22,{align:'right'}); }
+    const slug=norm(L.host).replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    doc.save('diagnostico-'+(slug||'loja')+'-tray-'+norm(PL.nome).replace(/[^a-z0-9]+/g,'')+'.pdf');
+  }catch(e){ alert('Não consegui gerar o PDF: '+(e.message||e)); }
+}
+</script>
+</body>
+</html>
