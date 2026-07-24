@@ -221,12 +221,12 @@
 </head>
 <body>
 <header class="topbar"><div class="wrap">
-  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja + Plano Tray</b><small>Prospecção de lojistas fora da plataforma · Time de Vendas</small></span></div>
+  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja + Plano Tray</b></span></div>
   <span class="tag">Roda no navegador · sem instalação</span>
 </div></header>
 <main class="wrap">
   <section class="hero">
-    <h1>Analise a loja do prospect e mostre <span class="u">o que ele ganha migrando</span> para a Tray.</h1>
+    <h1>Raio-X da Loja <span class="u">+ Plano Tray</span></h1>
     <p class="lead">Cole o endereço da loja atual e o link do plano que você vai indicar. A ferramenta identifica a plataforma em uso, mapeia experiência de compra, performance, SEO, marketing e perfil do negócio, aponta as dores prováveis e monta o discurso ligando cada dor a um recurso do plano — com guia de reunião e PDF assinado para enviar depois.</p>
     <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8912E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span>A leitura das páginas usa um relay público, porque o navegador não acessa outros sites diretamente. Se um link não carregar, clique em analisar de novo ou ative o modo de colar código-fonte. Tudo o que aparece aqui é lido da página pública no momento da análise.</span></div>
 
@@ -249,11 +249,6 @@
           <label for="plano-sel">Plano que você vai indicar</label>
           <select class="inp" id="plano-sel"></select>
           <span class="tip">A ferramenta sugere um plano pelo porte da loja. Você pode trocar.</span>
-        </div>
-        <div class="field">
-          <label for="obs">Observações da prospecção <span style="text-transform:none;font-weight:500;color:#9AA8B5">(opcional)</span></label>
-          <input class="inp" id="obs" type="text" placeholder="Ex.: indicação do Marcelo, vende muito por Instagram" />
-          <span class="tip">Entra no PDF, logo abaixo dos dados da loja.</span>
         </div>
       </div>
       <div class="panel-actions">
@@ -296,9 +291,11 @@
 
 /* ---------- 1. utilitários ---------- */
 const PROXIES=[
-  u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
-  u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),
-  u=>"https://corsproxy.io/?url="+encodeURIComponent(u)
+  u=>({url:"https://api.allorigins.win/raw?url="+encodeURIComponent(u),json:false}),
+  u=>({url:"https://corsproxy.io/?url="+encodeURIComponent(u),json:false}),
+  u=>({url:"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),json:false}),
+  u=>({url:"https://api.allorigins.win/get?url="+encodeURIComponent(u),json:true}),
+  u=>({url:"https://thingproxy.freeboard.io/fetch/"+u,json:false})
 ];
 function deaccent(s){ return (s||"").normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
 function norm(s){ return deaccent((s||"").toLowerCase()).replace(/\s+/g,' ').trim(); }
@@ -321,7 +318,7 @@ const PLATAFORMAS=[
   dores:['Loja já está na Tray — a conversa aqui é de upgrade de plano, tema ou apps, não de migração.']},
  {id:'shopify',nome:'Shopify',rx:[/cdn\.shopify\.com/i,/myshopify\.com/i,/Shopify\.theme/i,/shopify-features/i],
   dores:['Taxa adicional sobre as vendas quando não usa o gateway da própria plataforma.','Mensalidade e apps cobrados em dólar, com variação cambial e IOF.','Integração com marketplaces e ERPs brasileiros depende de apps de terceiros, com custo mensal somado.','Emissão de nota fiscal, boleto e Pix exigem aplicativos extras.','Suporte em português com horário e canais limitados.']},
- {id:'nuvemshop',nome:'Nuvemshop',rx:[/nuvemshop/i,/tiendanube/i,/nuvemshop\.com\.br/i],
+ {id:'nuvemshop',nome:'Nuvemshop',rx:[/nuvemshop/i,/tiendanube/i,/mitiendanube\.com/i,/dcdn\.mitiendanube/i,/d26lpennugtm8s\.cloudfront/i,/cdn\.nuvemshop/i,/window\.LS\b/i,/\bLS\.store\b/i,/data-store=/i,/nuvem-checkout/i],
   dores:['Recursos de crescimento (marketplaces, automações, relatórios) chegam via apps pagos, inflando o custo total.','Limite de personalização do checkout e do tema conforme o plano.','Cobrança de taxa por venda em parte dos planos.']},
  {id:'lojaintegrada',nome:'Loja Integrada',rx:[/lojaintegrada/i,/awsli\.com\.br/i,/cdn\.awsli/i],
   dores:['Recursos essenciais ficam bloqueados nos planos de entrada e crescem em degraus.','Personalização e acesso ao código-fonte limitados.','Suporte concentrado em ticket, sem canal humano rápido.','Integrações com ERP e marketplaces mais restritas conforme o plano.']},
@@ -348,8 +345,35 @@ const PLATAFORMAS=[
  {id:'shopee',nome:'Loja em marketplace (sem site próprio)',rx:[/shopee\.com\.br\/shop/i,/mercadoshops/i],
   dores:['Sem loja própria, o lojista não é dono da vitrine nem da base de clientes.','Comissão do marketplace corrói a margem de toda venda.','Sem domínio e sem SEO próprio, não constrói tráfego que fique.']},
  {id:'webflow',nome:'Webflow',rx:[/website-files\.com/i,/webflow/i],dores:['E-commerce limitado: meios de pagamento, frete e nota fiscal brasileiros ficam de fora.','Catálogo e estoque com pouca profundidade.']},
- {id:'squarespace',nome:'Squarespace',rx:[/squarespace/i,/sqspcdn/i],dores:['Estrutura estrangeira: pagamento, frete e nota fiscal do Brasil ficam de fora.','Integração com marketplaces nacionais inexistente.']}
+ {id:'squarespace',nome:'Squarespace',rx:[/squarespace/i,/sqspcdn/i],dores:['Estrutura estrangeira: pagamento, frete e nota fiscal do Brasil ficam de fora.','Integração com marketplaces nacionais inexistente.']},
+ {id:'dooca',nome:'Dooca Commerce',rx:[/dooca/i,/lojasdooca|dooca\.store/i],dores:['Ecossistema de apps e integrações menor que o das grandes plataformas.','Recursos avançados de venda concentrados nos planos superiores.']},
+ {id:'lo6',nome:'Loja do Google / Blogger loja',rx:[/blogspot|blogger\.com/i],dores:['Estrutura de blog adaptada para venda, sem recursos reais de e-commerce.','Sem checkout, frete ou nota fiscal nativos.']},
 ];
+
+/* aliases de marca para reconhecer crédito explícito em rodapé/generator */
+const PLAT_ALIAS={
+ nuvemshop:['nuvemshop','nuvem shop','tiendanube'],
+ tray:['tray'],
+ shopify:['shopify'],
+ lojaintegrada:['loja integrada','lojaintegrada'],
+ woocommerce:['woocommerce','wordpress'],
+ wix:['wix'],
+ vtex:['vtex'],
+ magento:['magento','adobe commerce'],
+ bagy:['bagy'],
+ yampi:['yampi'],
+ cartpanda:['cartpanda'],
+ prestashop:['prestashop'],
+ opencart:['opencart'],
+ wbuy:['wbuy'],
+ vnda:['vnda'],
+ irroba:['irroba'],
+ wake:['wake','fbits'],
+ linx:['linx'],
+ webflow:['webflow'],
+ squarespace:['squarespace'],
+ dooca:['dooca']
+};
 
 /* 2.2 planos da Tray — referência interna, atualizada pela leitura da página */
 const PLANOS=[
@@ -496,7 +520,7 @@ const SEGMENTOS=[
 
 /* 2.5 sinais rastreados no código da loja */
 const SINAIS={
- analytics:[['Google Analytics 4',/gtag\(|googletagmanager\.com\/gtag|G-[A-Z0-9]{8,}/i],['Google Tag Manager',/googletagmanager\.com\/gtm|GTM-[A-Z0-9]{5,}/i],['Meta Pixel',/fbq\(|connect\.facebook\.net|facebook.{0,10}pixel/i],['Google Ads',/AW-\d{6,}|googleadservices|gtag\/js\?id=AW/i],['TikTok Pixel',/tiktok.{0,15}pixel|ttq\.|analytics\.tiktok/i],['Pinterest Tag',/pintrk|pinterest.{0,10}tag/i],['Hotjar / Clarity',/hotjar|clarity\.ms/i],['RD Station',/rdstation|rd-?station/i],['Klaviyo / e-mail mkt',/klaviyo|mailchimp|activecampaign|dinamize/i]],
+ analytics:[['Google Analytics 4',/googletagmanager\.com\/gtag\/js\?id=G-|gtag\(\s*['\"]config['\"]\s*,\s*['\"]G-|\bG-[A-Z0-9]{9,12}\b/],['Google Tag Manager',/googletagmanager\.com\/gtm\.js|\bGTM-[A-Z0-9]{5,8}\b/],['Meta Pixel',/connect\.facebook\.net\/[a-z_]+\/fbevents\.js|fbq\(\s*['\"]init|facebook\.com\/tr\?id=/],['Google Ads',/googleadservices\.com\/pagead\/conversion|gtag\(\s*['\"]config['\"]\s*,\s*['\"]AW-|\bAW-\d{9,}/],['TikTok Pixel',/analytics\.tiktok\.com\/i18n\/pixel|ttq\.(load|track|page)\b/],['Pinterest Tag',/\bpintrk\(|s\.pinimg\.com\/ct\/core\.js/],['Hotjar',/static\.hotjar\.com|\bhjSiteSettings\b/],['Microsoft Clarity',/clarity\.ms\/tag|function\(c,l,a,r,i,t,y\)/],['RD Station',/d335luupugsy2\.cloudfront\.net|rdstation\.com\.br\/track|RDStationForms/],['Klaviyo',/static\.klaviyo\.com|klaviyo\.js/],['Mailchimp',/chimpstatic\.com|list-manage\.com\/subscribe/],['ActiveCampaign',/\.activehosted\.com|trackcmp\.net/]],
  atendimento:[['WhatsApp',/wa\.me|api\.whatsapp|whatsapp/i],['Chat online',/jivochat|tawk\.to|zendesk|crisp\.chat|octadesk|movidesk|olark|intercom|zenvia/i],['Chatbot',/chatbot|bot de atendimento|blip\.ai|take\.net/i],['Telefone / SAC visível',/\(\d{2}\)\s?\d{4,5}-?\d{4}|0800/i]],
  prova:[['Avaliações de produto',/trustvox|yourviews|avalia[çc][õo]es|review|estrelas/i],['Depoimentos',/depoiment|o que dizem|clientes satisfeit/i],['Selo de segurança',/site blindado|selo|ssl|seguran[çc]a|google safe/i],['Reclame Aqui',/reclame ?aqui/i],['CNPJ no rodapé',/cnpj/i],['Política de troca e devolução',/troca e devolu|pol[íi]tica de troca|devolu[çc][ãa]o/i]],
  canais:[['Instagram',/instagram\.com/i],['Facebook',/facebook\.com/i],['TikTok',/tiktok\.com/i],['YouTube',/youtube\.com|youtu\.be/i],['Pinterest',/pinterest\./i],['Mercado Livre',/mercadolivre|mercadolibre/i],['Shopee',/shopee\.com/i],['Amazon',/amazon\.com\.br/i],['Magalu',/magazineluiza|magalu/i],['Shein / TikTok Shop',/shein\.com|tiktok ?shop/i]],
@@ -505,19 +529,28 @@ const SINAIS={
 };
 
 /* ---------- 3. leitura das páginas ---------- */
-async function fetchText(url,timeout=15000){
+async function fetchText(url,timeout=20000){
   let lastErr=null;
   for(const build of PROXIES){
+    const cfg=build(url);
     try{
       const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeout);
-      const res=await fetch(build(url),{signal:ctl.signal}); clearTimeout(t);
+      const res=await fetch(cfg.url,{signal:ctl.signal,headers:{'Accept':'text/html,application/xhtml+xml,application/xml,*/*'}}); clearTimeout(t);
       if(!res.ok){ lastErr=new Error('HTTP '+res.status); continue; }
-      const txt=await res.text();
+      let txt=await res.text();
+      if(cfg.json){ try{ const j=JSON.parse(txt); txt=j.contents||j.data||''; }catch(e){ txt=''; } }
       if(txt&&txt.length>300) return txt;
       lastErr=new Error('resposta curta');
     }catch(e){ lastErr=e; }
   }
   throw lastErr||new Error('falha na leitura');
+}
+/* GET direto para APIs de DNS/IP (CORS liberado) — não passa por relay */
+async function fetchJson(url,timeout=9000){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),timeout);
+  try{ const r=await fetch(url,{signal:ctl.signal,headers:{'Accept':'application/json'}}); clearTimeout(t);
+    if(!r.ok) return null; return await r.json(); }
+  catch(e){ clearTimeout(t); return null; }
 }
 async function sondar(origin){
   const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false};
@@ -548,23 +581,34 @@ async function sondar(origin){
 /* ---------- 4. análise da loja ---------- */
 function detectPlataforma(html,url){
   const alvo=html+' '+url;
+  const bodyTxt=norm((html.match(/<body[\s\S]*<\/body>/i)||[html])[0].replace(/<[^>]+>/g,' '));
+  const rodape=bodyTxt.slice(-3500);
+  const gen=(html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i)||[])[1]||'';
+  const pw=(html.match(/(?:powered by|desenvolvido por|criado por|criada com|criado com|loja criada|loja virtual por|plataforma de e-?commerce)[^<>"']{0,55}/gi)||[]).map(s=>s.replace(/\s+/g,' ').trim());
   const achados=[];
   PLATAFORMAS.forEach(p=>{
     const hits=p.rx.filter(r=>r.test(alvo));
-    if(hits.length) achados.push({p,peso:hits.length,ev:hits.map(r=>String(r).replace(/^\/|\/i$/g,'')).slice(0,3)});
+    let peso=hits.length>=2?hits.length+1:hits.length, ev=hits.map(r=>'código: '+String(r).replace(/^\/|\/[a-z]*$/g,'')).slice(0,3);
+    // crédito explícito por nome no generator/rodapé/prose (peso 2 = tão forte quanto assinatura)
+    const aliases=(PLAT_ALIAS[p.id]||[]);
+    aliases.forEach(a=>{
+      const an=norm(a);
+      if(gen&&norm(gen).includes(an)){ peso+=2; ev.unshift('meta generator: '+gen.slice(0,50)); }
+      const credRx=new RegExp('(criad[oa]|desenvolvid[oa]|powered|feito|plataforma|loja virtual|e-?commerce)[^.]{0,25}'+an.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i');
+      if(credRx.test(rodape)){ peso+=2; ev.unshift('crédito no rodapé menciona "'+a+'"'); }
+    });
+    if(peso>0) achados.push({p,peso,ev:[...new Set(ev)].slice(0,4)});
   });
-  const gen=(html.match(/<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)/i)||[])[1]||'';
-  const pw=(html.match(/(?:powered by|desenvolvido por|criado por)[^<>"']{0,45}/gi)||[]).slice(0,2).map(s=>s.replace(/\s+/g,' ').trim());
   if(!achados.length){
-    return {id:'desconhecida',nome:gen?('Não identificada · generator: '+gen.slice(0,40)):'Não identificada automaticamente',
-      confianca:'baixa',evidencias:[...pw,gen?('meta generator: '+gen):''].filter(Boolean),
+    return {id:'desconhecida',nome:gen?('Não identificada · generator: '+gen.slice(0,44)):'Não identificada automaticamente',
+      confianca:'baixa',evidencias:[...pw.slice(0,2),gen?('meta generator: '+gen):''].filter(Boolean),
       dores:['Não foi possível identificar a plataforma pelo código — pergunte ao lojista na reunião. Costuma indicar site feito sob medida ou plataforma pequena, o que concentra o risco em um único fornecedor.']};
   }
   achados.sort((a,b)=>b.peso-a.peso);
   const top=achados[0];
-  return {id:top.p.id,nome:top.p.nome,confianca:top.peso>=2?'alta':'média',
-    evidencias:[...top.ev.map(e=>'assinatura no código: '+e),...pw,gen?('meta generator: '+gen):''].filter(Boolean).slice(0,5),
-    dores:top.p.dores,outras:achados.slice(1,3).map(a=>a.p.nome)};
+  return {id:top.p.id,nome:top.p.nome,confianca:top.peso>=3?'alta':top.peso>=2?'média':'indício',
+    evidencias:[...top.ev,...pw.slice(0,1)].filter(Boolean).slice(0,5),
+    dores:top.p.dores,outras:achados.slice(1,3).filter(a=>a.peso>=2).map(a=>a.p.nome)};
 }
 function tempoNaPlataforma(html){
   const anos=[...html.matchAll(/(?:©|&copy;|copyright)[^<]{0,40}?(19|20)\d{2}/gi)].map(m=>parseInt((m[0].match(/(19|20)\d{2}/)||[])[0],10)).filter(Boolean);
@@ -577,13 +621,54 @@ function tempoNaPlataforma(html){
   return {texto:'Rodapé indica atividade desde '+min+' (cerca de '+dif+' ano'+(dif>1?'s':'')+' de operação)',anos:dif};
 }
 function acharSinais(html,grupo){
-  return SINAIS[grupo].map(([nome,rx])=>({nome,ok:rx.test(html)}));
+  return SINAIS[grupo].map(([nome,rx])=>{ const m=html.match(rx); return {nome,ok:!!m,ev:m?String(m[0]).slice(0,44):''}; });
 }
-function precos(texto){
-  const vals=[...texto.matchAll(/R\$\s*([\d.]{1,9}),(\d{2})/g)].map(m=>parseFloat(m[1].replace(/\./g,'')+'.'+m[2])).filter(v=>v>=5&&v<=200000);
-  if(vals.length<3) return {n:vals.length,min:vals.length?Math.min(...vals):0,max:vals.length?Math.max(...vals):0,mediana:vals.length?vals[0]:0,ok:vals.length>0};
-  const s=vals.slice().sort((a,b)=>a-b);
-  return {n:vals.length,min:s[0],max:s[s.length-1],mediana:s[Math.floor(s.length/2)],ok:true};
+function _ldWalk(node,out,inOffer){
+  if(!node||typeof node!=='object') return;
+  if(Array.isArray(node)){ node.forEach(n=>_ldWalk(n,out,inOffer)); return; }
+  const grab=v=>{ if(v==null) return; const n=parseFloat(String(v).replace(/[^\d.,]/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(',','.')); if(n>=1&&n<=500000) out.push(n); };
+  if(node.price!=null) grab(node.price);
+  if(node.lowPrice!=null) grab(node.lowPrice);
+  if(node.highPrice!=null) grab(node.highPrice);
+  if(node.offers) _ldWalk(node.offers,out,true);
+  ['@graph','itemListElement','hasVariant','item','mainEntity'].forEach(k=>{ if(node[k]) _ldWalk(node[k],out,inOffer); });
+}
+function precos(dom,html){
+  const ld=[]; const raw=[];
+  // 1) JSON-LD (preço estruturado — fonte mais confiável)
+  (html.match(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)||[]).forEach(b=>{
+    const inner=b.replace(/^[\s\S]*?>/,'').replace(/<\/script>\s*$/i,'').trim();
+    try{ _ldWalk(JSON.parse(inner),ld); }
+    catch(e){ (inner.match(/"(?:price|lowPrice|highPrice)"\s*:\s*"?([\d.,]+)"?/gi)||[]).forEach(m=>{ const n=parseFloat((m.match(/([\d.,]+)/)||[])[1].replace(/\.(?=\d{3}\b)/g,'').replace(',','.')); if(n>=1&&n<=500000) ld.push(n); }); }
+  });
+  // 2) elementos/atributos de preço no DOM
+  const dom2=[];
+  try{
+    dom.querySelectorAll('[itemprop="price"],[property="product:price:amount"],[data-price],meta[itemprop="price"]').forEach(el=>{
+      const v=el.getAttribute('content')||el.getAttribute('data-price')||el.getAttribute('value')||el.textContent||'';
+      const n=parseFloat(String(v).replace(/[^\d.,]/g,'').replace(/\.(?=\d{3}\b)/g,'').replace(',','.')); if(n>=1&&n<=500000) dom2.push(n);
+    });
+    dom.querySelectorAll('[class*="price"],[class*="Price"],[class*="preco"],[class*="valor"],[class*="amount"]').forEach(el=>{
+      const tx=(el.textContent||'').replace(/\s+/g,' ').trim(); if(!tx||tx.length>60) return;
+      if(/\d\s*x\s|sem juros|frete|parcel/i.test(tx)) return;
+      const m=tx.match(/R\$\s*([\d.]{1,9}),(\d{2})/); if(m){ const n=parseFloat(m[1].replace(/\./g,'')+'.'+m[2]); if(n>=1&&n<=500000) dom2.push(n); }
+    });
+  }catch(e){}
+  // 3) fallback: texto, descartando parcelas e limiares de frete/cupom
+  const texto=(dom&&dom.body?dom.body.textContent:html).replace(/\s+/g,' ');
+  [...texto.matchAll(/R\$\s*([\d.]{1,9}),(\d{2})/g)].forEach(m=>{
+    const ini=Math.max(0,m.index-16), ctx=texto.slice(ini,m.index).toLowerCase();
+    if(/x\s*(de\s*)?$|sem juros|acima de|a partir de|frete|cupom|economize|de\s*$|por apenas mais/.test(ctx)) return;
+    const n=parseFloat(m[1].replace(/\./g,'')+'.'+m[2]); if(n>=5&&n<=500000) raw.push(n);
+  });
+  let pool=ld.length>=2?ld:(dom2.length>=2?dom2:raw);
+  let fonte=ld.length>=2?'dados estruturados':(dom2.length>=2?'preços na vitrine':'texto da página');
+  // remove outliers grosseiros por mediana (descarta parcela residual e valores fora de escala)
+  if(pool.length>=4){ const s=pool.slice().sort((a,b)=>a-b); const med=s[Math.floor(s.length/2)];
+    pool=pool.filter(v=>v>=med*0.15&&v<=med*8); }
+  if(!pool.length) return {n:0,min:0,max:0,mediana:0,ok:false,fonte:'não identificado'};
+  const s=pool.slice().sort((a,b)=>a-b);
+  return {n:pool.length,min:s[0],max:s[s.length-1],mediana:s[Math.floor(s.length/2)],ok:true,fonte};
 }
 function detectarSegmento(texto){
   let best={seg:SEGMENTOS[SEGMENTOS.length-1],hits:0};
@@ -662,9 +747,10 @@ function analisarLoja(html,url,extras){
   } else L.seo.produtosFonte='sitemap';
   /* marketing e integrações */
   L.mkt={analytics:acharSinais(html,'analytics'),atendimento:acharSinais(html,'atendimento'),prova:acharSinais(html,'prova'),canais:acharSinais(html,'canais')};
+  L.social=detectarSocial(html,dom,L);
   /* perfil do negócio */
   const seg=detectarSegmento(texto.slice(0,20000)+' '+titulo+' '+meta('description'));
-  const pr=precos(texto);
+  const pr=precos(dom,html);
   const prods=L.seo.produtosEstimados;
   let porte='pequena', porteTxt='';
   const sinaisPro=L.mkt.analytics.filter(s=>s.ok).length + L.mkt.canais.filter(s=>s.ok).length;
@@ -682,6 +768,109 @@ function analisarLoja(html,url,extras){
   /* placar */
   L.score=montarScore(L);
   return L;
+}
+/* ---------- redes sociais e social commerce (o que dá para ler do site) ---------- */
+function detectarSocial(html,dom,L){
+  const grab=rx=>{ const set=new Set(); [...dom.querySelectorAll('a[href]')].forEach(a=>{ const h=a.getAttribute('href')||''; if(rx.test(h)) set.add(h.split('?')[0]); }); const m=html.match(rx); return {ativo:set.size>0||!!m,url:[...set][0]||''}; };
+  const norml=u=>{ if(!u) return ''; u=u.replace(/\/$/,''); return u; };
+  const redes={
+    instagram:grab(/instagram\.com\/[A-Za-z0-9_.]+/i),
+    tiktok:grab(/tiktok\.com\/@[A-Za-z0-9_.]+/i),
+    facebook:grab(/facebook\.com\/[A-Za-z0-9_.\-]+/i),
+    pinterest:grab(/(?:br\.)?pinterest\.[a-z.]+\/[A-Za-z0-9_.\-]+/i),
+    youtube:grab(/youtube\.com\/(?:@|channel\/|c\/|user\/)[A-Za-z0-9_.\-]+/i)
+  };
+  Object.keys(redes).forEach(k=>redes[k].url=norml(redes[k].url));
+  const handle=u=>{ const m=(u||'').match(/(?:@|\/)([A-Za-z0-9_.]+)$/); return m?m[1].replace(/^@/,''):''; };
+  redes.instagram.handle=handle(redes.instagram.url);
+  redes.tiktok.handle=handle(redes.tiktok.url);
+  // agregador de bio
+  const agregRx=/(linktr\.ee|linktree|beacons\.ai|bio\.link|linkr\.bio|campsite\.bio|lnk\.bio|linkbio|about\.me|linke\.bio)/i;
+  const magr=html.match(agregRx);
+  const agregador={ativo:!!magr, nome:magr?magr[1]:''};
+  // sinais de social commerce no próprio site
+  const shopHints=/(comprar pelo instagram|instagram shop|facebook shop|sacolinha|loja no instagram|shopping tags|catalog\.fbsbx|business\.facebook\.com\/commerce)/i.test(html);
+  // WhatsApp como canal principal
+  const waCount=(html.match(/wa\.me\/|api\.whatsapp\.com\/send|whatsapp:\/\//gi)||[]).length;
+  const waPrimary=waCount>0 && (L.exp.checkoutExterno||!L.exp.pagamentos.filter(x=>x.ok).length || /comprar pelo whats|peça pelo whats|finalize pelo whats/i.test(html));
+  const marketplaces=(L.mkt.canais||[]).filter(c=>/Mercado Livre|Shopee|Amazon|Magalu|Shein|TikTok Shop/i.test(c.nome)&&c.ok).map(c=>c.nome);
+  return {redes,agregador,shopHints,waCount,waPrimary,marketplaces,
+    auto:{}, /* preenchido por lerRedesSociais (assíncrono, best-effort) */
+    manual:{sacolinha:'',bio:'',reclamacoes:'',conteudo:''}};
+}
+/* leitura best-effort de seguidores nos perfis públicos — SÓ aceita número explícito */
+async function lerRedesSociais(social){
+  const out={};
+  const parseIgFb=(txt)=>{
+    if(!txt) return null;
+    let m=txt.match(/([\d.,]+\s*(?:mil|mi|k|m|milh[õo]es|mil seguidores)?)\s*(?:seguidores|followers|curtidas|likes|gostam disto|seguidor)/i);
+    if(!m) m=(txt.match(/og:description["']\s+content=["']([^"']*(?:seguidores|followers)[^"']*)/i)||[])[1];
+    if(!m) return null;
+    const s=(typeof m==='string'?m:m[1]||m[0]);
+    const n=s.match(/([\d.,]+)\s*(mil|mi|k|m|milh[õo]es)?/i);
+    if(!n) return null;
+    let v=parseFloat(n[1].replace(/\./g,'').replace(',','.')); const u=(n[2]||'').toLowerCase();
+    if(/mil|k/.test(u)) v*=1000; if(/mi|m|milh/.test(u)) v*=1000000;
+    return v>=1?Math.round(v):null;
+  };
+  const attempts=[
+    ['instagram',social.redes.instagram],
+    ['facebook',social.redes.facebook],
+    ['tiktok',social.redes.tiktok]
+  ];
+  for(const [rede,info] of attempts){
+    if(!info||!info.ativo||!info.url) continue;
+    try{
+      const h=await fetchText(info.url,11000);
+      let seg=null,fonte='';
+      if(rede==='tiktok'){
+        const m=h.match(/"followerCount":\s*(\d+)/); if(m){ seg=parseInt(m[1],10); fonte='perfil'; }
+        if(seg==null){ const d=(h.match(/og:description["']\s+content=["']([^"']+)/i)||[])[1]; const mm=d&&d.match(/([\d.,]+[KMmilhõesi ]*)\s*(?:Followers|seguidores)/i); if(mm){ seg=parseIgFb(mm[0]); fonte='descrição'; } }
+      } else {
+        const d=(h.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)/i)||h.match(/<meta[^>]+content=["']([^"']*(?:seguidores|followers)[^"']*)["'][^>]*property=["']og:description/i)||[])[1];
+        seg=parseIgFb(d||''); fonte='descrição do perfil';
+        if(seg==null){ const j=h.match(/"edge_followed_by":\s*\{\s*"count":\s*(\d+)/); if(j){ seg=parseInt(j[1],10); fonte='perfil'; } }
+      }
+      out[rede]= seg!=null? {seguidores:seg,fonte,lido:true} : {seguidores:null,fonte:'perfil não retornou o número (login/JS)',lido:false};
+    }catch(e){ out[rede]={seguidores:null,fonte:'não acessível pelo relay',lido:false}; }
+  }
+  return out;
+}
+/* ---------- hospedagem: DNS (Google DoH) + ASN/org (ipwho.is / ipapi) ---------- */
+const HOST_MAP=[
+ [/cloudflare/i,'Cloudflare (CDN/proxy)'],[/amazon|aws|a2z/i,'Amazon AWS'],[/google|1e100|goog/i,'Google Cloud'],
+ [/microsoft|azure/i,'Microsoft Azure'],[/shopify/i,'Shopify'],[/vtex/i,'VTEX'],[/fastly/i,'Fastly (CDN)'],
+ [/akamai/i,'Akamai (CDN)'],[/locaweb/i,'Locaweb'],[/uol|universo online/i,'UOL Host'],[/hostgator/i,'HostGator'],
+ [/hostinger/i,'Hostinger'],[/godaddy/i,'GoDaddy'],[/kinghost/i,'KingHost'],[/tiendanube|nuvemshop/i,'Nuvemshop'],
+ [/digitalocean/i,'DigitalOcean'],[/ovh/i,'OVH'],[/oracle/i,'Oracle Cloud'],[/vercel/i,'Vercel'],[/netlify/i,'Netlify'],
+ [/incapsula|imperva/i,'Imperva/Incapsula (CDN)'],[/gcore|g-core/i,'Gcore (CDN)'],[/wix/i,'Wix']
+];
+function mapProvedor(txt){ for(const [rx,nome] of HOST_MAP){ if(rx.test(txt||'')) return nome; } return ''; }
+function cdnPorNs(ns){ const s=(ns||[]).join(' ').toLowerCase();
+  if(/cloudflare/.test(s)) return 'Cloudflare';
+  if(/awsdns|amazon/.test(s)) return 'Amazon AWS (Route 53)';
+  if(/googledomains|google/.test(s)) return 'Google';
+  if(/dns\.shopify|shopify/.test(s)) return 'Shopify';
+  if(/nuvemshop|tiendanube/.test(s)) return 'Nuvemshop';
+  if(/locaweb/.test(s)) return 'Locaweb';
+  if(/registro\.br|dns\.br/.test(s)) return 'DNS Registro.br';
+  return '';
+}
+async function resolverHospedagem(host){
+  const out={host,ip:'',ns:[],provedor:'',org:'',cdn:'',fonte:'',ok:false};
+  if(!host) return out;
+  const a=await fetchJson('https://dns.google/resolve?name='+encodeURIComponent(host)+'&type=A');
+  if(a&&a.Answer){ out.ip=(a.Answer.find(x=>x.type===1)||{}).data||''; out.ok=true; }
+  const n=await fetchJson('https://dns.google/resolve?name='+encodeURIComponent(host)+'&type=NS');
+  if(n&&n.Answer){ out.ns=n.Answer.filter(x=>x.type===2).map(x=>(x.data||'').replace(/\.$/,'')); out.ok=true; }
+  out.cdn=cdnPorNs(out.ns);
+  if(out.ip){
+    let j=await fetchJson('https://ipwho.is/'+out.ip);
+    if(j&&j.success!==false){ out.org=(j.connection&&(j.connection.org||j.connection.isp))||j.org||''; out.fonte='ipwho.is'; }
+    if(!out.org){ const k=await fetchJson('https://ipapi.co/'+out.ip+'/json/'); if(k){ out.org=k.org||k.asn||''; out.fonte='ipapi.co'; } }
+  }
+  out.provedor=mapProvedor(out.org)||mapProvedor(out.ns.join(' '))||out.cdn||'';
+  return out;
 }
 function montarScore(L){
   const b=v=>v?1:0;
@@ -896,7 +1085,6 @@ manualToggle.addEventListener('change',()=>{ document.querySelectorAll('textarea
 document.getElementById('ex-btn').addEventListener('click',()=>{
   document.getElementById('loja-url').value='https://www.lojasrenner.com.br';
   document.getElementById('plano-url').value='https://www.tray.com.br/planos-precos';
-  document.getElementById('obs').value='Exemplo para treinar a leitura do relatório';
 });
 function setStatus(lines){
   statusEl.className='status on';
@@ -911,7 +1099,7 @@ async function run(){
   const planoPaste=document.getElementById('plano-paste').value.trim();
   if(!lojaUrl&&!lojaPaste){ alertEl.className='alert on'; alertEl.textContent='Informe o endereço da loja do lojista para começar a análise.'; return; }
   runBtn.disabled=true;
-  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Lendo o plano da Tray'},{s:'',t:'Montando diagnóstico e discurso'}];
+  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Consultando hospedagem (DNS)'},{s:'',t:'Lendo redes sociais do lojista'},{s:'',t:'Lendo o plano da Tray'},{s:'',t:'Montando diagnóstico e discurso'}];
   setStatus(lines);
   let loja=null;
   try{
@@ -925,24 +1113,36 @@ async function run(){
     } else lines[1]={s:'',t:'Sondagem de sitemap desativada'};
     setStatus(lines);
     loja=analisarLoja(html,lojaUrl||('https://'+(hostOf(lojaUrl)||'loja')),extras);
+    // hospedagem (DNS + ASN) — best-effort
+    lines[2]={s:'load',t:'Consultando hospedagem (DNS)…'}; setStatus(lines);
+    try{ loja.hospedagem=await resolverHospedagem(loja.host); }catch(e){ loja.hospedagem={ok:false}; }
+    lines[2]={s:loja.hospedagem&&loja.hospedagem.ok?'ok':'err',t:loja.hospedagem&&loja.hospedagem.ok?('Hospedagem: '+(loja.hospedagem.provedor||loja.hospedagem.org||loja.hospedagem.ip||'identificada')):'DNS não respondeu — hospedagem a confirmar'};
+    setStatus(lines);
+    // redes sociais — best-effort de seguidores
+    const temRede=loja.social&&Object.values(loja.social.redes).some(r=>r.ativo);
+    if(temRede){ lines[3]={s:'load',t:'Lendo redes sociais do lojista…'}; setStatus(lines);
+      try{ loja.social.auto=await lerRedesSociais(loja.social); }catch(e){}
+      const lidos=Object.values(loja.social.auto).filter(x=>x.lido).length;
+      lines[3]={s:lidos?'ok':'err',t:lidos?('Redes lidas: '+lidos+' com número de seguidores'):'Redes detectadas — seguidores não puderam ser lidos automaticamente (confira no perfil)'};
+    } else lines[3]={s:'',t:'Nenhuma rede social encontrada no site'};
+    setStatus(lines);
   }catch(err){
     lines[0]={s:'err',t:'Não consegui ler a loja. Tente de novo ou use o modo de colar conteúdo.'}; setStatus(lines);
     alertEl.className='alert on'; alertEl.textContent='Não consegui ler a loja pelo relay público. Clique em analisar de novo, ou ative "Colar conteúdo manualmente" e cole o código-fonte da página inicial.';
     runBtn.disabled=false; return;
   }
-  lines[2]={s:'load',t:'Lendo o plano da Tray…'}; setStatus(lines);
+  lines[4]={s:'load',t:'Lendo o plano da Tray…'}; setStatus(lines);
   let planoHtml='';
   try{ planoHtml=(planoPaste&&planoPaste.length>500)?planoPaste:(planoUrl?await fetchText(planoUrl,14000):''); }catch(e){}
   let planoId=planoSel.value;
   if(planoId==='auto') planoId=planoPorUrl(planoUrl)||sugerirPlano(loja);
   const plano=analisarPlano(planoHtml,planoUrl,planoId);
   plano.sugerido=(planoSel.value==='auto');
-  lines[2]={s:plano.lido?'ok':'err',t:plano.lido?('Plano '+plano.nome+' lido da página'):('Plano '+plano.nome+' montado com a base interna — confirme os valores na página da Tray')};
-  lines[3]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
+  lines[4]={s:plano.lido?'ok':'err',t:plano.lido?('Plano '+plano.nome+' lido da página'):('Plano '+plano.nome+' montado com a base interna — confirme os valores na página da Tray')};
+  lines[5]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
   try{
     const dores=montarDores(loja,plano);
-    state={loja,plano,dores,args:montarArgumentos(loja,plano,dores),guia:montarGuia(loja,plano,dores),
-      obs:document.getElementById('obs').value.trim()};
+    state={loja,plano,dores,args:montarArgumentos(loja,plano,dores),guia:montarGuia(loja,plano,dores)};
     statusEl.className='status'; statusEl.innerHTML='';
     render(); resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){ alertEl.className='alert on'; alertEl.textContent='Erro ao montar a análise: '+(err.message||err); }
@@ -971,12 +1171,20 @@ function render(){
     '<div class="xray-grid"><div class="gauge">'+gauge(L.score.total)+'<div class="gl"><b>'+L.score.total+'/100</b>maturidade digital<br/>da loja hoje</div></div><div class="axes">'+eixos+'</div></div></div></div>');
 
   /* 1. plataforma */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">1 · Plataforma atual</span><h2>Onde a loja roda hoje</h2></div><p class="sec-sub">Identificação feita por assinaturas no código, CDN, scripts e rodapé.</p><div class="cards c2">'+
+  const H=L.hospedagem||{};
+  const hospLinhas=H.ok?('<div class="line"><span class="k">Provedor / CDN</span><span class="v">'+esc(H.provedor||H.cdn||'não classificado')+'</span></div>'+
+     (H.org?'<div class="line"><span class="k">Rede (ASN/org)</span><span class="v">'+esc(H.org)+'</span></div>':'')+
+     (H.ip?'<div class="line"><span class="k">IP do domínio</span><span class="v">'+esc(H.ip)+'</span></div>':'')+
+     (H.ns&&H.ns.length?'<div class="line"><span class="k">Servidores DNS</span><span class="v">'+esc(H.ns.slice(0,2).join(', '))+'</span></div>':'')):
+     '<div class="line"><span class="k">Consulta DNS</span><span class="v">não respondeu</span></div>';
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">1 · Plataforma e hospedagem</span><h2>Onde a loja roda hoje</h2></div><p class="sec-sub">Plataforma identificada por assinaturas no código e crédito no rodapé. Hospedagem resolvida por DNS ao vivo (registro A, servidores de nome e rede do IP).</p><div class="cards c3">'+
    '<div class="card"><div class="ck">Plataforma identificada</div><h4>'+esc(L.plataforma.nome)+'</h4>'+
-   '<div class="kv" style="margin-top:10px"><div class="line"><span class="k">Confiança da identificação</span><span class="v">'+esc(L.plataforma.confianca)+'</span></div>'+
+   '<div class="kv" style="margin-top:10px"><div class="line"><span class="k">Confiança</span><span class="v">'+esc(L.plataforma.confianca)+'</span></div>'+
    (L.plataforma.outras&&L.plataforma.outras.length?'<div class="line"><span class="k">Outros sinais</span><span class="v">'+esc(L.plataforma.outras.join(', '))+'</span></div>':'')+
    '<div class="line"><span class="k">Tempo de operação</span><span class="v">'+esc(L.tempo.texto)+'</span></div></div>'+
    (L.plataforma.evidencias.length?'<div class="ev"><b>Evidências:</b> '+esc(L.plataforma.evidencias.join(' · '))+'</div>':'')+'</div>'+
+   '<div class="card"><div class="ck">Hospedagem do domínio</div><h4>'+esc(H.provedor||H.cdn||(H.ok?'Rede não classificada':'A confirmar'))+'</h4><div class="kv" style="margin-top:10px">'+hospLinhas+'</div>'+
+   (H.cdn?'<div class="ev">Um CDN/proxy como '+esc(H.cdn)+' pode mascarar o servidor real de origem — o provedor de hospedagem em si pode estar atrás dele.</div>':'')+'</div>'+
    '<div class="card"><div class="ck">O que isso costuma significar</div><div class="blk"><ul>'+(L.plataforma.dores||[]).map(d=>'<li><span class="m warnm">!</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div></div></div></div>');
 
   /* 2. experiência */
@@ -1015,8 +1223,13 @@ function render(){
 
   /* 5. marketing */
   const m=L.mkt;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Pixels, atendimento, prova social e canais visíveis no código.</p><div class="cards c2">'+
-   '<div class="card"><div class="ck">Medição e mídia</div>'+chipsHtml(m.analytics)+'</div>'+
+  const temGTM=m.analytics.some(x=>x.nome==='Google Tag Manager'&&x.ok);
+  const midiaAtiva=m.analytics.filter(x=>x.ok);
+  const evList=midiaAtiva.filter(x=>x.ev).slice(0,4).map(x=>esc(x.nome)+': '+esc(x.ev)).join(' · ');
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
+   '<div class="card"><div class="ck">Medição e mídia ('+midiaAtiva.length+' ativas)</div>'+chipsHtml(m.analytics)+
+   (evList?'<div class="ev"><b>Evidências encontradas:</b> '+evList+'</div>':'<div class="ev">Nenhuma tag de medição carregada diretamente na home.</div>')+
+   (temGTM?'<div class="ev" style="border-color:var(--gold-line);background:var(--gold-soft);color:#8A6A1E"><b>Observação:</b> o Google Tag Manager está presente. Pixels e tags de conversão podem ser disparados por dentro dele e não aparecer no código — confirme no gerenciador do lojista antes de afirmar que faltam.</div>':'')+'</div>'+
    '<div class="card"><div class="ck">Atendimento</div>'+chipsHtml(m.atendimento)+'</div>'+
    '<div class="card"><div class="ck">Prova social e confiança</div>'+chipsHtml(m.prova)+'</div>'+
    '<div class="card"><div class="ck">Canais e marketplaces</div>'+chipsHtml(m.canais)+'</div></div></div>');
@@ -1032,22 +1245,25 @@ function render(){
    '<div class="card"><div class="ck">Porte da operação</div><h4>'+cap(p.porte)+'</h4><p style="font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.55">'+esc(p.porteTxt)+'</p>'+
    '<div class="blk"><div class="h">Perfil típico do segmento</div><ul><li><span class="m chk">✓</span><span>'+esc(p.segmento.perfil)+'</span></li></ul></div></div></div></div>');
 
-  /* 7. recursos do segmento */
+  /* 7. redes sociais e social commerce */
+  h.push(socialSectionHtml(L));
+
+  /* 8. recursos do segmento */
   const rec=L.recursos;
   const tag=st=>st==='sim'?'<span class="tag-s y">Usa hoje</span>':st==='nao'?'<span class="tag-s n">Não usa</span>':'<span class="tag-s w">Confirmar</span>';
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">7 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2></div><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2></div><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
    '<div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Recurso</th><th class="mid">Na loja hoje</th><th>Na Tray</th></tr></thead><tbody>'+
    rec.map(r=>'<tr><td class="rec"><b>'+esc(r.nome)+'</b><span>'+esc(r.porque)+'</span></td><td class="mk">'+tag(r.estado)+'</td><td>'+esc(r.tray)+'</td></tr>').join('')+
    '</tbody></table></div></div>'+
    '<p class="sec-sub" style="margin-top:12px">'+rec.filter(r=>r.estado==='nao').length+' recursos essenciais não foram encontrados na loja · '+rec.filter(r=>r.estado==='sim').length+' já estão em uso · '+rec.filter(r=>r.estado==='checar').length+' a confirmar.</p></div>');
 
-  /* 8. dores */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">8 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2></div><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
+  /* 9. dores */
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2></div><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
    D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div>');
 
-  /* 9. plano */
+  /* 10. plano */
   const P2=state.plano, recsPlano=recursosDoPlano(P2,L);
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+(P2.lido?'Dados lidos da página do plano.':'Dados da base interna — confirme os valores vigentes na página da Tray.')+'</p>'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+(P2.lido?'Dados lidos da página do plano.':'Dados da base interna — confirme os valores vigentes na página da Tray.')+'</p>'+
    '<div class="plan"><div class="lab">Plano recomendado</div><h3>'+esc(P2.nome)+'</h3><div class="price">'+esc(P2.preco)+' <small>· '+esc(P2.precoFonte)+'</small></div>'+
    '<p class="sub">Indicado para '+esc(P2.indicado)+'. '+esc(P2.produtos)+'. '+esc(P2.limite||'')+'</p>'+
    '<div class="plan-grid"><div class="plan-box"><div class="h">Recursos em destaque do plano</div><ul>'+P2.destaques.slice(0,10).map(d=>'<li><span>✓</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div>'+
@@ -1056,15 +1272,15 @@ function render(){
    '<div class="section" style="margin-top:18px"><div class="sec-title"><span class="kicker">Benefícios</span><h2>Por que cada recurso importa para esta loja</h2></div><div class="benef">'+
    recsPlano.map(r=>'<div class="b"><h4>'+esc(r.nome)+'</h4><p>'+esc(r.porque)+'</p></div>').join('')+'</div></div></div>');
 
-  /* 10. argumentos */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
+  /* 11. argumentos */
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">11 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
    A.blocos.map((b,i)=>'<div class="arg"><button class="copy" data-arg="'+i+'">Copiar</button><div class="h">'+esc(b.h)+'</div><p>'+esc(b.t)+'</p></div>').join('')+'</div>'+
    '<div class="arg" style="margin-top:16px"><button class="copy" data-arg="pitch">Copiar</button><div class="h">Resumo em uma mensagem (WhatsApp)</div><p>'+esc(A.pitch)+'</p></div></div>');
 
-  /* 11. guia */
+  /* 12. guia */
   h.push(guiaHtml());
 
-  /* 12. conclusão + ações */
+  /* 13. conclusão + ações */
   const concl='A loja '+L.nomeLoja+' opera em '+L.plataforma.nome+' com maturidade digital '+L.score.rotulo+' ('+L.score.total+'/100). '+
     (D.length?'Os pontos mais críticos hoje: '+listPt(D.slice(0,3).map(d=>d.curto||lower1(d.titulo)))+'. ':'')+
     'O plano '+P2.nome+' cobre esses pontos com recursos nativos, sem plugin de terceiro: '+listPt(recsPlano.slice(0,4).map(r=>lower1(r.nome)))+'. '+
@@ -1075,6 +1291,50 @@ function render(){
   state.concl=concl; state.recsPlano=recsPlano;
   resultsEl.innerHTML=h.join(''); resultsEl.className='on'; wireResults();
 }
+function fSeg(n){ if(n==null) return '—'; if(n>=1000000) return (n/1000000).toFixed(n%1000000?1:0).replace('.',',')+' mi'; if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.',',')+' mil'; return String(n); }
+const SOCIAL_META={instagram:['Instagram','#C13584'],tiktok:['TikTok','#111'],facebook:['Facebook','#1877F2'],pinterest:['Pinterest','#BD081C'],youtube:['YouTube','#FF0000']};
+function socialSectionHtml(L){
+  const S=L.social||{redes:{},manual:{},auto:{}};
+  const redes=Object.keys(SOCIAL_META).filter(k=>S.redes[k]&&S.redes[k].ativo);
+  const linkChips=Object.keys(SOCIAL_META).map(k=>{
+    const on=S.redes[k]&&S.redes[k].ativo, meta=SOCIAL_META[k];
+    const a=S.auto&&S.auto[k];
+    let seg='';
+    if(on&&a){ seg = a.lido? ' — '+fSeg(a.seguidores)+' seguidores' : ' — seguidores não lidos'; }
+    return '<span class="chip '+(on?'y':'n')+'">'+(on?'✓':'·')+' '+meta[0]+seg+'</span>';
+  }).join('');
+  const perfilLinks=redes.map(k=>'<a href="'+esc(S.redes[k].url)+'" target="_blank" rel="noopener" style="font-size:12.5px;font-weight:600;color:var(--teal-deep);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:6px 11px;display:inline-flex;gap:6px;align-items:center">Abrir '+SOCIAL_META[k][0]+' ↗</a>').join(' ');
+  // bloco automático
+  const mkts=(S.marketplaces||[]);
+  const auto='<div class="card"><div class="ck">Detectado no site (automático)</div>'+
+    '<div class="blk"><div class="h">Redes ligadas na loja</div><div class="chips">'+linkChips+'</div></div>'+
+    '<div class="kv" style="margin-top:12px">'+
+    '<div class="line"><span class="k">Link na bio / agregador</span><span class="v">'+(S.agregador&&S.agregador.ativo?('Usa agregador ('+esc(S.agregador.nome)+')'):'Não detectado no site')+'</span></div>'+
+    '<div class="line"><span class="k">Venda por WhatsApp</span><span class="v">'+(S.waPrimary?'Aparenta ser canal central':(S.waCount?'Presente':'Não detectado'))+'</span></div>'+
+    '<div class="line"><span class="k">Social commerce (sacolinha)</span><span class="v">'+(S.shopHints?'Sinais no site':'Sem sinal no site')+'</span></div>'+
+    '<div class="line"><span class="k">Marketplaces ativos</span><span class="v">'+(mkts.length?esc(mkts.join(', ')):'nenhum detectado')+'</span></div></div>'+
+    (perfilLinks?'<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'+perfilLinks+'</div>':'')+
+    '<div class="ev">Seguidores são lidos do perfil público quando a rede permite. Instagram e TikTok muitas vezes exigem login e retornam "não lidos" — nesse caso, confira no próprio perfil e registre ao lado.</div></div>';
+  // bloco manual (100% real: o vendedor olha e registra)
+  const M=S.manual||{};
+  const grp=(campo,titulo,ops)=>'<div class="blk"><div class="h">'+titulo+'</div><div class="chips">'+
+    ops.map(([val,lab])=>'<span class="chip '+(M[campo]===val?'w':'')+'" style="cursor:pointer" onclick="setSocial(\''+campo+'\',\''+val+'\')">'+esc(lab)+'</span>').join('')+'</div></div>';
+  const manual='<div class="card"><div class="ck">Recon manual (2 min, 100% real)</div>'+
+    '<p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Abra os perfis acima e marque o que você viu. Isto entra no resumo do vendedor.</p>'+
+    grp('sacolinha','Sacolinha / Shop ativa no Instagram?',[['sim','Sim, com catálogo'],['desatualizada','Sim, parece desatualizada'],['nao','Não tem'],['naovi','Não consegui ver']])+
+    grp('bio','Link na bio direciona para…',[['site','O site da loja'],['agregador','Agregador (Linktree etc.)'],['whats','Direto para o WhatsApp'],['outro','Outro / não tem']])+
+    grp('reclamacoes','Reclamações recorrentes nos comentários?',[['nao','Não vi reclamações'],['frete','Frete / entrega'],['bugs','Bugs / lentidão do site'],['atendimento','Atendimento / SAC'],['varias','Várias, recorrentes']])+
+    grp('conteudo','Estratégia de conteúdo predominante',[['reels','Reels / provador / vídeo'],['estudio','Fotos de estúdio'],['ugc','Influencer / UGC'],['misto','Misto / pouco ativo']])+'</div>';
+  return '<div class="section"><div class="sec-title"><span class="kicker">7 · Redes e social commerce</span><h2>Presença social e conversão pelo perfil</h2></div><p class="sec-sub">A parte automática lê o que o site e os perfis públicos revelam. A parte manual é o que só o olho humano confirma — e é onde mora a análise 100% real de sacolinha, bio, reclamações e conteúdo.</p><div class="cards c2" id="social-cards">'+auto+manual+'</div></div>';
+}
+function setSocial(campo,val){
+  if(!state.loja||!state.loja.social) return;
+  const m=state.loja.social.manual||(state.loja.social.manual={});
+  m[campo]= (m[campo]===val?'':val);
+  const box=document.getElementById('social-cards');
+  if(box){ const tmp=document.createElement('div'); tmp.innerHTML=socialSectionHtml(state.loja); const novo=tmp.querySelector('#social-cards'); if(novo) box.innerHTML=novo.innerHTML; }
+}
+window.setSocial=setSocial;
 function guiaHtml(){
   const g=state.guia; if(!g) return '';
   const steps=g.steps.map(s=>'<div class="gstep '+(s.warn?'warn':'')+'"><div class="n">'+s.n+'</div><div class="body"><h4>'+esc(s.t)+'</h4><ul>'+s.b.map(x=>'<li><span class="m">'+(s.warn?'✕':'✓')+'</span><span>'+esc(x)+'</span></li>').join('')+'</ul>'+(s.say?'<div class="say">'+esc(s.say)+'</div>':'')+'</div></div>').join('');
@@ -1094,7 +1354,15 @@ function buildSummary(){
   const L=state.loja,P=state.plano,D=state.dores,X=[];
   X.push('RAIO-X DA LOJA — '+L.nomeLoja+' ('+L.host+')');
   X.push('Plataforma atual: '+L.plataforma.nome+' · maturidade '+L.score.total+'/100 ('+L.score.rotulo+')');
-  X.push('Segmento: '+L.perfil.segmento.nome+' · porte '+L.perfil.porte+' · ~'+L.perfil.produtos+' produtos');
+  if(L.hospedagem&&L.hospedagem.ok) X.push('Hospedagem: '+(L.hospedagem.provedor||L.hospedagem.org||'—')+(L.hospedagem.ip?' ('+L.hospedagem.ip+')':''));
+  X.push('Segmento: '+L.perfil.segmento.nome+' · porte '+L.perfil.porte+' · ~'+L.perfil.produtos+' produtos'+(L.perfil.precos.ok?' · ticket ~'+brl(L.perfil.precos.mediana):''));
+  const S=L.social||{redes:{},manual:{}};
+  const rn=Object.keys(S.redes||{}).filter(k=>S.redes[k].ativo).map(k=>{const a=S.auto&&S.auto[k];return k+(a&&a.lido?' ('+a.seguidores+')':'');});
+  if(rn.length) X.push('Redes ativas: '+rn.join(', '));
+  const M=S.manual||{}; const mm=[];
+  if(M.sacolinha) mm.push('sacolinha: '+M.sacolinha); if(M.bio) mm.push('bio: '+M.bio);
+  if(M.reclamacoes) mm.push('reclamações: '+M.reclamacoes); if(M.conteudo) mm.push('conteúdo: '+M.conteudo);
+  if(mm.length) X.push('Recon social: '+mm.join(' · '));
   X.push('');
   X.push('PLACAR POR FRENTE'); L.score.eixos.forEach(e=>X.push('- '+e.nome+': '+e.valor+'/100'));
   X.push(''); X.push('DORES E GATILHOS');
@@ -1246,13 +1514,8 @@ function generatePDF(){
       F('normal',9.5); T(MUT); const t2=doc.splitTextToSize(r.porque,CW-14); t2.forEach(l=>{need(12);doc.text(l,P.mL+14,y);y+=12;}); y+=6;
     });
 
-    /* conclusão + assinatura */
-    need(120); y+=6;
-    Fl([251,241,221]); const cls=doc.splitTextToSize(state.concl||'',CW-32); const ch=cls.length*14+46; need(ch);
-    doc.roundedRect(P.mL,y,CW,ch,9,9,'F'); Dr([240,220,175]); doc.roundedRect(P.mL,y,CW,ch,9,9,'S');
-    F('bold',9.5); T(GOLD); doc.text('CONCLUSÃO E PRÓXIMO PASSO',P.mL+16,y+22);
-    F('normal',10.5); T(INK); let cy=y+42; cls.forEach(l=>{doc.text(l,P.mL+16,cy);cy+=14;}); y+=ch+26;
-    need(110); Dr(LINE); doc.setLineWidth(1); doc.line(P.mL,y,P.mL+CW,y); y+=20;
+    /* assinatura (Conclusão, Argumentos e Guia ficam de fora do PDF, por opção) */
+    need(110); y+=10; Dr(LINE); doc.setLineWidth(1); doc.line(P.mL,y,P.mL+CW,y); y+=20;
     F('bold',9); T(TEALd); doc.text('PREPARADO POR',P.mL,y);
     F('normal',9); T(MUT); doc.text(new Date().toLocaleDateString('pt-BR'),P.W-P.mR,y,{align:'right'}); y+=19;
     F('bold',13); T(INK); doc.text(vendedor.nome,P.mL,y); y+=16;
