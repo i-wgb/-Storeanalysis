@@ -217,6 +217,27 @@
   .mfield{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
   .mfield label{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
   @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  /* --- seções recolhíveis --- */
+  .sec-title.collap{cursor:pointer}
+  .sec-title.collap .chev{margin-left:auto;font-size:22px;line-height:1;color:var(--muted);transition:transform .2s;flex:none;display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:8px}
+  .sec-title.collap:hover .chev{border-color:var(--teal);color:var(--teal-deep)}
+  .sec-title.collap.open .chev{transform:rotate(180deg)}
+  .coll-body[hidden]{display:none}
+  .coll-peek{font-size:12.5px;color:var(--muted);margin:2px 0 0;width:100%}
+  /* --- tráfego por canal (entrada manual real) --- */
+  .traf{display:flex;flex-direction:column;gap:12px}
+  .traf .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .traf label{font-size:13px;color:var(--ink-2);min-width:150px}
+  .traf input[type=number]{width:78px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:13px;background:var(--surface-2)}
+  .traf input[type=number]:focus{outline:none;border-color:var(--teal);background:#fff}
+  .traf .bar{flex:1;min-width:120px;height:10px;border-radius:6px;background:var(--surface-2);overflow:hidden;display:flex}
+  .traf .bar i{display:block;height:100%}
+  .traf .bar .org{background:var(--teal)} .traf .bar .soc{background:var(--gold)} .traf .bar .pag{background:#8B6FC7}
+  .traf .lk{display:inline-flex;gap:6px;align-items:center;font-size:12.5px;font-weight:600;color:var(--teal-deep);text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:7px 11px}
+  .traf .lk:hover{border-color:var(--teal)}
+  .foll-in{width:96px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:inherit;font-size:13px;background:var(--surface-2)}
+  .foll-in:focus{outline:none;border-color:var(--teal);background:#fff}
 </style>
 </head>
 <body>
@@ -377,30 +398,30 @@ const PLAT_ALIAS={
 
 /* 2.2 planos da Tray — referência interna, atualizada pela leitura da página */
 const PLANOS=[
- {id:'start',nome:'Start',preco:'R$ 19/mês (anual)',faixa:1,produtos:'Produtos ilimitados',
-  indicado:'quem está começando e precisa profissionalizar a vitrine com investimento baixo',
-  limite:'Limite de vendas de R$ 10.000 por mês',
-  destaques:['Produtos ilimitados','Tarifa grátis nas vendas com Tray Pagamentos','SSL grátis','Live Shop nativa','Integração com marketplaces','Suporte via ticket','Relatórios avançados','1 usuário']},
- {id:'basico',nome:'Básico',preco:'R$ 49/mês (anual) · R$ 59/mês (mensal)',faixa:2,produtos:'Até 100 produtos',
+ {id:'start',nome:'Start',preco:'R$ 19/mês no plano anual',precoMensal:'',precoAnual:'R$ 19/mês (R$ 228/ano)',faixa:1,produtos:'Produtos ilimitados',
+  indicado:'quem está começando e quer profissionalizar a vitrine com investimento baixo',
+  limite:'Limite de vendas de R$ 10.000 por mês · disponível apenas no plano anual',
+  destaques:['Produtos ilimitados','Tarifa grátis nas vendas com Tray Pagamentos','Limite de vendas: R$ 10.000/mês','Zero taxas em marketplaces','SSL grátis','Live Shop nativa e grátis','Integração com marketplaces','Suporte via ticket','Relatórios avançados','Apenas Tray Envios','1 usuário']},
+ {id:'basico',nome:'Básico',preco:'R$ 49/mês anual · R$ 59/mês mensal',precoMensal:'R$ 59/mês',precoAnual:'R$ 49/mês',faixa:2,produtos:'Até 100 produtos',
   indicado:'quem já fez as primeiras vendas e quer profissionalizar a operação',
-  limite:'Sem limite de faturamento',
-  destaques:['Sem limite de vendas','Usuários ilimitados','Integração com marketplaces','SSL grátis','Recuperação de carrinho abandonado','Cupom e desconto progressivo','Suporte via ticket']},
- {id:'crescimento',nome:'Crescimento',preco:'R$ 85/mês (anual) · R$ 99/mês (mensal)',faixa:3,produtos:'Até 500 produtos',
+  limite:'Sem limite de vendas',
+  destaques:['100 produtos','Tarifa grátis com Tray Pagamentos','Todos os recursos base','Sem limite de vendas','Integração com marketplaces','SSL grátis','Usuários ilimitados','Recuperação de carrinho abandonado','Suporte via ticket']},
+ {id:'crescimento',nome:'Crescimento',preco:'R$ 85/mês anual · R$ 99/mês mensal',precoMensal:'R$ 99/mês',precoAnual:'R$ 85/mês',faixa:3,produtos:'Até 500 produtos',
   indicado:'lojas que já vendem todo mês e querem acelerar com mais autonomia',
-  limite:'Sem limite de faturamento · tarifa reduzida por venda',
-  destaques:['Tudo do Básico','Edição de HTML e CSS da loja','Inclusão de pedido manual','Relatórios avançados','Suporte via ticket e chat','Integração com marketplaces','Dropshipping AliExpress']},
- {id:'expansao',nome:'Expansão',preco:'R$ 189/mês (anual) · R$ 199/mês (mensal)',faixa:4,produtos:'Até 1.000 produtos',
+  limite:'Sem limite de vendas · tarifa reduzida por venda',
+  destaques:['500 produtos','Tudo do plano Básico','Edição de HTML e CSS da loja','Inclusão de pedido manual','Relatórios avançados','Suporte via ticket e chat','Integração com marketplaces','Dropshipping AliExpress']},
+ {id:'expansao',nome:'Expansão',preco:'R$ 189/mês anual · R$ 199/mês mensal',precoMensal:'R$ 199/mês',precoAnual:'R$ 189/mês',faixa:4,produtos:'Até 1.000 produtos',
   indicado:'operações estruturadas, com equipe e catálogo em crescimento',
-  limite:'Sem limite de faturamento · tarifa menor por venda',
-  destaques:['Tudo do Crescimento','Acesso e download do código-fonte','Live Shop nativa e grátis','Suporte por ticket, chat, telefone e WhatsApp','Apoio de implantação avançado','Módulo B2B disponível','R$ 200 de cashback em temas']},
- {id:'avancado',nome:'Avançado',preco:'R$ 399/mês (anual) · R$ 449/mês (mensal)',faixa:5,produtos:'Até 2.500 produtos',
+  limite:'Sem limite de vendas · tarifa menor por venda',
+  destaques:['1.000 produtos','Tudo do plano Crescimento','Acesso e download do código-fonte (HTML/CSS/JS)','Live Shop nativa e grátis','Suporte por ticket, chat, telefone e WhatsApp','R$ 200 de cashback em temas','Integração com marketplaces']},
+ {id:'avancado',nome:'Avançado',preco:'R$ 399/mês anual · R$ 449/mês mensal',precoMensal:'R$ 449/mês',precoAnual:'R$ 399/mês',faixa:5,produtos:'Até 2.500 produtos',
   indicado:'operações que precisam de escala, multiestoque e menor tarifa por venda',
-  limite:'Sem limite de faturamento · menor tarifa por venda da tabela padrão',
-  destaques:['Tudo do Expansão','Módulo Multi Estoques grátis','Clube de assinatura','Suporte completo com WhatsApp','Apoio de implantação premium','R$ 200 de cashback em temas']},
- {id:'ultra',nome:'Ultra',preco:'Sob consulta',faixa:6,produtos:'Produtos ilimitados',
+  limite:'Sem limite de vendas · menor tarifa por venda da tabela padrão',
+  destaques:['2.500 produtos','Tudo do plano Expansão','Módulo Multi Estoques grátis','Clube de assinatura','Suporte por ticket, chat, telefone e WhatsApp','R$ 200 de cashback em temas']},
+ {id:'ultra',nome:'Ultra',preco:'Sob consulta',precoMensal:'Sob consulta',precoAnual:'Sob consulta',faixa:6,produtos:'Produtos ilimitados',
   indicado:'operações de grande porte que precisam de infraestrutura dedicada e time de apoio',
   limite:'Condições comerciais sob consulta',
-  destaques:['Todos os recursos da plataforma','Infraestrutura dedicada','Módulo B2B e atacado grátis','Módulo Multi Estoques grátis','Especialista de e-commerce dedicado','Migração e implantação assistidas','Atendimento prioritário']}
+  destaques:['Produtos ilimitados','Todos os recursos da plataforma','Infraestrutura dedicada','Módulo B2B e atacado grátis','Módulo Multi Estoques grátis','Especialista de e-commerce dedicado','Migração e implantação assistidas','Atendimento prioritário']}
 ];
 
 /* 2.3 recursos da Tray usados no discurso: o que é, por que importa */
@@ -553,8 +574,17 @@ async function fetchJson(url,timeout=9000){
   catch(e){ clearTimeout(t); return null; }
 }
 async function sondar(origin){
-  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false};
+  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false,sitemapsLidos:0,sitemapsTotais:0,parcial:false};
   if(!origin) return out;
+  const ehProduto=l=>/\/(produto|produtos|product|products)\//i.test(l)||/\/p\/[^/]+/i.test(l);
+  const ehCategoria=l=>/\/(categoria|categorias|category|categories|collections?|departamento|linha|colecao|cole[çc][ãa]o|marca|marcas)\//i.test(l);
+  const contar=(xml)=>{
+    const locs=[...(xml||'').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
+    out.urls+=locs.length;
+    out.produtos+=locs.filter(ehProduto).length;
+    out.categorias+=locs.filter(ehCategoria).length;
+    if(locs.some(l=>/\/blog|\/noticias|\/dicas/i.test(l))) out.blog=true;
+  };
   let sitemapUrl=origin+'/sitemap.xml';
   try{
     const rb=await fetchText(origin+'/robots.txt',9000);
@@ -564,16 +594,22 @@ async function sondar(origin){
   try{
     let xml=await fetchText(sitemapUrl,12000);
     if(/<sitemapindex/i.test(xml)){
-      const locs=[...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
-      out.sitemap=locs.length>0; out.sitemapUrl=sitemapUrl;
-      const alvo=locs.find(l=>/produt|product/i.test(l))||locs[0];
-      if(alvo){ try{ xml=await fetchText(alvo,12000); }catch(e){ xml=''; } }
-    } else if(/<urlset/i.test(xml)){ out.sitemap=true; out.sitemapUrl=sitemapUrl; }
-    const locs=[...(xml||'').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
-    out.urls=locs.length;
-    out.produtos=locs.filter(l=>/\/(produto|produtos|product|products|p)\//i.test(l)).length;
-    out.categorias=locs.filter(l=>/\/(categoria|categorias|category|collections?|departamento)\//i.test(l)).length;
-    out.blog=locs.some(l=>/\/blog|\/noticias|\/dicas/i.test(l));
+      out.sitemap=true; out.sitemapUrl=sitemapUrl;
+      let filhos=[...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
+      // priorizar sitemaps de produto e categoria; ignorar imagens
+      filhos=filhos.filter(l=>!/image|imagem/i.test(l));
+      const prio=filhos.filter(l=>/produt|product|categor|collection|departamento/i.test(l));
+      const resto=filhos.filter(l=>!prio.includes(l));
+      const ordem=[...prio,...resto];
+      out.sitemapsTotais=ordem.length;
+      const LIMITE=12; // teto de leituras para não estourar o tempo
+      for(const f of ordem.slice(0,LIMITE)){
+        try{ const cx=await fetchText(f,11000); contar(cx); out.sitemapsLidos++; }catch(e){}
+      }
+      out.parcial = ordem.length>LIMITE;
+    } else if(/<urlset/i.test(xml)){
+      out.sitemap=true; out.sitemapUrl=sitemapUrl; contar(xml); out.sitemapsLidos=1; out.sitemapsTotais=1;
+    }
   }catch(e){}
   return out;
 }
@@ -670,14 +706,42 @@ function precos(dom,html){
   const s=pool.slice().sort((a,b)=>a-b);
   return {n:pool.length,min:s[0],max:s[s.length-1],mediana:s[Math.floor(s.length/2)],ok:true,fonte};
 }
-function detectarSegmento(texto){
-  let best={seg:SEGMENTOS[SEGMENTOS.length-1],hits:0};
+/* termos de detecção por segmento — precisos, com fronteira, sem substrings genéricas */
+const SEG_DET={
+ moda:['moda feminina','moda masculina','moda praia','moda [íi]ntima','vestidos?','camisetas?','camisas?','\\bcal[çc]as?\\b','jeans','blusas?','\\bsaias?\\b','lingerie','\\bcal[çc]ados?\\b','t[êe]nis','sapatos?','sand[áa]lias?','bolsas?','jaquetas?','moletom','bon[ée]s?','biqu[íi]ni','sutiã','cropped'],
+ beleza:['cosm[ée]ticos?','maquiagem','perfumes?','perfumaria','skincare','skin care','dermocosm','protetor solar','s[ée]rum','hidratante corporal','batom','esmaltes?','shampoo','condicionador','\\bmakeup\\b'],
+ joias:['joias?','semijoias?','folheados?','prata 925','ouro 18k','alian[çc]as?','pingentes?','colares?','brincos?','pulseiras?','an[ée]is','rel[óo]gios?'],
+ eletronicos:['eletr[ôo]nicos?','notebooks?','smartphones?','\\bcelular','fone de ouvido','headset','carregador','placa de v[íi]deo','inform[áa]tica','gamer','console','mouse gamer','teclado mec'],
+ casa:['decora[çc][ãa]o','m[óo]veis?','\\bsof[áa]','poltronas?','lumin[áa]rias?','tapetes?','cortinas?','cama mesa e banho','enxoval','utilidades dom[ée]sticas','organizador'],
+ alimentos:['alimentos?','bebidas?','\\bvinhos?','cervejas?','\\bcaf[ée]s?','chocolates?','gourmet','mercearia','hortifruti','\\bdoces?\\b','suplemento alimentar'],
+ pet:['pet shop','petshop','ra[çc][ãa]o','coleiras?','aqu[áa]rio','veterin[áa]ri','areia higi[êe]nica','petiscos?'],
+ esporte:['suplementos?','\\bwhey','academia','fitness','muscula[çc][ãa]o','bicicletas?','ciclismo','\\bcorrida\\b','camping','\\bpesca\\b','crossfit'],
+ infantil:['beb[êe]s?','\\binfantil\\b','enxoval de beb[êe]','fraldas?','carrinho de beb[êe]','ber[çc]o','brinquedos?','maternidade'],
+ automotivo:['automotivos?','autope[çc]as?','\\bpneus?\\b','[óo]leo lubrificante','far[óo]l','som automotivo','pe[çc]as para carro','pe[çc]as para moto','acess[óo]rios automotivos'],
+ papelaria:['papelaria','cadernos?','canetas?','material escolar','planner','adesivos?','artigos de festa'],
+ ferramentas:['ferramentas?','furadeira','parafusos?','material de constru[çc][ãa]o','el[ée]trica','hidr[áa]ulica','tintas?']
+};
+function detectarSegmento(sig){
+  // sig pode ser string (compat) ou {forte, corpo}: 'forte' = título+descrição+categorias (peso 3)
+  const forte = typeof sig==='object' ? norm(sig.forte||'') : '';
+  const corpo = typeof sig==='object' ? norm(sig.corpo||'') : norm(sig||'');
+  const geral = SEGMENTOS.find(s=>s.id==='geral')||SEGMENTOS[SEGMENTOS.length-1];
+  let best={seg:geral,score:0,distintos:0,termos:[]};
   SEGMENTOS.forEach(s=>{
     if(s.id==='geral') return;
-    const hits=(texto.match(new RegExp(s.rx.source,'gi'))||[]).length;
-    if(hits>best.hits) best={seg:s,hits};
+    const termos=SEG_DET[s.id]||[];
+    let score=0, distintos=0, achou=[];
+    termos.forEach(t=>{
+      const r=new RegExp(t,'i');
+      if(forte&&r.test(forte)){ score+=3; distintos++; achou.push(t); }
+      else if(r.test(corpo)){ score+=1; distintos++; achou.push(t); }
+    });
+    if(score>best.score||(score===best.score&&distintos>best.distintos)) best={seg:s,score,distintos,termos:achou};
   });
-  return {seg:best.seg,confianca:best.hits>=6?'alta':best.hits>=2?'média':'baixa',hits:best.hits};
+  if(best.score<2) return {seg:geral,confianca:'baixa',score:best.score,evidencia:''};
+  const conf = best.score>=9?'alta':best.score>=4?'média':'baixa';
+  const ev = best.termos.slice(0,4).map(t=>t.replace(/\\+b|\\\\|[?()]/g,'').replace(/\[.*?\]/g,'')).join(', ');
+  return {seg:best.seg,confianca:conf,score:best.score,evidencia:ev};
 }
 function analisarLoja(html,url,extras){
   const dom=new DOMParser().parseFromString(html,'text/html');
@@ -737,7 +801,10 @@ function analisarLoja(html,url,extras){
     sitemap:!!(extras&&extras.sitemap),
     produtosEstimados:(extras&&extras.produtos)||0,
     categoriasEstimadas:(extras&&extras.categorias)||0,
-    urlsSitemap:(extras&&extras.urls)||0
+    urlsSitemap:(extras&&extras.urls)||0,
+    sitemapsLidos:(extras&&extras.sitemapsLidos)||0,
+    sitemapsTotais:(extras&&extras.sitemapsTotais)||0,
+    parcial:!!(extras&&extras.parcial)
   };
   if(!L.seo.produtosEstimados){
     const blocos=(html.match(/class="[^"]*(product|produto)[^"]*"/gi)||[]).length;
@@ -749,7 +816,9 @@ function analisarLoja(html,url,extras){
   L.mkt={analytics:acharSinais(html,'analytics'),atendimento:acharSinais(html,'atendimento'),prova:acharSinais(html,'prova'),canais:acharSinais(html,'canais')};
   L.social=detectarSocial(html,dom,L);
   /* perfil do negócio */
-  const seg=detectarSegmento(texto.slice(0,20000)+' '+titulo+' '+meta('description'));
+  const catsTxt=[...dom.querySelectorAll('nav a,header a,[class*="menu"] a,[class*="categor"] a,[class*="breadcrumb"] a,[class*="departamento"] a')].map(a=>(a.textContent||'').replace(/\s+/g,' ').trim()).filter(t=>t.length>1&&t.length<40).join(' ');
+  const kw=meta('keywords')||'';
+  const seg=detectarSegmento({forte:titulo+' '+meta('description')+' '+meta('og:title')+' '+kw+' '+catsTxt, corpo:texto.slice(0,20000)});
   const pr=precos(dom,html);
   const prods=L.seo.produtosEstimados;
   let porte='pequena', porteTxt='';
@@ -762,8 +831,8 @@ function analisarLoja(html,url,extras){
   L.perfil={segmento:seg.seg,segConf:seg.confianca,precos:pr,produtos:prods,porte,porteTxt,
     ticket: pr.ok? (pr.mediana<80?'baixo':pr.mediana<300?'médio':pr.mediana<1000?'alto':'muito alto'):'não estimado'};
   /* recursos essenciais do segmento */
-  const lista=RECURSOS_BASE.concat(L.perfil.segmento.extras||[]);
-  L.recursos=lista.map(r=>({nome:r.n,tray:r.tray,porque:r.porque,
+  const lista=RECURSOS_BASE.map(r=>Object.assign({_seg:false},r)).concat((L.perfil.segmento.extras||[]).map(r=>Object.assign({_seg:true},r)));
+  L.recursos=lista.map(r=>({nome:r.n,tray:r.tray,porque:r.porque,seg:!!r._seg,
     estado: !r.rx? 'checar' : (r.rx.test(html)?'sim':'nao')}));
   /* placar */
   L.score=montarScore(L);
@@ -905,40 +974,11 @@ function sugerirPlano(L){
 }
 function analisarPlano(html,url,planoId){
   const base=PLANOS.find(p=>p.id===planoId)||PLANOS[2];
-  const out={id:base.id,nome:base.nome,preco:base.preco,precoFonte:'referência interna',produtos:base.produtos,
-    limite:base.limite,indicado:base.indicado,destaques:base.destaques.slice(),url:url||'',lido:false};
-  if(!html) return out;
-  try{
-    const dom=new DOMParser().parseFromString(html,'text/html');
-    const alvo=norm(base.nome);
-    let bloco=null;
-    const cands=[...dom.querySelectorAll('h1,h2,h3,h4,h5,div,span,strong,p')].filter(el=>norm(el.textContent)===alvo&&el.children.length<=1);
-    for(const el of cands){
-      let node=el;
-      for(let i=0;i<7&&node;i++){
-        node=node.parentElement;
-        if(!node) break;
-        const t=node.textContent||'';
-        if(node.querySelectorAll('li').length>=3&&/R\$/.test(t)&&t.length<4000){ bloco=node; break; }
-      }
-      if(bloco) break;
-    }
-    if(bloco){
-      const t=bloco.textContent.replace(/\s+/g,' ');
-      const mp=t.match(/R\$\s?[\d.]+(,\d{2})?\s*\/?\s*m[êe]s/i);
-      if(mp){ out.preco=mp[0].replace(/\s+/g,' ').trim(); out.precoFonte='lido da página'; }
-      const itens=[...bloco.querySelectorAll('li')].map(li=>li.textContent.replace(/\s+/g,' ').trim())
-        .filter(x=>x.length>=3&&x.length<=95);
-      const vistos=new Set(); const limpos=[];
-      itens.forEach(x=>{ const k=norm(x); if(k&&!vistos.has(k)){ vistos.add(k); limpos.push(x); } });
-      if(limpos.length>=3){ out.destaques=limpos.slice(0,16); out.lido=true; }
-      const mprod=t.match(/(produtos ilimitados|ilimitados|\d[\d.]*\s*produtos)/i);
-      if(mprod) out.produtos=cap(mprod[0].toLowerCase());
-      const mlim=t.match(/limite de vendas[^.]{0,40}/i);
-      if(mlim) out.limite=cap(mlim[0].trim());
-    }
-  }catch(e){}
-  return out;
+  // Preço e destaques vêm da tabela oficial da Tray (verificada), não da leitura ao vivo:
+  // a página de planos mistura preço mensal, anual e tarifas por venda, o que gerava valor errado.
+  return {id:base.id,nome:base.nome,preco:base.preco,precoMensal:base.precoMensal,precoAnual:base.precoAnual,
+    precoFonte:'tabela oficial da Tray',produtos:base.produtos,limite:base.limite,indicado:base.indicado,
+    destaques:base.destaques.slice(),url:url||'',lido:true};
 }
 function recursosDoPlano(plano,L){
   const R=TRAY_RECURSOS, add=[], usados=new Set();
@@ -957,7 +997,9 @@ function recursosDoPlano(plano,L){
   if(['avancado','ultra'].includes(plano.id)&&/beleza|pet|alimentos/.test(L.perfil.segmento.id)) put('assinatura');
   if(plano.id==='ultra') put('b2b');
   if(['avancado','ultra'].includes(plano.id)) put('multiestoque');
-  put('apps'); put('relatorios'); put('app'); put('liveshop'); put('escola');
+  if(L.perfil.produtos>=300||L.perfil.porte!=='pequena') put('relatorios');
+  if(!L.mkt.atendimento.find(a=>/WhatsApp/i.test(a.nome)&&a.ok)) put('whatsapp');
+  put('apps');
   return add.slice(0,10);
 }
 function frase1(t){ const s=String(t||'').split('. ')[0].replace(/\.$/,''); return s.length>96?s.slice(0,93).replace(/\s\S*$/,'')+'…':s; }
@@ -968,6 +1010,16 @@ function montarDores(L,plano){
     const recs=fixKeys.map(k=>TRAY_RECURSOS[k]).filter(Boolean);
     dores.push({titulo:t,curto:curto,evidencia:ev,solucao:fixTexto,recursos:recs.map(r=>r.nome)});
   };
+  // dor específica do segmento: recursos que uma loja daquele ramo precisa e não tem
+  const segFalta=(L.recursos||[]).filter(r=>r.seg&&r.estado==='nao');
+  if(segFalta.length){
+    const nomes=segFalta.slice(0,3).map(r=>lower1(r.nome));
+    dores.push({titulo:'Faltam recursos que uma loja de '+L.perfil.segmento.nome.toLowerCase()+' precisa',
+      curto:'faltam recursos que o segmento de '+L.perfil.segmento.nome.toLowerCase()+' exige',
+      evidencia:'Não localizamos na loja: '+listPt(nomes)+' — itens que pesam justamente em '+L.perfil.segmento.nome.toLowerCase()+'.',
+      solucao:'Na Tray esses recursos são nativos ou instalados em minutos pela loja de aplicativos, sem desenvolvimento sob medida — a loja passa a ter o que o segmento espera sem depender de agência.',
+      recursos:segFalta.slice(0,3).map(r=>r.nome)});
+  }
   (L.plataforma.dores||[]).slice(0,2).forEach(d=>{
     dores.push({titulo:frase1(d),curto:lower1(frase1(d).replace(/^(A\s+)?[Ll]oja\s+/,'')),
       evidencia:'Plataforma identificada no código da loja: '+L.plataforma.nome+' (confiança '+L.plataforma.confianca+').'+(frase1(d)===d?'':' '+d),
@@ -1010,6 +1062,36 @@ function montarDores(L,plano){
     ['whatsapp'],'O WhatsApp Business integrado mantém a conversa ligada ao pedido, sem perder o histórico e sem depender da memória de quem atende.');
   const vistos=new Set();
   return dores.filter(d=>{ const k=norm(d.titulo); if(vistos.has(k)) return false; vistos.add(k); return true; }).slice(0,5);
+}
+function montarBeneficios(L,plano,dores){
+  const loja=L.nomeLoja||'esta loja', seg=(L.perfil.segmento.nome||'varejo').toLowerCase();
+  const out=[]; const vistos=new Set();
+  const add=(nome,porque)=>{ const k=norm(nome); if(nome&&porque&&!vistos.has(k)){ vistos.add(k); out.push({nome,porque}); } };
+  // 1) LIDERA com os recursos do SEGMENTO ausentes — é o que muda de loja para loja
+  (L.recursos||[]).filter(r=>r.seg&&r.estado==='nao').slice(0,4).forEach(r=>{
+    add(r.nome,'Específico de '+seg+' e não encontrado na '+loja+' hoje: '+lower1(r.porque));
+  });
+  // 2) por catálogo e porte reais desta loja
+  if(L.perfil.produtos>=500) add(TRAY_RECURSOS.relatorios.nome,'Com cerca de '+L.perfil.produtos+' produtos, a '+loja+' precisa enxergar o que gira e o que encalha — os relatórios mostram isso por produto, categoria e canal.');
+  if(L.perfil.produtos>=300&&!L.exp.filtros) add(TRAY_RECURSOS.temas.nome,'Catálogo de ~'+L.perfil.produtos+' itens sem filtro faz o cliente desistir; o tema já traz filtro por categoria, atributo e faixa de preço.');
+  if(L.perfil.precos&&L.perfil.precos.ok&&L.perfil.precos.mediana>=250) add(TRAY_RECURSOS.checkout.nome,'Ticket aparente de ~'+brl(L.perfil.precos.mediana)+' na '+loja+': quanto maior o valor, mais o cliente desiste num checkout que joga ele para fora — o transparente segura a venda dentro da loja.');
+  // 2b) essenciais genéricos que a loja também não tem
+  (L.recursos||[]).filter(r=>!r.seg&&r.estado==='nao').slice(0,3).forEach(r=>{
+    add(r.nome,'Essencial de e-commerce ausente na '+loja+': '+lower1(r.porque));
+  });
+  // 3) a partir das dores reais lidas nesta loja (sinais específicos)
+  (dores||[]).forEach(d=>{
+    const rec=(d.recursos&&d.recursos[0])||'';
+    if(!rec) return;
+    const ev=d.evidencia?(' '+frase1(d.evidencia)+'.'):'';
+    add(rec,'Ataca uma dor concreta da '+loja+': '+lower1(d.curto||frase1(d.titulo))+'.'+ev);
+  });
+  // 4) diferencial de plataforma (fica por último — é o que mais se repete entre lojas do mesmo sistema)
+  if(L.plataforma.id==='desconhecida'||['woocommerce','wix','magento','prestashop','opencart'].includes(L.plataforma.id))
+    add(TRAY_RECURSOS.suporte.nome,'A '+loja+' hoje roda em '+L.plataforma.nome+', onde o suporte costuma depender de agência ou fórum; na Tray há atendimento humano em português quando a loja para.');
+  // 5) preencher com destaques do plano se ainda estiver curto (ainda citando a loja)
+  if(out.length<4){ (plano.destaques||[]).forEach(d=> add(d,'Já incluído no plano '+plano.nome+', reforça a operação da '+loja+' sem somar custo de app de terceiro.')); }
+  return out.slice(0,8);
 }
 function montarArgumentos(L,plano,dores){
   const seg=L.perfil.segmento.nome.toLowerCase();
@@ -1187,10 +1269,22 @@ function render(){
    (H.cdn?'<div class="ev">Um CDN/proxy como '+esc(H.cdn)+' pode mascarar o servidor real de origem — o provedor de hospedagem em si pode estar atrás dele.</div>':'')+'</div>'+
    '<div class="card"><div class="ck">O que isso costuma significar</div><div class="blk"><ul>'+(L.plataforma.dores||[]).map(d=>'<li><span class="m warnm">!</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div></div></div></div>');
 
+  /* 6. perfil */
+  const p=L.perfil;
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">2 · Perfil do negócio</span><h2>Com quem você está falando</h2></div><div class="cards c2">'+
+   '<div class="card"><div class="ck">Segmento e ticket</div><h4>'+esc(p.segmento.nome)+'</h4><div class="kv" style="margin-top:10px">'+
+   '<div class="line"><span class="k">Confiança do segmento</span><span class="v">'+esc(p.segConf)+'</span></div>'+
+   '<div class="line"><span class="k">Faixa de preço na vitrine</span><span class="v">'+(p.precos.ok?brl(p.precos.min)+' a '+brl(p.precos.max):'não identificada')+'</span></div>'+
+   '<div class="line"><span class="k">Ticket aparente</span><span class="v">'+(p.precos.ok?brl(p.precos.mediana)+' · '+p.ticket:'não estimado')+'</span></div></div>'+
+   '<div class="ev">O ticket é a mediana dos preços exibidos na página inicial. Use como ordem de grandeza para a conta de venda perdida, não como número oficial.</div></div>'+
+   '<div class="card"><div class="ck">Porte da operação</div><h4>'+cap(p.porte)+'</h4><p style="font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.55">'+esc(p.porteTxt)+'</p>'+
+   '<div class="blk"><div class="h">Perfil típico do segmento</div><ul><li><span class="m chk">✓</span><span>'+esc(p.segmento.perfil)+'</span></li></ul></div></div></div></div>');
+
+
   /* 2. experiência */
   const e=L.exp;
   const expChecks=[{nome:'Busca na loja',ok:e.busca},{nome:'Filtros de categoria',ok:e.filtros},{nome:'Menu mobile',ok:e.menuMobile},{nome:'Menu com submenu',ok:e.submenu},{nome:'Carrinho lateral',ok:e.carrinhoLateral},{nome:'Área do cliente',ok:e.contaCliente}];
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">2 · Experiência de compra</span><h2>Navegação, checkout, pagamento e frete</h2></div><p class="sec-sub">Sinais lidos da página inicial. O que depende de login ou do painel do lojista fica para confirmar ao vivo.</p><div class="cards c3">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">3 · Experiência de compra</span><h2>Navegação, checkout, pagamento e frete</h2></div><p class="sec-sub">Sinais lidos da página inicial. O que depende de login ou do painel do lojista fica para confirmar ao vivo.</p><div class="cards c3">'+
    '<div class="card"><div class="ck">Navegação</div>'+chipsHtml(expChecks)+
    (e.itensMenu.length?'<div class="blk"><div class="h">Itens de menu encontrados</div><div class="chips">'+e.itensMenu.map(i=>'<span class="chip">'+esc(i)+'</span>').join('')+'</div></div>':'')+'</div>'+
    '<div class="card"><div class="ck">Pagamento</div>'+chipsHtml(e.pagamentos)+
@@ -1199,7 +1293,7 @@ function render(){
 
   /* 3. performance */
   const t=L.tec;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">3 · Performance e técnico</span><h2>Como a loja carrega</h2></div><p class="sec-sub">Estimativas lidas do código da página inicial — servem para impressão geral, não substituem um teste de velocidade.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">4 · Performance e técnico</span><h2>Como a loja carrega</h2></div><p class="sec-sub">Estimativas lidas do código da página inicial — servem para impressão geral, não substituem um teste de velocidade.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Medidas da página inicial</div><div class="metrics">'+
    '<div class="metric"><b>'+t.pesoKb+' KB</b><span>PESO DO HTML</span></div>'+
    '<div class="metric"><b>'+t.scripts+'</b><span>SCRIPTS</span></div>'+
@@ -1211,22 +1305,26 @@ function render(){
 
   /* 4. SEO */
   const s=L.seo;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">4 · SEO e conteúdo</span><h2>Como a loja é encontrada</h2></div><p class="sec-sub">Base do tráfego que não depende de anúncio pago.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · SEO e conteúdo</span><h2>Como a loja é encontrada</h2></div><p class="sec-sub">Base do tráfego que não depende de anúncio pago.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Itens de SEO</div>'+chipsHtml([{nome:'Título da página adequado',ok:s.tituloOk},{nome:'Meta descrição',ok:s.descricaoOk},{nome:'Canonical',ok:s.canonical},{nome:'Tags de compartilhamento (OG)',ok:s.og},{nome:'H1 único',ok:s.h1Ok},{nome:'URLs amigáveis',ok:s.urlsAmigaveis},{nome:'Dados estruturados',ok:s.schema.length>0},{nome:'robots.txt',ok:s.robots},{nome:'Sitemap',ok:s.sitemap},{nome:'Blog / conteúdo',ok:s.blog}])+
    (s.titulo?'<div class="ev"><b>Título atual:</b> '+esc(s.titulo.slice(0,120))+'</div>':'')+'</div>'+
-   '<div class="card"><div class="ck">Volume estimado</div><div class="kv">'+
-   '<div class="line"><span class="k">Produtos</span><span class="v">'+(s.produtosEstimados||'não estimado')+(s.produtosFonte==='sitemap'?' (sitemap)':' (home)')+'</span></div>'+
-   '<div class="line"><span class="k">Categorias</span><span class="v">'+(s.categoriasEstimadas||'não estimado')+'</span></div>'+
+   '<div class="card"><div class="ck">Catálogo (contagem real)</div><div class="kv">'+
+   '<div class="line"><span class="k">Produtos'+(s.produtosFonte==='sitemap'?'':' (só home)')+'</span><span class="v">'+(s.produtosEstimados||'não estimado')+'</span></div>'+
+   '<div class="line"><span class="k">Categorias / coleções</span><span class="v">'+(s.categoriasEstimadas||'não estimado')+'</span></div>'+
    '<div class="line"><span class="k">Endereços no sitemap</span><span class="v">'+(s.urlsSitemap||'—')+'</span></div>'+
+   '<div class="line"><span class="k">Sitemaps lidos</span><span class="v">'+(s.sitemapsTotais?(s.sitemapsLidos+' de '+s.sitemapsTotais):'—')+'</span></div>'+
    '<div class="line"><span class="k">Dados estruturados</span><span class="v">'+(s.schema.length?esc(s.schema.join(', ')):'nenhum')+'</span></div></div>'+
-   '<div class="ev">Número de produtos é a base para indicar o plano certo. Confirme com o lojista: catálogo publicado nem sempre é o catálogo real.</div></div></div></div>');
+   '<div class="ev">'+(s.produtosFonte==='sitemap'?('Produtos e categorias somados de '+s.sitemapsLidos+' sitemap(s).'+(s.parcial?' Há mais sitemaps além do teto lido — o total real pode ser maior.':'')):'Sitemap não pôde ser lido; os números vêm só da página inicial e subestimam o catálogo.')+' Confirme o catálogo real com o lojista.</div></div></div></div>');
+
+  /* 5b. tráfego por canal (dado real, não inventado) */
+  h.push(trafegoSectionHtml(L));
 
   /* 5. marketing */
   const m=L.mkt;
   const temGTM=m.analytics.some(x=>x.nome==='Google Tag Manager'&&x.ok);
   const midiaAtiva=m.analytics.filter(x=>x.ok);
   const evList=midiaAtiva.filter(x=>x.ev).slice(0,4).map(x=>esc(x.nome)+': '+esc(x.ev)).join(' · ');
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">6 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Medição e mídia ('+midiaAtiva.length+' ativas)</div>'+chipsHtml(m.analytics)+
    (evList?'<div class="ev"><b>Evidências encontradas:</b> '+evList+'</div>':'<div class="ev">Nenhuma tag de medição carregada diretamente na home.</div>')+
    (temGTM?'<div class="ev" style="border-color:var(--gold-line);background:var(--gold-soft);color:#8A6A1E"><b>Observação:</b> o Google Tag Manager está presente. Pixels e tags de conversão podem ser disparados por dentro dele e não aparecer no código — confirme no gerenciador do lojista antes de afirmar que faltam.</div>':'')+'</div>'+
@@ -1234,43 +1332,35 @@ function render(){
    '<div class="card"><div class="ck">Prova social e confiança</div>'+chipsHtml(m.prova)+'</div>'+
    '<div class="card"><div class="ck">Canais e marketplaces</div>'+chipsHtml(m.canais)+'</div></div></div>');
 
-  /* 6. perfil */
-  const p=L.perfil;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">6 · Perfil do negócio</span><h2>Com quem você está falando</h2></div><div class="cards c2">'+
-   '<div class="card"><div class="ck">Segmento e ticket</div><h4>'+esc(p.segmento.nome)+'</h4><div class="kv" style="margin-top:10px">'+
-   '<div class="line"><span class="k">Confiança do segmento</span><span class="v">'+esc(p.segConf)+'</span></div>'+
-   '<div class="line"><span class="k">Faixa de preço na vitrine</span><span class="v">'+(p.precos.ok?brl(p.precos.min)+' a '+brl(p.precos.max):'não identificada')+'</span></div>'+
-   '<div class="line"><span class="k">Ticket aparente</span><span class="v">'+(p.precos.ok?brl(p.precos.mediana)+' · '+p.ticket:'não estimado')+'</span></div></div>'+
-   '<div class="ev">O ticket é a mediana dos preços exibidos na página inicial. Use como ordem de grandeza para a conta de venda perdida, não como número oficial.</div></div>'+
-   '<div class="card"><div class="ck">Porte da operação</div><h4>'+cap(p.porte)+'</h4><p style="font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.55">'+esc(p.porteTxt)+'</p>'+
-   '<div class="blk"><div class="h">Perfil típico do segmento</div><ul><li><span class="m chk">✓</span><span>'+esc(p.segmento.perfil)+'</span></li></ul></div></div></div></div>');
-
   /* 7. redes sociais e social commerce */
   h.push(socialSectionHtml(L));
 
   /* 8. recursos do segmento */
   const rec=L.recursos;
   const tag=st=>st==='sim'?'<span class="tag-s y">Usa hoje</span>':st==='nao'?'<span class="tag-s n">Não usa</span>':'<span class="tag-s w">Confirmar</span>';
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2></div><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
+  const recNao=rec.filter(r=>r.estado==='nao').length, recSim=rec.filter(r=>r.estado==='sim').length, recChk=rec.filter(r=>r.estado==='checar').length;
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2><span class="coll-peek">'+recNao+' faltando · '+recSim+' em uso · '+recChk+' a confirmar — toque para abrir</span><span class="chev">⌄</span></div>'+
+   '<div class="coll-body" hidden><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
    '<div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Recurso</th><th class="mid">Na loja hoje</th><th>Na Tray</th></tr></thead><tbody>'+
    rec.map(r=>'<tr><td class="rec"><b>'+esc(r.nome)+'</b><span>'+esc(r.porque)+'</span></td><td class="mk">'+tag(r.estado)+'</td><td>'+esc(r.tray)+'</td></tr>').join('')+
    '</tbody></table></div></div>'+
-   '<p class="sec-sub" style="margin-top:12px">'+rec.filter(r=>r.estado==='nao').length+' recursos essenciais não foram encontrados na loja · '+rec.filter(r=>r.estado==='sim').length+' já estão em uso · '+rec.filter(r=>r.estado==='checar').length+' a confirmar.</p></div>');
+   '<p class="sec-sub" style="margin-top:12px">'+recNao+' recursos essenciais não foram encontrados na loja · '+recSim+' já estão em uso · '+recChk+' a confirmar.</p></div></div>');
 
   /* 9. dores */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2></div><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
-   D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div>');
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev">⌄</span></div>'+
+   '<div class="coll-body" hidden><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
+   D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div></div>');
 
   /* 10. plano */
-  const P2=state.plano, recsPlano=recursosDoPlano(P2,L);
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+(P2.lido?'Dados lidos da página do plano.':'Dados da base interna — confirme os valores vigentes na página da Tray.')+'</p>'+
+  const P2=state.plano, recsPlano=recursosDoPlano(P2,L), benef=montarBeneficios(L,P2,D);
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+'Preços conforme a tabela oficial da Tray — confira sempre a vigente antes de fechar.'+'</p>'+
    '<div class="plan"><div class="lab">Plano recomendado</div><h3>'+esc(P2.nome)+'</h3><div class="price">'+esc(P2.preco)+' <small>· '+esc(P2.precoFonte)+'</small></div>'+
    '<p class="sub">Indicado para '+esc(P2.indicado)+'. '+esc(P2.produtos)+'. '+esc(P2.limite||'')+'</p>'+
    '<div class="plan-grid"><div class="plan-box"><div class="h">Recursos em destaque do plano</div><ul>'+P2.destaques.slice(0,10).map(d=>'<li><span>✓</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div>'+
    '<div class="plan-box"><div class="h">O que muda na operação dele</div><ul>'+recsPlano.slice(0,8).map(r=>'<li><span>→</span><span>'+esc(r.nome)+'</span></li>').join('')+'</ul></div></div>'+
    (P2.url?'<div class="plan-src">Fonte: '+esc(P2.url)+'</div>':'')+'</div>'+
-   '<div class="section" style="margin-top:18px"><div class="sec-title"><span class="kicker">Benefícios</span><h2>Por que cada recurso importa para esta loja</h2></div><div class="benef">'+
-   recsPlano.map(r=>'<div class="b"><h4>'+esc(r.nome)+'</h4><p>'+esc(r.porque)+'</p></div>').join('')+'</div></div></div>');
+   '<div class="section" style="margin-top:18px"><div class="sec-title"><span class="kicker">Benefícios</span><h2>Por que cada recurso importa para esta loja</h2></div><p class="sec-sub">Cada item liga um recurso da Tray a uma evidência real desta loja — não é lista genérica.</p><div class="benef">'+
+   benef.map(r=>'<div class="b"><h4>'+esc(r.nome)+'</h4><p>'+esc(r.porque)+'</p></div>').join('')+'</div></div></div>');
 
   /* 11. argumentos */
   h.push('<div class="section"><div class="sec-title"><span class="kicker">11 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
@@ -1288,11 +1378,44 @@ function render(){
   h.push('<div class="section"><div class="concl"><div class="tag">Conclusão</div><h3>Indicação: plano '+esc(P2.nome)+'</h3><p>'+esc(concl)+'</p></div>'+
    '<div class="final-actions"><button class="btn btn-primary" id="pdf-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>Gerar PDF para o cliente</button>'+
    '<button class="btn btn-ghost" id="copy-summary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar resumo</button></div></div>');
-  state.concl=concl; state.recsPlano=recsPlano;
+  state.concl=concl; state.recsPlano=recsPlano; state.benef=benef;
   resultsEl.innerHTML=h.join(''); resultsEl.className='on'; wireResults();
 }
 function fSeg(n){ if(n==null) return '—'; if(n>=1000000) return (n/1000000).toFixed(n%1000000?1:0).replace('.',',')+' mi'; if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.',',')+' mil'; return String(n); }
 const SOCIAL_META={instagram:['Instagram','#C13584'],tiktok:['TikTok','#111'],facebook:['Facebook','#1877F2'],pinterest:['Pinterest','#BD081C'],youtube:['YouTube','#FF0000']};
+function trafegoSectionHtml(L){
+  const host=L.host||'';
+  const T=(L.trafego||(L.trafego={organico:'',social:'',pago:''}));
+  const paidPix=(L.mkt.analytics||[]).filter(a=>a.ok&&/Meta Pixel|Google Ads|TikTok Pixel|Pinterest/.test(a.nome)).map(a=>a.nome);
+  const seoScore=((L.score&&L.score.eixos.find(e=>/SEO/.test(e.nome)))||{}).valor||0;
+  const socialOn=Object.values((L.social&&L.social.redes)||{}).some(r=>r.ativo);
+  const qual=[];
+  qual.push(paidPix.length?('Mídia paga: provável — pixel de anúncio ativo ('+paidPix.join(', ')+').'):'Mídia paga: nenhum pixel de anúncio detectado no código da home.');
+  qual.push(seoScore>=60?('Orgânico: base sólida — SEO em '+seoScore+'/100'+(L.seo.sitemap?', com sitemap':'')+(L.seo.blog?' e conteúdo/blog':'')+'.'):('Orgânico: frágil — SEO em '+seoScore+'/100; a loja tende a depender de anúncio para receber visita.'));
+  qual.push(socialOn?'Social: a loja tem perfis de rede ligados (ver seção 7).':'Social: nenhuma rede social ligada à loja foi detectada.');
+  const o=parseInt(T.organico)||0,s=parseInt(T.social)||0,pg=parseInt(T.pago)||0,tot=o+s+pg;
+  const num=(campo,lab,val)=>'<div class="row"><label>'+lab+'</label><input type="number" min="0" max="100" value="'+esc(val||'')+'" oninput="setTrafego(\''+campo+'\',this.value)"/><span style="color:var(--muted);font-size:12px">%</span></div>';
+  const bar='<div class="bar" id="traf-bar"><i class="org" style="width:'+o+'%"></i><i class="soc" style="width:'+s+'%"></i><i class="pag" style="width:'+pg+'%"></i></div>';
+  return '<div class="section"><div class="sec-title collap open" onclick="toggColl(this)"><span class="kicker">Tráfego por canal</span><h2>De onde vem a visita da loja</h2><span class="coll-peek">números reais do SimilarWeb — toque para recolher</span><span class="chev">⌄</span></div>'+
+    '<div class="coll-body"><p class="sec-sub">A ferramenta <b>não estima</b> a divisão de tráfego de outra loja — isso seria chute. Abra o SimilarWeb em um clique, veja a divisão real (orgânico / social / pago) e registre aqui. Ao lado, uma leitura qualitativa honesta a partir do que dá para ver no código.</p>'+
+    '<div class="cards c2">'+
+    '<div class="card"><div class="ck">Divisão real (informe do SimilarWeb)</div>'+
+    (host?'<a class="lk" href="https://www.similarweb.com/website/'+esc(host)+'/#traffic" target="_blank" rel="noopener">Abrir '+esc(host)+' no SimilarWeb ↗</a>':'<span style="font-size:12.5px;color:var(--muted)">Sem domínio para consultar.</span>')+
+    '<div class="traf" style="margin-top:12px">'+num('organico','Orgânico (busca)',T.organico)+num('social','Redes sociais',T.social)+num('pago','Mídia paga',T.pago)+bar+'</div>'+
+    '<div class="ev" id="traf-sum" style="'+(tot>0?'':'display:none')+'">'+(tot>0?('Soma: '+tot+'%'+(tot!==100?' — ajuste para 100%':' ✓')):'')+'</div>'+
+    '<div class="ev">Fonte: SimilarWeb, informado pelo vendedor — não é medido nem estimado pela ferramenta.</div></div>'+
+    '<div class="card"><div class="ck">Leitura qualitativa (do código da loja)</div><div class="blk"><ul>'+qual.map(q=>'<li><span class="m chk">›</span><span>'+esc(q)+'</span></li>').join('')+'</ul></div>'+
+    '<div class="ev">Isto indica a <b>tendência</b> de cada canal a partir de sinais técnicos. A porcentagem exata só vem do SimilarWeb ao lado.</div></div>'+
+    '</div></div></div>';
+}
+function setTrafego(campo,val){
+  if(!state.loja) return;
+  const T=state.loja.trafego||(state.loja.trafego={organico:'',social:'',pago:''}); T[campo]=val;
+  const o=parseInt(T.organico)||0,s=parseInt(T.social)||0,pg=parseInt(T.pago)||0,tot=o+s+pg;
+  const bar=document.getElementById('traf-bar'); if(bar) bar.innerHTML='<i class="org" style="width:'+o+'%"></i><i class="soc" style="width:'+s+'%"></i><i class="pag" style="width:'+pg+'%"></i>';
+  const sum=document.getElementById('traf-sum'); if(sum){ if(tot>0){ sum.style.display=''; sum.textContent='Soma: '+tot+'%'+(tot!==100?' — ajuste para 100%':' ✓'); } else sum.style.display='none'; }
+}
+window.setTrafego=setTrafego;
 function socialSectionHtml(L){
   const S=L.social||{redes:{},manual:{},auto:{}};
   const redes=Object.keys(SOCIAL_META).filter(k=>S.redes[k]&&S.redes[k].ativo);
@@ -1319,8 +1442,14 @@ function socialSectionHtml(L){
   const M=S.manual||{};
   const grp=(campo,titulo,ops)=>'<div class="blk"><div class="h">'+titulo+'</div><div class="chips">'+
     ops.map(([val,lab])=>'<span class="chip '+(M[campo]===val?'w':'')+'" style="cursor:pointer" onclick="setSocial(\''+campo+'\',\''+val+'\')">'+esc(lab)+'</span>').join('')+'</div></div>';
+  const F=(M.seguidores||{});
+  const ativas=Object.keys(SOCIAL_META).filter(k=>S.redes[k]&&S.redes[k].ativo);
+  const follRows = ativas.length? '<div class="blk"><div class="h">Seguidores — confira no perfil e digite (dado 100% real)</div>'+
+    ativas.map(k=>{ const a=S.auto&&S.auto[k]; const ph=a&&a.lido?String(a.seguidores):'ex.: 18400'; return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><label style="min-width:96px;font-size:13px;color:var(--ink-2)">'+SOCIAL_META[k][0]+'</label><input class="foll-in" type="text" inputmode="numeric" placeholder="'+ph+'" value="'+esc(F[k]||'')+'" oninput="setFoll(\''+k+'\',this.value)"/></div>'; }).join('')+
+    '<p style="font-size:11.5px;color:var(--muted);margin:6px 0 0">A leitura automática de seguidores costuma falhar (Instagram/TikTok exigem login). Por isso o número confiável é o que você digita aqui olhando o perfil.</p></div>':'';
   const manual='<div class="card"><div class="ck">Recon manual (2 min, 100% real)</div>'+
     '<p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">Abra os perfis acima e marque o que você viu. Isto entra no resumo do vendedor.</p>'+
+    follRows+
     grp('sacolinha','Sacolinha / Shop ativa no Instagram?',[['sim','Sim, com catálogo'],['desatualizada','Sim, parece desatualizada'],['nao','Não tem'],['naovi','Não consegui ver']])+
     grp('bio','Link na bio direciona para…',[['site','O site da loja'],['agregador','Agregador (Linktree etc.)'],['whats','Direto para o WhatsApp'],['outro','Outro / não tem']])+
     grp('reclamacoes','Reclamações recorrentes nos comentários?',[['nao','Não vi reclamações'],['frete','Frete / entrega'],['bugs','Bugs / lentidão do site'],['atendimento','Atendimento / SAC'],['varias','Várias, recorrentes']])+
@@ -1335,6 +1464,10 @@ function setSocial(campo,val){
   if(box){ const tmp=document.createElement('div'); tmp.innerHTML=socialSectionHtml(state.loja); const novo=tmp.querySelector('#social-cards'); if(novo) box.innerHTML=novo.innerHTML; }
 }
 window.setSocial=setSocial;
+function setFoll(rede,val){ if(!state.loja||!state.loja.social) return; const m=state.loja.social.manual||(state.loja.social.manual={}); (m.seguidores||(m.seguidores={}))[rede]=val; }
+window.setFoll=setFoll;
+function toggColl(el){ const b=el.parentElement.querySelector('.coll-body'); if(!b) return; const open=b.hasAttribute('hidden'); if(open){ b.removeAttribute('hidden'); el.classList.add('open'); } else { b.setAttribute('hidden',''); el.classList.remove('open'); } }
+window.toggColl=toggColl;
 function guiaHtml(){
   const g=state.guia; if(!g) return '';
   const steps=g.steps.map(s=>'<div class="gstep '+(s.warn?'warn':'')+'"><div class="n">'+s.n+'</div><div class="body"><h4>'+esc(s.t)+'</h4><ul>'+s.b.map(x=>'<li><span class="m">'+(s.warn?'✕':'✓')+'</span><span>'+esc(x)+'</span></li>').join('')+'</ul>'+(s.say?'<div class="say">'+esc(s.say)+'</div>':'')+'</div></div>').join('');
@@ -1355,9 +1488,11 @@ function buildSummary(){
   X.push('RAIO-X DA LOJA — '+L.nomeLoja+' ('+L.host+')');
   X.push('Plataforma atual: '+L.plataforma.nome+' · maturidade '+L.score.total+'/100 ('+L.score.rotulo+')');
   if(L.hospedagem&&L.hospedagem.ok) X.push('Hospedagem: '+(L.hospedagem.provedor||L.hospedagem.org||'—')+(L.hospedagem.ip?' ('+L.hospedagem.ip+')':''));
-  X.push('Segmento: '+L.perfil.segmento.nome+' · porte '+L.perfil.porte+' · ~'+L.perfil.produtos+' produtos'+(L.perfil.precos.ok?' · ticket ~'+brl(L.perfil.precos.mediana):''));
+  X.push('Segmento: '+L.perfil.segmento.nome+' ('+L.perfil.segConf+') · porte '+L.perfil.porte+' · '+(L.perfil.produtos||'?')+' produtos'+(L.seo.categoriasEstimadas?' · '+L.seo.categoriasEstimadas+' categorias':'')+(L.perfil.precos.ok?' · ticket ~'+brl(L.perfil.precos.mediana):''));
+  const T=L.trafego||{}; if(T.organico||T.social||T.pago) X.push('Tráfego (SimilarWeb): orgânico '+(T.organico||'?')+'% · social '+(T.social||'?')+'% · pago '+(T.pago||'?')+'%');
   const S=L.social||{redes:{},manual:{}};
-  const rn=Object.keys(S.redes||{}).filter(k=>S.redes[k].ativo).map(k=>{const a=S.auto&&S.auto[k];return k+(a&&a.lido?' ('+a.seguidores+')':'');});
+  const F=(S.manual&&S.manual.seguidores)||{};
+  const rn=Object.keys(S.redes||{}).filter(k=>S.redes[k].ativo).map(k=>{const a=S.auto&&S.auto[k]; const seg=F[k]||(a&&a.lido?a.seguidores:''); return k+(seg?' ('+seg+' seg.)':'');});
   if(rn.length) X.push('Redes ativas: '+rn.join(', '));
   const M=S.manual||{}; const mm=[];
   if(M.sacolinha) mm.push('sacolinha: '+M.sacolinha); if(M.bio) mm.push('bio: '+M.bio);
@@ -1369,7 +1504,8 @@ function buildSummary(){
   D.forEach((d,i)=>X.push((i+1)+'. '+d.titulo+' — '+d.evidencia+' → '+d.solucao));
   X.push(''); X.push('PLANO INDICADO: '+P.nome+' ('+P.preco+')');
   X.push(P.produtos+' · '+(P.limite||''));
-  (state.recsPlano||[]).slice(0,6).forEach(r=>X.push('- '+r.nome));
+  X.push('BENEFÍCIOS PARA ESTA LOJA');
+  (state.benef||[]).slice(0,6).forEach(r=>X.push('- '+r.nome+': '+r.porque));
   X.push(''); X.push('CONCLUSÃO'); X.push(state.concl||'');
   X.push(''); X.push('MENSAGEM PRONTA'); X.push(state.args.pitch);
   return X.join('\n');
@@ -1395,7 +1531,7 @@ function generatePDF(){
   try{
     const jsPDF=window.jspdf.jsPDF, doc=new jsPDF({unit:'pt',format:'a4'});
     const P={W:595.28,H:841.89,mL:48,mR:48,mT:54,mB:64},CW=P.W-P.mL-P.mR; let y=P.mT;
-    const L=state.loja,PL=state.plano,D=state.dores,recs=state.recsPlano||[];
+    const L=state.loja,PL=state.plano,D=state.dores,recs=state.benef||state.recsPlano||[];
     const INK=[15,29,46],TEAL=[15,182,160],TEALd=[10,134,118],GOLD=[196,133,26],MUT=[107,124,141],LINE=[228,234,240],MISS=[150,164,178],WARN=[192,112,63];
     const F=(s,z)=>{doc.setFont('helvetica',s);doc.setFontSize(z);};
     const T=c=>doc.setTextColor(c[0],c[1],c[2]);
@@ -1429,11 +1565,10 @@ function generatePDF(){
     F('normal',9.5); T(MUT); doc.text(L.host,P.mL+16,y+56); y+=82;
     kvline('Plataforma atual',L.plataforma.nome+' (confiança '+L.plataforma.confianca+')');
     kvline('Tempo de operação',L.tempo.texto);
-    kvline('Segmento',L.perfil.segmento.nome);
+    kvline('Segmento',L.perfil.segmento.nome+' (confiança '+L.perfil.segConf+')');
     kvline('Porte estimado',cap(L.perfil.porte));
-    kvline('Produtos estimados',L.perfil.produtos||'não estimado');
+    kvline('Produtos'+(L.seo.produtosFonte==='sitemap'?' (sitemap)':' (home)'),(L.perfil.produtos||'não estimado')+(L.seo.categoriasEstimadas?' · '+L.seo.categoriasEstimadas+' categorias':''));
     kvline('Faixa de preço',L.perfil.precos.ok?(brl(L.perfil.precos.min)+' a '+brl(L.perfil.precos.max)+' · ticket aparente '+brl(L.perfil.precos.mediana)):'não identificada');
-    if(state.obs) kvline('Observações',state.obs);
     y+=8;
 
     /* placar */
@@ -1470,7 +1605,7 @@ function generatePDF(){
     sub('SEO e conteúdo');
     bullets([
       'Itens de SEO presentes: '+(listPt([L.seo.tituloOk?'título':'',L.seo.descricaoOk?'meta descrição':'',L.seo.canonical?'canonical':'',L.seo.og?'tags de compartilhamento':'',L.seo.h1Ok?'H1 único':'',L.seo.urlsAmigaveis?'URLs amigáveis':'',L.seo.sitemap?'sitemap':'',L.seo.robots?'robots.txt':'',L.seo.blog?'blog':''].filter(Boolean))||'nenhum dos itens básicos')+'.',
-      'Volume estimado: '+(L.seo.produtosEstimados||'não estimado')+' produtos e '+(L.seo.categoriasEstimadas||'não estimado')+' categorias.'
+      (L.seo.produtosFonte==='sitemap'?'Catálogo (sitemap): ':'Catálogo (só home, subestima): ')+(L.seo.produtosEstimados||'não estimado')+' produtos e '+(L.seo.categoriasEstimadas||'não estimado')+' categorias.'
     ],'dot'); y+=4;
     sub('Marketing e integrações');
     const an=L.mkt.analytics.filter(a=>a.ok).map(a=>a.nome), cn=L.mkt.canais.filter(c=>c.ok).map(c=>c.nome), pv=L.mkt.prova.filter(p=>p.ok).map(p=>p.nome);
@@ -1508,7 +1643,7 @@ function generatePDF(){
     F('normal',11); T(TEALd); doc.text(PL.preco,P.mL+18,y+68); y+=96;
     para('Indicado para '+PL.indicado+'. '+PL.produtos+'. '+(PL.limite||''),10.5,INK,'normal',15); y+=8;
     sub('Recursos em destaque do plano',TEALd); bullets(PL.destaques.slice(0,14),'check'); y+=6;
-    sub('O que muda na operação da sua loja',TEALd);
+    sub('Por que cada recurso importa para esta loja',TEALd);
     recs.forEach(r=>{
       need(34); F('bold',10); T(INK); const t1=doc.splitTextToSize(r.nome,CW); t1.slice(0,2).forEach(l=>{doc.text(l,P.mL,y);y+=13;});
       F('normal',9.5); T(MUT); const t2=doc.splitTextToSize(r.porque,CW-14); t2.forEach(l=>{need(12);doc.text(l,P.mL+14,y);y+=12;}); y+=6;
