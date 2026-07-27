@@ -220,9 +220,10 @@
 
   /* --- seções recolhíveis --- */
   .sec-title.collap{cursor:pointer}
-  .sec-title.collap .chev{margin-left:auto;font-size:22px;line-height:1;color:var(--muted);transition:transform .2s;flex:none;display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line);border-radius:8px}
-  .sec-title.collap:hover .chev{border-color:var(--teal);color:var(--teal-deep)}
-  .sec-title.collap.open .chev{transform:rotate(180deg)}
+  .sec-title.collap .chev{margin-left:auto;flex:none;width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--line);border-radius:10px;color:var(--muted);background:var(--surface);transition:transform .25s ease,border-color .18s,background .18s,color .18s}
+  .sec-title.collap .chev svg{display:block}
+  .sec-title.collap:hover .chev{border-color:var(--teal);color:var(--teal-deep);background:var(--teal-soft)}
+  .sec-title.collap.open .chev{transform:rotate(180deg);border-color:var(--teal);color:var(--teal-deep);background:var(--teal-soft)}
   .coll-body[hidden]{display:none}
   .coll-peek{font-size:12.5px;color:var(--muted);margin:2px 0 0;width:100%}
   /* --- tráfego por canal (entrada manual real) --- */
@@ -738,10 +739,41 @@ function detectarSegmento(sig){
     });
     if(score>best.score||(score===best.score&&distintos>best.distintos)) best={seg:s,score,distintos,termos:achou};
   });
-  if(best.score<2) return {seg:geral,confianca:'baixa',score:best.score,evidencia:''};
-  const conf = best.score>=9?'alta':best.score>=4?'média':'baixa';
   const ev = best.termos.slice(0,4).map(t=>t.replace(/\\+b|\\\\|[?()]/g,'').replace(/\[.*?\]/g,'')).join(', ');
-  return {seg:best.seg,confianca:conf,score:best.score,evidencia:ev};
+  // 1) segmento conhecido com boa evidência -> nome limpo + recursos específicos do ramo
+  if(best.score>=6 && best.distintos>=2){
+    return {seg:best.seg, confianca: best.score>=10?'alta':'média', score:best.score, evidencia:ev};
+  }
+  // 2) qualquer outro nicho -> lê o rótulo do próprio site (não fica preso à lista)
+  const rot = (typeof sig==='object') ? rotuloSegmento(sig) : '';
+  if(rot){
+    const seg={ id:'custom', nome:rot,
+      perfil:'lojas de '+lower1(rot)+' que querem estruturar a operação e vender mais online',
+      extras:(geral.extras||[]) };
+    return {seg, confianca:'lido do site', score:best.score, evidencia:'identificado pela descrição/categorias da própria loja'};
+  }
+  // 3) conhecido com evidência fraca
+  if(best.score>=3) return {seg:best.seg, confianca:'baixa', score:best.score, evidencia:ev};
+  // 4) sem sinal claro
+  return {seg:geral, confianca:'baixa', score:best.score, evidencia:''};
+}
+/* rótulo livre do segmento — extraído do que a própria loja declara vender */
+function rotuloSegmento(sig){
+  const cand=[];
+  const push=s=>{ s=(s||'').replace(/\s+/g,' ').trim(); if(s.length>=3&&s.length<=36) cand.push(s); };
+  const txt=((sig.titulo||'')+' . '+(sig.desc||'')+' . '+(sig.forte||''));
+  let m;
+  if(m=txt.match(/loja (?:online |virtual )?(?:especializada )?(?:de|em) ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
+  if(m=txt.match(/especializad[ao] em ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
+  if(m=txt.match(/(?:venda|comércio|com[ée]rcio) de ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
+  if(m=txt.match(/(?:artigos|produtos) (?:de|para) ([a-zà-ú0-9 &\/-]{3,36})/i)) push('Artigos para '+m[1]);
+  (sig.keywords||'').split(/[,;|]/).slice(0,2).forEach(k=>push(k));
+  (sig.cats||[]).slice(0,1).forEach(c=>push(c));
+  let r=cand.find(Boolean)||'';
+  r=r.replace(/[.,;:]+$/,'').replace(/\b(online|virtual|oficial|loja|store|shop|melhor|sua)\b/gi,'').replace(/\s{2,}/g,' ').trim();
+  for(let i=0;i<3;i++) r=r.replace(/\s+(para|de|da|do|das|dos|e|com|a|o|em|no|na|nos|nas)$/i,'').trim();
+  if(r.length<3) return '';
+  return r.charAt(0).toUpperCase()+r.slice(1);
 }
 function analisarLoja(html,url,extras){
   const dom=new DOMParser().parseFromString(html,'text/html');
@@ -818,7 +850,8 @@ function analisarLoja(html,url,extras){
   /* perfil do negócio */
   const catsTxt=[...dom.querySelectorAll('nav a,header a,[class*="menu"] a,[class*="categor"] a,[class*="breadcrumb"] a,[class*="departamento"] a')].map(a=>(a.textContent||'').replace(/\s+/g,' ').trim()).filter(t=>t.length>1&&t.length<40).join(' ');
   const kw=meta('keywords')||'';
-  const seg=detectarSegmento({forte:titulo+' '+meta('description')+' '+meta('og:title')+' '+kw+' '+catsTxt, corpo:texto.slice(0,20000)});
+  const catsArr=[...new Set([...dom.querySelectorAll('nav a,header a,[class*="menu"] a,[class*="categor"] a,[class*="breadcrumb"] a,[class*="departamento"] a')].map(a=>(a.textContent||'').replace(/\s+/g,' ').trim()).filter(t=>t.length>2&&t.length<30))];
+  const seg=detectarSegmento({forte:titulo+' '+meta('description')+' '+meta('og:title')+' '+kw+' '+catsTxt, corpo:texto.slice(0,20000), titulo:titulo, desc:meta('description'), keywords:kw, cats:catsArr});
   const pr=precos(dom,html);
   const prods=L.seo.produtosEstimados;
   let porte='pequena', porteTxt='';
@@ -828,7 +861,7 @@ function analisarLoja(html,url,extras){
   if(porte==='pequena') porteTxt='Operação enxuta: catálogo pequeno e poucos sinais de mídia paga. Provável time de 1 a 3 pessoas.';
   if(porte==='média') porteTxt='Operação estruturada: catálogo relevante e presença de mídia e canais. Costuma ter alguém dedicado ao e-commerce.';
   if(porte==='grande') porteTxt='Operação de porte: catálogo extenso e stack técnica robusta. Decisão passa por mais de uma pessoa.';
-  L.perfil={segmento:seg.seg,segConf:seg.confianca,precos:pr,produtos:prods,porte,porteTxt,
+  L.perfil={segmento:seg.seg,segConf:seg.confianca,segEv:seg.evidencia||"",precos:pr,produtos:prods,porte,porteTxt,
     ticket: pr.ok? (pr.mediana<80?'baixo':pr.mediana<300?'médio':pr.mediana<1000?'alto':'muito alto'):'não estimado'};
   /* recursos essenciais do segmento */
   const lista=RECURSOS_BASE.map(r=>Object.assign({_seg:false},r)).concat((L.perfil.segmento.extras||[]).map(r=>Object.assign({_seg:true},r)));
@@ -1339,7 +1372,7 @@ function render(){
   const rec=L.recursos;
   const tag=st=>st==='sim'?'<span class="tag-s y">Usa hoje</span>':st==='nao'?'<span class="tag-s n">Não usa</span>':'<span class="tag-s w">Confirmar</span>';
   const recNao=rec.filter(r=>r.estado==='nao').length, recSim=rec.filter(r=>r.estado==='sim').length, recChk=rec.filter(r=>r.estado==='checar').length;
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2><span class="coll-peek">'+recNao+' faltando · '+recSim+' em uso · '+recChk+' a confirmar — toque para abrir</span><span class="chev">⌄</span></div>'+
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2><span class="coll-peek">'+recNao+' faltando · '+recSim+' em uso · '+recChk+' a confirmar — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
    '<div class="coll-body" hidden><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
    '<div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Recurso</th><th class="mid">Na loja hoje</th><th>Na Tray</th></tr></thead><tbody>'+
    rec.map(r=>'<tr><td class="rec"><b>'+esc(r.nome)+'</b><span>'+esc(r.porque)+'</span></td><td class="mk">'+tag(r.estado)+'</td><td>'+esc(r.tray)+'</td></tr>').join('')+
@@ -1347,7 +1380,7 @@ function render(){
    '<p class="sec-sub" style="margin-top:12px">'+recNao+' recursos essenciais não foram encontrados na loja · '+recSim+' já estão em uso · '+recChk+' a confirmar.</p></div></div>');
 
   /* 9. dores */
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev">⌄</span></div>'+
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
    '<div class="coll-body" hidden><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
    D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div></div>');
 
@@ -1396,7 +1429,7 @@ function trafegoSectionHtml(L){
   const o=parseInt(T.organico)||0,s=parseInt(T.social)||0,pg=parseInt(T.pago)||0,tot=o+s+pg;
   const num=(campo,lab,val)=>'<div class="row"><label>'+lab+'</label><input type="number" min="0" max="100" value="'+esc(val||'')+'" oninput="setTrafego(\''+campo+'\',this.value)"/><span style="color:var(--muted);font-size:12px">%</span></div>';
   const bar='<div class="bar" id="traf-bar"><i class="org" style="width:'+o+'%"></i><i class="soc" style="width:'+s+'%"></i><i class="pag" style="width:'+pg+'%"></i></div>';
-  return '<div class="section"><div class="sec-title collap open" onclick="toggColl(this)"><span class="kicker">Tráfego por canal</span><h2>De onde vem a visita da loja</h2><span class="coll-peek">números reais do SimilarWeb — toque para recolher</span><span class="chev">⌄</span></div>'+
+  return '<div class="section"><div class="sec-title collap open" onclick="toggColl(this)"><span class="kicker">Tráfego por canal</span><h2>De onde vem a visita da loja</h2><span class="coll-peek">números reais do SimilarWeb — toque para recolher</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
     '<div class="coll-body"><p class="sec-sub">A ferramenta <b>não estima</b> a divisão de tráfego de outra loja — isso seria chute. Abra o SimilarWeb em um clique, veja a divisão real (orgânico / social / pago) e registre aqui. Ao lado, uma leitura qualitativa honesta a partir do que dá para ver no código.</p>'+
     '<div class="cards c2">'+
     '<div class="card"><div class="ck">Divisão real (informe do SimilarWeb)</div>'+
