@@ -243,13 +243,13 @@
 </head>
 <body>
 <header class="topbar"><div class="wrap">
-  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja + Plano Tray</b></span></div>
+  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja</b></span></div>
   <span class="tag">Roda no navegador · sem instalação</span>
 </div></header>
 <main class="wrap">
   <section class="hero">
-    <h1>Raio-X da Loja <span class="u">+ Plano Tray</span></h1>
-    <p class="lead">Cole o endereço da loja atual e o link do plano que você vai indicar. A ferramenta identifica a plataforma em uso, mapeia experiência de compra, performance, SEO, marketing e perfil do negócio, aponta as dores prováveis e monta o discurso ligando cada dor a um recurso do plano — com guia de reunião e PDF assinado para enviar depois.</p>
+    <h1>Raio-X <span class="u">da Loja do Lojista</span></h1>
+    <p class="lead">Cole o endereço da loja do lojista. A ferramenta identifica a plataforma em uso, mapeia experiência de compra, performance, SEO, marketing, tráfego e perfil do negócio, e aponta as dores prováveis com os argumentos de venda e um guia de reunião — mais o PDF assinado para enviar depois.</p>
     <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8912E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span>A leitura das páginas usa um relay público, porque o navegador não acessa outros sites diretamente. Se um link não carregar, clique em analisar de novo ou ative o modo de colar código-fonte. Tudo o que aparece aqui é lido da página pública no momento da análise.</span></div>
 
     <div class="panel">
@@ -260,17 +260,6 @@
           <input class="inp" id="loja-url" type="url" placeholder="https://www.lojadocliente.com.br" />
           <span class="tip">Use a página inicial. É de lá que sai a maior parte do diagnóstico.</span>
           <textarea class="paste" id="loja-paste" placeholder="Modo manual: abra a loja, use Ctrl+U (código-fonte), Ctrl+A, Ctrl+C e cole aqui."></textarea>
-        </div>
-        <div class="field">
-          <label for="plano-url">Link do plano da Tray</label>
-          <input class="inp" id="plano-url" type="url" value="https://www.tray.com.br/planos-precos" />
-          <span class="tip">Página de planos ou a landing do plano específico.</span>
-          <textarea class="paste" id="plano-paste" placeholder="Modo manual: cole aqui o código-fonte da página do plano."></textarea>
-        </div>
-        <div class="field">
-          <label for="plano-sel">Plano que você vai indicar</label>
-          <select class="inp" id="plano-sel"></select>
-          <span class="tip">A ferramenta sugere um plano pelo porte da loja. Você pode trocar.</span>
         </div>
       </div>
       <div class="panel-actions">
@@ -1151,7 +1140,7 @@ function montarBeneficios(L,plano,dores){
   if(out.length<4){ (plano.destaques||[]).forEach(d=> add(d,'Já incluído no plano '+plano.nome+', reforça a operação da '+loja+' sem somar custo de app de terceiro.')); }
   return out.slice(0,8);
 }
-function montarArgumentos(L,plano,dores){
+function montarArgumentos(L,dores){
   const seg=L.perfil.segmento.nome.toLowerCase();
   const plat=L.plataforma.id==='desconhecida'?'a plataforma atual':L.plataforma.nome;
   const dor1=dores[0]?(dores[0].curto||lower1(dores[0].titulo)):'os gargalos que a gente viu na loja';
@@ -1160,12 +1149,11 @@ function montarArgumentos(L,plano,dores){
   A.push({h:'Abertura da reunião',t:'Antes de vir conversar, eu abri a sua loja e olhei com calma. Ela está em '+plat+', o visual está '+(L.score.total>=55?'bem resolvido':'funcional')+' e dá para ver que tem gente cuidando. O que eu quero te mostrar hoje não é um site novo: é onde a sua loja está deixando venda passar, e o que a Tray resolve disso já no primeiro mês.'});
   A.push({h:'Dor principal',t:'O ponto que mais me chamou atenção: '+cap(dor1)+'.'+(dor2?' Junto com isso: '+cap(dor2)+'.':'')+' Isso não é detalhe técnico: é o cliente que já estava com o produto escolhido e desistiu no meio do caminho. Cada ponto desses vale faturamento todo mês, e nenhum deles depende de você investir mais em anúncio.'});
   A.push({h:'Por que a Tray',t:'A Tray é plataforma brasileira, feita para a operação daqui: checkout transparente, Pix e boleto nativos, nota fiscal, frete negociado com o Tray Envios e integração direta com Mercado Livre, Shopee, Amazon e Magalu — tudo no mesmo painel e no mesmo plano. Você para de somar plugin, app e taxa de terceiro para chegar no básico, e passa a ter suporte humano em português quando a loja precisar.'});
-  A.push({h:'O plano indicado',t:'Para o tamanho da sua operação, o plano '+plano.nome+' é o que faz sentido: '+plano.produtos.toLowerCase()+', '+lower1(plano.limite||'sem limite de faturamento')+', e '+listPt(plano.destaques.slice(0,3).map(lower1))+'. É '+plano.preco+' — menos do que custa uma única venda perdida por semana em uma loja de '+seg+'.'});
   A.push({h:'Fechamento',t:'Minha proposta é simples: eu deixo com você este diagnóstico por escrito, com tudo o que a gente olhou e o que muda na Tray. Se fizer sentido, a gente já agenda a migração — nossa equipe apoia a importação de produtos, clientes e categorias, e a loja entra no ar sem parar de vender. Que dia da semana que vem funciona melhor para você?'});
-  const pitch='Analisei a sua loja antes da nossa conversa. Ela roda em '+plat+' e o ponto que mais pesa hoje: '+cap(dor1)+'. Na Tray, com o plano '+plano.nome+' ('+plano.preco+'), isso é resolvido com '+listPt((dores[0]?dores[0].recursos:['checkout transparente','recuperação de carrinho abandonado']).slice(0,2).map(lower1))+'. Junto vêm integração nativa com marketplaces, frete negociado pelo Tray Envios e uma plataforma brasileira que já resolve o básico sem app de terceiro — a mesma operação que você já tem, sem os gargalos que custam venda todo mês.';
+  const pitch='Analisei a sua loja antes da nossa conversa. Ela roda em '+plat+' e o ponto que mais pesa hoje: '+cap(dor1)+'. Na Tray, isso é resolvido com '+listPt((dores[0]?dores[0].recursos:['checkout transparente','recuperação de carrinho abandonado']).slice(0,2).map(lower1))+'. Junto vêm integração nativa com marketplaces, frete negociado pelo Tray Envios e uma plataforma brasileira que já resolve o básico sem app de terceiro — a mesma operação que você já tem, sem os gargalos que custam venda todo mês.';
   return {blocos:A,pitch};
 }
-function montarGuia(L,plano,dores){
+function montarGuia(L,dores){
   const plat=L.plataforma.id==='desconhecida'?'a plataforma atual':L.plataforma.nome;
   const dor1=dores[0]?(dores[0].curto||lower1(dores[0].titulo)):'o gargalo principal';
   const seg=L.perfil.segmento.nome;
@@ -1173,7 +1161,7 @@ function montarGuia(L,plano,dores){
   steps.push({n:1,t:'Chegue com o diagnóstico pronto, mas comece perguntando',b:[
     'Abra dizendo que você olhou a loja antes da reunião. Isso muda a conversa de vendedor para consultor em dez segundos.',
     'Pergunte primeiro: "o que hoje mais te incomoda na sua loja?" — e cale a boca. A resposta dele define qual das dores deste relatório você vai puxar.',
-    'Confirme três números com ele: quantos produtos tem, quanto das visitas vem do celular e quanto ele fatura por mês. Servem para validar o plano indicado.'],
+    'Confirme três números com ele: quantos produtos tem, quanto das visitas vem do celular e quanto ele fatura por mês. Servem para dimensionar a operação e afinar o discurso.'],
     say:'"Dei uma olhada na sua loja antes de vir. Antes de eu te mostrar o que vi, me conta: o que você sente que está travando as vendas hoje?"'});
   steps.push({n:2,t:'Mostre a loja dele antes de mostrar a Tray',b:[
     'Abra a loja do cliente na tela, no celular se possível. Ele precisa ver o problema, não ouvir sobre ele.',
@@ -1183,16 +1171,16 @@ function montarGuia(L,plano,dores){
     'Traduza: checkout externo = cliente que desiste na hora de pagar. Sem filtro = cliente que não acha o produto e sai.',
     'Use a conta dele: "se você recupera 2 carrinhos por dia, com o seu ticket, isso dá quanto no mês?" Deixe ele fazer a conta em voz alta.',
     'Só depois da conta é que entra o nome do recurso da Tray. Recurso sem consequência é jargão.']});
-  steps.push({n:4,t:'Apresente o plano '+plano.nome+' como consequência, não como oferta',b:[
-    'Diga por que esse plano e não outro: '+plano.produtos.toLowerCase()+', '+lower1(plano.indicado)+'.',
-    'Mostre no máximo 4 recursos do plano — os que resolvem as dores que ele confirmou. O resto vai no PDF.',
-    'Preço é o último assunto do bloco. Sempre depois do valor, nunca antes.']});
+  steps.push({n:4,t:'Apresente a Tray como consequência do diagnóstico, não como oferta',b:[
+    'Ligue a solução à dor que ele confirmou: "para o que você me falou, o que resolve é isto". A Tray entra como resposta, não como produto empurrado.',
+    'Mostre no máximo 3 ou 4 recursos — os que resolvem as dores que ele confirmou. O resto vai no PDF.',
+    'Fale de plano e preço só quando ele perguntar. Nesta reunião o foco é o valor; o comercial vem depois.']});
   steps.push({n:5,t:'Onde NÃO se alongar',warn:true,b:[
-    'Não leia a lista de recursos do plano em voz alta. Cansa e dilui o que importa — ela está no PDF.',
+    'Não leia a lista inteira de recursos em voz alta. Cansa e dilui o que importa — ela está no PDF.',
     'Não entre em detalhe de migração técnica, API, layout ou código nesta reunião. Isso é conversa de implantação, e assusta quem não é técnico.',
     'Não fale mal de '+plat+'. Diga que ela atendeu até aqui e que a operação dele cresceu além do que ela entrega. Quem escolheu a plataforma atual foi ele.',
     'Não prometa número de conversão nem posição no Google. Fale de recurso e de consequência provável, nunca de garantia.',
-    'Não mostre a tabela completa de planos. Comparar seis planos na frente do cliente transfere a decisão para ele — e trava.']});
+    'Não abra a conversa de preço/plano sem ele pedir. Antecipar valor antes de fechar a dor transfere a decisão para o bolso — e trava.']});
   steps.push({n:6,t:'Adapte ao segmento: '+seg,b:[
     'A loja é de '+seg.toLowerCase()+'. Use os recursos essenciais desse segmento marcados como ausentes no relatório — são os argumentos mais específicos que você tem.',
     'Fale a língua da operação dele: '+(L.perfil.segmento.perfil||'o dia a dia da loja')+'.',
@@ -1204,7 +1192,7 @@ function montarGuia(L,plano,dores){
     '"Vou pensar" → ofereça o PDF na hora e proponha data para retomar. Sem data marcada, a conversa esfria em 48 horas.',
     '"Já tenho um desenvolvedor" → ótimo, ele continua: na Tray há acesso a HTML, CSS e JS nos planos a partir do Crescimento e documentação aberta.']});
   steps.push({n:8,t:'Fechamento e próximo passo',b:[
-    'Recapitule em uma frase: a dor que ele confirmou, o recurso que resolve e o plano.',
+    'Recapitule em uma frase: a dor que ele confirmou e o recurso da Tray que resolve.',
     'Confirme o encaixe em voz alta: "faz sentido para o que você me falou no começo?"',
     'Proponha um passo pequeno e concreto: enviar o PDF hoje, agendar a migração ou marcar uma segunda conversa com data.',
     'Envie o PDF no fim da reunião, nunca no começo — se ele recebe antes, para de ouvir e começa a ler.']});
@@ -1212,19 +1200,15 @@ function montarGuia(L,plano,dores){
 }
 
 /* ---------- 6. fluxo e render ---------- */
-let state={loja:null,plano:null,dores:[],args:null,guia:null};
+let state={loja:null,dores:[],args:null,guia:null};
 let vendedor={nome:'',fone:''};
 const statusEl=document.getElementById('status'),alertEl=document.getElementById('alert'),
       runBtn=document.getElementById('run-btn'),resultsEl=document.getElementById('results'),
-      manualToggle=document.getElementById('manual-toggle'),deepToggle=document.getElementById('deep-toggle'),
-      planoSel=document.getElementById('plano-sel');
+      manualToggle=document.getElementById('manual-toggle'),deepToggle=document.getElementById('deep-toggle');
 
-planoSel.innerHTML='<option value="auto">Sugerir pelo porte da loja (recomendado)</option>'+
-  PLANOS.map(p=>'<option value="'+p.id+'">Plano '+p.nome+' — '+p.preco+'</option>').join('');
 manualToggle.addEventListener('change',()=>{ document.querySelectorAll('textarea.paste').forEach(t=>t.classList.toggle('on',manualToggle.checked)); });
 document.getElementById('ex-btn').addEventListener('click',()=>{
   document.getElementById('loja-url').value='https://www.lojasrenner.com.br';
-  document.getElementById('plano-url').value='https://www.tray.com.br/planos-precos';
 });
 function setStatus(lines){
   statusEl.className='status on';
@@ -1235,11 +1219,9 @@ async function run(){
   alertEl.className='alert'; resultsEl.className=''; resultsEl.innerHTML='';
   const lojaUrl=normUrl(document.getElementById('loja-url').value);
   const lojaPaste=document.getElementById('loja-paste').value.trim();
-  const planoUrl=normUrl(document.getElementById('plano-url').value);
-  const planoPaste=document.getElementById('plano-paste').value.trim();
   if(!lojaUrl&&!lojaPaste){ alertEl.className='alert on'; alertEl.textContent='Informe o endereço da loja do lojista para começar a análise.'; return; }
   runBtn.disabled=true;
-  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Consultando hospedagem (DNS)'},{s:'',t:'Lendo redes sociais do lojista'},{s:'',t:'Lendo o plano da Tray'},{s:'',t:'Montando diagnóstico e discurso'}];
+  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Consultando hospedagem (DNS)'},{s:'',t:'Lendo redes sociais do lojista'},{s:'',t:'Montando diagnóstico e discurso'}];
   setStatus(lines);
   let loja=null;
   try{
@@ -1271,18 +1253,10 @@ async function run(){
     alertEl.className='alert on'; alertEl.textContent='Não consegui ler a loja pelo relay público. Clique em analisar de novo, ou ative "Colar conteúdo manualmente" e cole o código-fonte da página inicial.';
     runBtn.disabled=false; return;
   }
-  lines[4]={s:'load',t:'Lendo o plano da Tray…'}; setStatus(lines);
-  let planoHtml='';
-  try{ planoHtml=(planoPaste&&planoPaste.length>500)?planoPaste:(planoUrl?await fetchText(planoUrl,14000):''); }catch(e){}
-  let planoId=planoSel.value;
-  if(planoId==='auto') planoId=planoPorUrl(planoUrl)||sugerirPlano(loja);
-  const plano=analisarPlano(planoHtml,planoUrl,planoId);
-  plano.sugerido=(planoSel.value==='auto');
-  lines[4]={s:plano.lido?'ok':'err',t:plano.lido?('Plano '+plano.nome+' lido da página'):('Plano '+plano.nome+' montado com a base interna — confirme os valores na página da Tray')};
-  lines[5]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
+  lines[4]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
   try{
-    const dores=montarDores(loja,plano);
-    state={loja,plano,dores,args:montarArgumentos(loja,plano,dores),guia:montarGuia(loja,plano,dores)};
+    const dores=montarDores(loja);
+    state={loja,dores,args:montarArgumentos(loja,dores),guia:montarGuia(loja,dores)};
     statusEl.className='status'; statusEl.innerHTML='';
     render(); resultsEl.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(err){ alertEl.className='alert on'; alertEl.textContent='Erro ao montar a análise: '+(err.message||err); }
@@ -1295,7 +1269,7 @@ function gauge(v){
 }
 function chipsHtml(arr){ return '<div class="chips">'+arr.map(s=>'<span class="chip '+(s.ok?'y':'n')+'">'+(s.ok?'✓':'·')+' '+esc(s.nome)+'</span>').join('')+'</div>'; }
 function render(){
-  const L=state.loja,P=state.plano,D=state.dores,A=state.args,h=[];
+  const L=state.loja,D=state.dores,A=state.args,h=[];
   /* diagnóstico */
   const eixos=L.score.eixos.map(e=>'<div class="axis"><span>'+esc(e.nome)+'</span><span class="bar"><i class="'+(e.valor>=70?'':e.valor>=45?'mid':'low')+'" style="width:'+e.valor+'%"></i></span><span class="val">'+e.valor+'</span></div>').join('');
   const resumo='Loja de '+L.perfil.segmento.nome.toLowerCase()+', porte '+L.perfil.porte+', rodando em '+L.plataforma.nome+
@@ -1393,35 +1367,13 @@ function render(){
   /* 7. redes sociais e social commerce */
   h.push(socialSectionHtml(L));
 
-  /* 8. recursos do segmento */
-  const rec=L.recursos;
-  const tag=st=>st==='sim'?'<span class="tag-s y">Usa hoje</span>':st==='nao'?'<span class="tag-s n">Não usa</span>':'<span class="tag-s w">Confirmar</span>';
-  const recNao=rec.filter(r=>r.estado==='nao').length, recSim=rec.filter(r=>r.estado==='sim').length, recChk=rec.filter(r=>r.estado==='checar').length;
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Recursos do segmento</span><h2>O que uma loja de '+esc(L.perfil.segmento.nome.toLowerCase())+' precisa ter</h2><span class="coll-peek">'+recNao+' faltando · '+recSim+' em uso · '+recChk+' a confirmar — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
-   '<div class="coll-body" hidden><p class="sec-sub">Lista de recursos essenciais, o que a loja já usa e o que a Tray entrega. "Confirmar" é o que não dá para ver de fora — pergunte na reunião.</p>'+
-   '<div class="tbl-wrap"><div class="tbl-scroll"><table><thead><tr><th>Recurso</th><th class="mid">Na loja hoje</th><th>Na Tray</th></tr></thead><tbody>'+
-   rec.map(r=>'<tr><td class="rec"><b>'+esc(r.nome)+'</b><span>'+esc(r.porque)+'</span></td><td class="mk">'+tag(r.estado)+'</td><td>'+esc(r.tray)+'</td></tr>').join('')+
-   '</tbody></table></div></div>'+
-   '<p class="sec-sub" style="margin-top:12px">'+recNao+' recursos essenciais não foram encontrados na loja · '+recSim+' já estão em uso · '+recChk+' a confirmar.</p></div></div>');
-
   /* 9. dores */
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
    '<div class="coll-body" hidden><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
    D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div></div>');
 
-  /* 10. plano */
-  const P2=state.plano, recsPlano=recursosDoPlano(P2,L), benef=montarBeneficios(L,P2,D);
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Plano indicado</span><h2>O que ele passa a ter na Tray</h2></div><p class="sec-sub">'+(P2.sugerido?'Plano sugerido pelo porte da loja. ':'Plano escolhido por você. ')+'Preços conforme a tabela oficial da Tray — confira sempre a vigente antes de fechar.'+'</p>'+
-   '<div class="plan"><div class="lab">Plano recomendado</div><h3>'+esc(P2.nome)+'</h3><div class="price">'+esc(P2.preco)+' <small>· '+esc(P2.precoFonte)+'</small></div>'+
-   '<p class="sub">Indicado para '+esc(P2.indicado)+'. '+esc(P2.produtos)+'. '+esc(P2.limite||'')+'</p>'+
-   '<div class="plan-grid"><div class="plan-box"><div class="h">Recursos em destaque do plano</div><ul>'+P2.destaques.slice(0,10).map(d=>'<li><span>✓</span><span>'+esc(d)+'</span></li>').join('')+'</ul></div>'+
-   '<div class="plan-box"><div class="h">O que muda na operação dele</div><ul>'+recsPlano.slice(0,8).map(r=>'<li><span>→</span><span>'+esc(r.nome)+'</span></li>').join('')+'</ul></div></div>'+
-   (P2.url?'<div class="plan-src">Fonte: '+esc(P2.url)+'</div>':'')+'</div>'+
-   '<div class="section" style="margin-top:18px"><div class="sec-title"><span class="kicker">Benefícios</span><h2>Por que cada recurso importa para esta loja</h2></div><p class="sec-sub">Cada item liga um recurso da Tray a uma evidência real desta loja — não é lista genérica.</p><div class="benef">'+
-   benef.map(r=>'<div class="b"><h4>'+esc(r.nome)+'</h4><p>'+esc(r.porque)+'</p></div>').join('')+'</div></div></div>');
-
   /* 11. argumentos */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">11 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
    A.blocos.map((b,i)=>'<div class="arg"><button class="copy" data-arg="'+i+'">Copiar</button><div class="h">'+esc(b.h)+'</div><p>'+esc(b.t)+'</p></div>').join('')+'</div>'+
    '<div class="arg" style="margin-top:16px"><button class="copy" data-arg="pitch">Copiar</button><div class="h">Resumo em uma mensagem (WhatsApp)</div><p>'+esc(A.pitch)+'</p></div></div>');
 
@@ -1429,14 +1381,15 @@ function render(){
   h.push(guiaHtml());
 
   /* 13. conclusão + ações */
+  const recsChave=[]; D.forEach(d=>(d.recursos||[]).forEach(r=>{ if(!recsChave.includes(r)) recsChave.push(r); }));
   const concl='A loja '+L.nomeLoja+' opera em '+L.plataforma.nome+' com maturidade digital '+L.score.rotulo+' ('+L.score.total+'/100). '+
     (D.length?'Os pontos mais críticos hoje: '+listPt(D.slice(0,3).map(d=>d.curto||lower1(d.titulo)))+'. ':'')+
-    'O plano '+P2.nome+' cobre esses pontos com recursos nativos, sem plugin de terceiro: '+listPt(recsPlano.slice(0,4).map(r=>lower1(r.nome)))+'. '+
-    'Para uma operação de '+L.perfil.segmento.nome.toLowerCase()+' de porte '+L.perfil.porte+', é a troca com menor risco e menor custo total.';
-  h.push('<div class="section"><div class="concl"><div class="tag">Conclusão</div><h3>Indicação: plano '+esc(P2.nome)+'</h3><p>'+esc(concl)+'</p></div>'+
+    (recsChave.length?'Na Tray, esses pontos são resolvidos com recursos nativos, sem plugin de terceiro: '+listPt(recsChave.slice(0,4).map(lower1))+'. ':'')+
+    'Para uma operação de '+L.perfil.segmento.nome.toLowerCase()+' de porte '+L.perfil.porte+', a migração é a troca com menor risco e menor custo total.';
+  h.push('<div class="section"><div class="concl"><div class="tag">Conclusão</div><h3>Recomendação: migrar para a Tray</h3><p>'+esc(concl)+'</p></div>'+
    '<div class="final-actions"><button class="btn btn-primary" id="pdf-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15l3 3 3-3"/></svg>Gerar PDF para o cliente</button>'+
    '<button class="btn btn-ghost" id="copy-summary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Copiar resumo</button></div></div>');
-  state.concl=concl; state.recsPlano=recsPlano; state.benef=benef;
+  state.concl=concl;
   resultsEl.innerHTML=h.join(''); resultsEl.className='on'; wireResults();
 }
 function fSeg(n){ if(n==null) return '—'; if(n>=1000000) return (n/1000000).toFixed(n%1000000?1:0).replace('.',',')+' mi'; if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.',',')+' mil'; return String(n); }
@@ -1542,7 +1495,7 @@ function wireResults(){
 }
 function copyText(t,btn,ok){ navigator.clipboard.writeText(t).then(()=>{const o=btn.innerHTML;btn.innerHTML=ok;setTimeout(()=>btn.innerHTML=o,1600);}).catch(()=>{}); }
 function buildSummary(){
-  const L=state.loja,P=state.plano,D=state.dores,X=[];
+  const L=state.loja,D=state.dores,X=[];
   X.push('RAIO-X DA LOJA — '+L.nomeLoja+' ('+L.host+')');
   X.push('Plataforma atual: '+L.plataforma.nome+' · maturidade '+L.score.total+'/100 ('+L.score.rotulo+')');
   if(L.hospedagem&&L.hospedagem.ok) X.push('Hospedagem: '+(L.hospedagem.provedor||L.hospedagem.org||'—')+(L.hospedagem.ip?' ('+L.hospedagem.ip+')':''));
@@ -1560,10 +1513,6 @@ function buildSummary(){
   X.push('PLACAR POR FRENTE'); L.score.eixos.forEach(e=>X.push('- '+e.nome+': '+e.valor+'/100'));
   X.push(''); X.push('DORES E GATILHOS');
   D.forEach((d,i)=>X.push((i+1)+'. '+d.titulo+' — '+d.evidencia+' → '+d.solucao));
-  X.push(''); X.push('PLANO INDICADO: '+P.nome+' ('+P.preco+')');
-  X.push(P.produtos+' · '+(P.limite||''));
-  X.push('BENEFÍCIOS PARA ESTA LOJA');
-  (state.benef||[]).slice(0,6).forEach(r=>X.push('- '+r.nome+': '+r.porque));
   X.push(''); X.push('CONCLUSÃO'); X.push(state.concl||'');
   X.push(''); X.push('MENSAGEM PRONTA'); X.push(state.args.pitch);
   return X.join('\n');
@@ -1589,7 +1538,7 @@ function generatePDF(){
   try{
     const jsPDF=window.jspdf.jsPDF, doc=new jsPDF({unit:'pt',format:'a4'});
     const P={W:595.28,H:841.89,mL:48,mR:48,mT:54,mB:64},CW=P.W-P.mL-P.mR; let y=P.mT;
-    const L=state.loja,PL=state.plano,D=state.dores,recs=state.benef||state.recsPlano||[];
+    const L=state.loja,D=state.dores;
     const INK=[15,29,46],TEAL=[15,182,160],TEALd=[10,134,118],GOLD=[196,133,26],MUT=[107,124,141],LINE=[228,234,240],MISS=[150,164,178],WARN=[192,112,63];
     const F=(s,z)=>{doc.setFont('helvetica',s);doc.setFontSize(z);};
     const T=c=>doc.setTextColor(c[0],c[1],c[2]);
@@ -1673,16 +1622,8 @@ function generatePDF(){
       'Prova social e confiança: '+(pv.length?listPt(pv):'poucos sinais na página inicial')+'.'
     ],'dot');
 
-    /* recursos do segmento */
-    doc.addPage(); y=P.mT;
-    h2('Recursos essenciais para '+L.perfil.segmento.nome.toLowerCase());
-    para('Comparamos a sua loja com o que uma operação desse segmento precisa ter. Os itens marcados com o círculo dourado dependem do painel da loja e devem ser confirmados em conversa.',9.5,MUT,'normal',13); y+=8;
-    const sim=L.recursos.filter(r=>r.estado==='sim'), nao=L.recursos.filter(r=>r.estado==='nao'), chc=L.recursos.filter(r=>r.estado==='checar');
-    sub('Já em uso na loja ('+sim.length+')',TEALd); bullets(sim.map(r=>r.nome),'check'); y+=6;
-    sub('Não encontrados na loja ('+nao.length+')',[150,120,40]); bullets(nao.map(r=>r.nome+' — '+r.porque),'cross'); y+=6;
-    if(chc.length){ sub('A confirmar com o lojista ('+chc.length+')',GOLD); bullets(chc.map(r=>r.nome),'q'); }
-
     /* dores */
+    doc.addPage(); y=P.mT;
     h2('Onde a loja está perdendo venda hoje');
     D.forEach((d,i)=>{
       need(70); F('bold',11.5); T(INK); doc.text(doc.splitTextToSize((i+1)+'. '+d.titulo,CW)[0],P.mL,y); y+=15;
@@ -1693,20 +1634,6 @@ function generatePDF(){
       if(d.recursos&&d.recursos.length){ F('bold',8.5); T(TEALd); need(13); doc.text('Recursos Tray: '+d.recursos.join(' · '),P.mL,y); y+=16; }
     });
 
-    /* plano */
-    doc.addPage(); y=P.mT;
-    Fl([227,247,242]); doc.roundedRect(P.mL,y,CW,78,10,10,'F');
-    F('bold',9.5); T(TEALd); doc.text('PLANO INDICADO PARA A SUA LOJA',P.mL+18,y+24);
-    F('bold',20); T(INK); doc.text('Tray '+PL.nome,P.mL+18,y+50);
-    F('normal',11); T(TEALd); doc.text(PL.preco,P.mL+18,y+68); y+=96;
-    para('Indicado para '+PL.indicado+'. '+PL.produtos+'. '+(PL.limite||''),10.5,INK,'normal',15); y+=8;
-    sub('Recursos em destaque do plano',TEALd); bullets(PL.destaques.slice(0,14),'check'); y+=6;
-    sub('Por que cada recurso importa para esta loja',TEALd);
-    recs.forEach(r=>{
-      need(34); F('bold',10); T(INK); const t1=doc.splitTextToSize(r.nome,CW); t1.slice(0,2).forEach(l=>{doc.text(l,P.mL,y);y+=13;});
-      F('normal',9.5); T(MUT); const t2=doc.splitTextToSize(r.porque,CW-14); t2.forEach(l=>{need(12);doc.text(l,P.mL+14,y);y+=12;}); y+=6;
-    });
-
     /* assinatura (Conclusão, Argumentos e Guia ficam de fora do PDF, por opção) */
     need(110); y+=10; Dr(LINE); doc.setLineWidth(1); doc.line(P.mL,y,P.mL+CW,y); y+=20;
     F('bold',9); T(TEALd); doc.text('PREPARADO POR',P.mL,y);
@@ -1715,13 +1642,13 @@ function generatePDF(){
     F('normal',10.5); T(MUT); doc.text(vendedor.fone,P.mL,y); y+=14;
     F('normal',9.5); T(MUT); doc.text('Consultor(a) de vendas · Tray Plataforma de E-commerce',P.mL,y); y+=20;
     F('normal',8); T(MUT);
-    doc.text(doc.splitTextToSize('Diagnóstico montado a partir das informações públicas da loja em '+new Date().toLocaleDateString('pt-BR')+'. Valores e limites do plano estão sujeitos à tabela vigente da Tray no momento da contratação.',CW),P.mL,y);
+    doc.text(doc.splitTextToSize('Diagnóstico montado a partir das informações públicas da loja em '+new Date().toLocaleDateString('pt-BR')+'. Serve de apoio à conversa comercial; confirme os pontos marcados como “a confirmar” diretamente com o lojista.',CW),P.mL,y);
     const pc=doc.getNumberOfPages();
     for(let p=1;p<=pc;p++){ doc.setPage(p); F('normal',8); T(MUT);
       doc.text('Diagnóstico '+L.host+' · '+vendedor.nome+' · '+vendedor.fone,P.mL,P.H-22);
       doc.text(p+'/'+pc,P.W-P.mR,P.H-22,{align:'right'}); }
     const slug=norm(L.host).replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
-    doc.save('diagnostico-'+(slug||'loja')+'-tray-'+norm(PL.nome).replace(/[^a-z0-9]+/g,'')+'.pdf');
+    doc.save('diagnostico-'+(slug||'loja')+'-tray.pdf');
   }catch(e){ alert('Não consegui gerar o PDF: '+(e.message||e)); }
 }
 </script>
