@@ -712,63 +712,88 @@ const SEG_DET={
  moda:['moda feminina','moda masculina','moda praia','moda [íi]ntima','vestidos?','camisetas?','camisas?','\\bcal[çc]as?\\b','jeans','blusas?','\\bsaias?\\b','lingerie','\\bcal[çc]ados?\\b','t[êe]nis','sapatos?','sand[áa]lias?','bolsas?','jaquetas?','moletom','bon[ée]s?','biqu[íi]ni','sutiã','cropped'],
  beleza:['cosm[ée]ticos?','maquiagem','perfumes?','perfumaria','skincare','skin care','dermocosm','protetor solar','s[ée]rum','hidratante corporal','batom','esmaltes?','shampoo','condicionador','\\bmakeup\\b'],
  joias:['joias?','semijoias?','folheados?','prata 925','ouro 18k','alian[çc]as?','pingentes?','colares?','brincos?','pulseiras?','an[ée]is','rel[óo]gios?'],
- eletronicos:['eletr[ôo]nicos?','notebooks?','smartphones?','\\bcelular','fone de ouvido','headset','carregador','placa de v[íi]deo','inform[áa]tica','gamer','console','mouse gamer','teclado mec'],
+ eletronicos:['eletr[ôo]nicos?','notebooks?','smartphones?','\\bcelular(?:es)?\\b','fone de ouvido','headset','placa de v[íi]deo','inform[áa]tica','\\bgamer\\b','console (?:de v[íi]deo)?game','mouse gamer','teclado mec[âa]nico','\\bmonitor(?:es)?\\b','\\bssd\\b','processador','placa[- ]m[ãa]e','webcam'],
  casa:['decora[çc][ãa]o','m[óo]veis?','\\bsof[áa]','poltronas?','lumin[áa]rias?','tapetes?','cortinas?','cama mesa e banho','enxoval','utilidades dom[ée]sticas','organizador'],
  alimentos:['alimentos?','bebidas?','\\bvinhos?','cervejas?','\\bcaf[ée]s?','chocolates?','gourmet','mercearia','hortifruti','\\bdoces?\\b','suplemento alimentar'],
- pet:['pet shop','petshop','ra[çc][ãa]o','coleiras?','aqu[áa]rio','veterin[áa]ri','areia higi[êe]nica','petiscos?'],
+ pet:['pet shop','petshop','\\bpets?\\b','ra[çc][ãa]o','coleiras?','aqu[áa]rio','veterin[áa]ri','areia higi[êe]nica','petiscos?'],
  esporte:['suplementos?','\\bwhey','academia','fitness','muscula[çc][ãa]o','bicicletas?','ciclismo','\\bcorrida\\b','camping','\\bpesca\\b','crossfit'],
  infantil:['beb[êe]s?','\\binfantil\\b','enxoval de beb[êe]','fraldas?','carrinho de beb[êe]','ber[çc]o','brinquedos?','maternidade'],
- automotivo:['automotivos?','autope[çc]as?','\\bpneus?\\b','[óo]leo lubrificante','far[óo]l','som automotivo','pe[çc]as para carro','pe[çc]as para moto','acess[óo]rios automotivos'],
+ automotivo:['automotiv[ao]s?','autope[çc]as?','pe[çc]as automotivas','pe[çc]as para (?:carro|moto|ve[íi]culo)','\\bpneus?\\b','[óo]leo (?:lubrificante|de motor|automotivo)','far[óo]is?','lanternas?','som automotivo','central multim[íi]dia','acess[óo]rios? (?:automotivos?|para (?:carro|moto|ve[íi]culo))','bateria automotiva','amortecedor','pastilhas? de freio','vela de igni[çc][ãa]o','retrovisor','escapamento','calotas?','tapetes? automotivos?','capa de banco','filtro de (?:[óo]leo|ar|combust[íi]vel)','radiador','limpador de para-?brisa'],
  papelaria:['papelaria','cadernos?','canetas?','material escolar','planner','adesivos?','artigos de festa'],
  ferramentas:['ferramentas?','furadeira','parafusos?','material de constru[çc][ãa]o','el[ée]trica','hidr[áa]ulica','tintas?']
 };
 function detectarSegmento(sig){
-  // sig pode ser string (compat) ou {forte, corpo}: 'forte' = título+descrição+categorias (peso 3)
-  const forte = typeof sig==='object' ? norm(sig.forte||'') : '';
-  const corpo = typeof sig==='object' ? norm(sig.corpo||'') : norm(sig||'');
+  const forte = norm(sig.forte||'');
+  const corpo = norm(sig.corpo||'');
   const geral = SEGMENTOS.find(s=>s.id==='geral')||SEGMENTOS[SEGMENTOS.length-1];
-  let best={seg:geral,score:0,distintos:0,termos:[]};
-  SEGMENTOS.forEach(s=>{
-    if(s.id==='geral') return;
-    const termos=SEG_DET[s.id]||[];
-    let score=0, distintos=0, achou=[];
-    termos.forEach(t=>{
-      const r=new RegExp(t,'i');
-      if(forte&&r.test(forte)){ score+=3; distintos++; achou.push(t); }
-      else if(r.test(corpo)){ score+=1; distintos++; achou.push(t); }
+  const limpaTermo=t=>t.replace(/\\+b|\\\\|[?()]/g,'').replace(/\[.*?\]/g,'').replace(/\s*:.*/,'').trim();
+  // pontua um texto contra os segmentos conhecidos
+  function pontuar(txtForte,txtCorpo){
+    const sc=[];
+    SEGMENTOS.forEach(s=>{ if(s.id==='geral') return;
+      const termos=SEG_DET[s.id]||[]; let score=0,dist=0,ach=[];
+      termos.forEach(t=>{ const r=new RegExp(t,'i');
+        if(txtForte&&r.test(txtForte)){ score+=3; dist++; ach.push(limpaTermo(t)); }
+        else if(txtCorpo&&r.test(txtCorpo)){ score+=1; dist++; ach.push(limpaTermo(t)); } });
+      if(score>0) sc.push({seg:s,score,dist,termos:ach});
     });
-    if(score>best.score||(score===best.score&&distintos>best.distintos)) best={seg:s,score,distintos,termos:achou};
-  });
-  const ev = best.termos.slice(0,4).map(t=>t.replace(/\\+b|\\\\|[?()]/g,'').replace(/\[.*?\]/g,'')).join(', ');
-  // 1) segmento conhecido com boa evidência -> nome limpo + recursos específicos do ramo
-  if(best.score>=6 && best.distintos>=2){
-    return {seg:best.seg, confianca: best.score>=10?'alta':'média', score:best.score, evidencia:ev};
+    sc.sort((a,b)=>b.score-a.score||b.dist-a.dist);
+    return sc;
   }
-  // 2) qualquer outro nicho -> lê o rótulo do próprio site (não fica preso à lista)
-  const rot = (typeof sig==='object') ? rotuloSegmento(sig) : '';
-  if(rot){
-    const seg={ id:'custom', nome:rot,
-      perfil:'lojas de '+lower1(rot)+' que querem estruturar a operação e vender mais online',
-      extras:(geral.extras||[]) };
-    return {seg, confianca:'lido do site', score:best.score, evidencia:'identificado pela descrição/categorias da própria loja'};
+  // casa um rótulo curto com um segmento conhecido (só se for match forte e sem dúvida)
+  function classificarRotulo(rot){
+    const sc=pontuar(norm(rot),'');
+    if(sc.length&&sc[0].score>=6&&sc[0].dist>=2&&(sc[0].score-((sc[1]||{}).score||0))>=3) return sc[0].seg;
+    return null;
   }
-  // 3) conhecido com evidência fraca
-  if(best.score>=3) return {seg:best.seg, confianca:'baixa', score:best.score, evidencia:ev};
-  // 4) sem sinal claro
-  return {seg:geral, confianca:'baixa', score:best.score, evidencia:''};
+  const custom=nome=>({id:'custom',nome:nome,perfil:'lojas de '+lower1(nome)+' que querem estruturar a operação e vender mais online',extras:(geral.extras||[])});
+
+  const sc=pontuar(forte,corpo);
+  const top=sc[0], run=sc[1];
+  const margem = top? top.score-((run||{}).score||0):0;
+  const evOf=t=>t.termos.slice(0,4).join(', ');
+
+  // 1) o que a LOJA declara explicitamente vender manda (mais confiável que adivinhar por palavra)
+  const rotExpl=rotuloSegmento(sig,true);
+  if(rotExpl){
+    const kn=classificarRotulo(rotExpl);
+    if(kn) return {seg:kn,confianca:'alta',evidencia:'declarado pela loja: "'+rotExpl+'"'};
+    return {seg:custom(rotExpl),confianca:'alta',evidencia:'declarado pela loja: "'+rotExpl+'"'};
+  }
+  // 2) segmento conhecido só quando é forte E vence o 2º por margem clara (evita automotivo->eletronicos)
+  if(top && top.score>=6 && top.dist>=2 && margem>=2){
+    return {seg:top.seg,confianca: top.score>=10?'alta':'média',evidencia:evOf(top)};
+  }
+  // 3) rótulo livre do site (keywords/categorias) — cobre qualquer nicho
+  const rotAny=rotuloSegmento(sig,false);
+  if(rotAny){
+    const kn=classificarRotulo(rotAny);
+    if(kn) return {seg:kn,confianca:'média',evidencia:'categorias/keywords da loja'};
+    return {seg:custom(rotAny),confianca:'lido do site',evidencia:'categorias/keywords da loja'};
+  }
+  // 4) conhecido com evidência média
+  if(top && top.score>=6 && top.dist>=2){
+    return {seg:top.seg,confianca:'média',evidencia:evOf(top)};
+  }
+  // 5) conhecido fraco / sem sinal
+  if(top && top.score>=3) return {seg:top.seg,confianca:'baixa',evidencia:evOf(top)};
+  return {seg:geral,confianca:'baixa',evidencia:''};
 }
-/* rótulo livre do segmento — extraído do que a própria loja declara vender */
-function rotuloSegmento(sig){
+/* rótulo livre do segmento — extraído do que a própria loja declara vender.
+   explicitOnly=true usa só padrões fortes ("loja de X", "especializada em X"). */
+function rotuloSegmento(sig,explicitOnly){
   const cand=[];
-  const push=s=>{ s=(s||'').replace(/\s+/g,' ').trim(); if(s.length>=3&&s.length<=36) cand.push(s); };
+  const push=s=>{ s=(s||'').replace(/\s+/g,' ').trim(); if(s.length>=3&&s.length<=40) cand.push(s); };
   const txt=((sig.titulo||'')+' . '+(sig.desc||'')+' . '+(sig.forte||''));
   let m;
-  if(m=txt.match(/loja (?:online |virtual )?(?:especializada )?(?:de|em) ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
-  if(m=txt.match(/especializad[ao] em ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
-  if(m=txt.match(/(?:venda|comércio|com[ée]rcio) de ([a-zà-ú0-9 &\/-]{3,36})/i)) push(m[1]);
-  if(m=txt.match(/(?:artigos|produtos) (?:de|para) ([a-zà-ú0-9 &\/-]{3,36})/i)) push('Artigos para '+m[1]);
-  (sig.keywords||'').split(/[,;|]/).slice(0,2).forEach(k=>push(k));
-  (sig.cats||[]).slice(0,1).forEach(c=>push(c));
+  if(m=txt.match(/loja (?:online |virtual )?(?:especializada )?(?:de|em) ([a-zà-ú0-9 &\/-]{3,40})/i)) push(m[1]);
+  if(m=txt.match(/especializad[ao] em ([a-zà-ú0-9 &\/-]{3,40})/i)) push(m[1]);
+  if(m=txt.match(/(?:venda|com[ée]rcio) de ([a-zà-ú0-9 &\/-]{3,40})/i)) push(m[1]);
+  if(m=txt.match(/(?:artigos|produtos) (?:de|para) ([a-zà-ú0-9 &\/-]{3,40})/i)) push((/artigos/i.test(m[0])?'Artigos para ':'Produtos para ')+m[1]);
+  if(!explicitOnly){
+    (sig.keywords||'').split(/[,;|]/).slice(0,2).forEach(k=>push(k));
+    (sig.cats||[]).slice(0,1).forEach(c=>push(c));
+  }
   let r=cand.find(Boolean)||'';
   r=r.replace(/[.,;:]+$/,'').replace(/\b(online|virtual|oficial|loja|store|shop|melhor|sua)\b/gi,'').replace(/\s{2,}/g,' ').trim();
   for(let i=0;i<3;i++) r=r.replace(/\s+(para|de|da|do|das|dos|e|com|a|o|em|no|na|nos|nas)$/i,'').trim();
