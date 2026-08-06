@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Raio-X da Loja + Plano Tray · Time de Vendas</title>
+<title>Raio-X da Loja Migração · Time de Vendas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -243,14 +243,13 @@
 </head>
 <body>
 <header class="topbar"><div class="wrap">
-  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja</b></span></div>
+  <div class="brand"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span><span><b>Raio-X da Loja Migração</b></span></div>
   <span class="tag">Roda no navegador · sem instalação</span>
 </div></header>
 <main class="wrap">
   <section class="hero">
-    <h1>Raio-X <span class="u">da Loja do Lojista</span></h1>
+    <h1>Raio-X da Loja <span class="u">Migração</span></h1>
     <p class="lead">Cole o endereço da loja do lojista. A ferramenta identifica a plataforma em uso, mapeia experiência de compra, performance, SEO, marketing, tráfego e perfil do negócio, e aponta as dores prováveis com os argumentos de venda e um guia de reunião — mais o PDF assinado para enviar depois.</p>
-    <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#B8912E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8h.01M11 12h1v4h1"/></svg><span>A leitura das páginas usa um relay público, porque o navegador não acessa outros sites diretamente. Se um link não carregar, clique em analisar de novo ou ative o modo de colar código-fonte. Tudo o que aparece aqui é lido da página pública no momento da análise.</span></div>
 
     <div class="panel">
       <div class="panel-head"><span class="eyebrow">Dados da análise</span><span class="hint">Leva de 10 a 40 segundos</span></div>
@@ -259,16 +258,13 @@
           <label for="loja-url">Endereço da loja do lojista</label>
           <input class="inp" id="loja-url" type="url" placeholder="https://www.lojadocliente.com.br" />
           <span class="tip">Use a página inicial. É de lá que sai a maior parte do diagnóstico.</span>
-          <textarea class="paste" id="loja-paste" placeholder="Modo manual: abra a loja, use Ctrl+U (código-fonte), Ctrl+A, Ctrl+C e cole aqui."></textarea>
         </div>
       </div>
       <div class="panel-actions">
         <button class="btn btn-primary" id="run-btn"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Analisar loja</button>
         <button class="btn btn-ghost" id="ex-btn">Preencher com exemplo</button>
         <label class="toggle"><input type="checkbox" id="deep-toggle" checked/><span class="sw"></span>Ler sitemap e robots (mais preciso)</label>
-        <label class="toggle"><input type="checkbox" id="manual-toggle"/><span class="sw"></span>Colar conteúdo manualmente</label>
       </div>
-      <p class="hint" style="margin:10px 0 0">Lojas muito grandes às vezes bloqueiam a leitura automática. Nesse caso, ative o modo de colar conteúdo.</p>
       <div class="status" id="status"></div>
       <div class="alert" id="alert"></div>
     </div>
@@ -531,7 +527,7 @@ const SEGMENTOS=[
 
 /* 2.5 sinais rastreados no código da loja */
 const SINAIS={
- analytics:[['Google Analytics 4',/googletagmanager\.com\/gtag\/js\?id=G-|gtag\(\s*['\"]config['\"]\s*,\s*['\"]G-|\bG-[A-Z0-9]{9,12}\b/],['Google Tag Manager',/googletagmanager\.com\/gtm\.js|\bGTM-[A-Z0-9]{5,8}\b/],['Meta Pixel',/connect\.facebook\.net\/[a-z_]+\/fbevents\.js|fbq\(\s*['\"]init|facebook\.com\/tr\?id=/],['Google Ads',/googleadservices\.com\/pagead\/conversion|gtag\(\s*['\"]config['\"]\s*,\s*['\"]AW-|\bAW-\d{9,}/],['TikTok Pixel',/analytics\.tiktok\.com\/i18n\/pixel|ttq\.(load|track|page)\b/],['Pinterest Tag',/\bpintrk\(|s\.pinimg\.com\/ct\/core\.js/],['Hotjar',/static\.hotjar\.com|\bhjSiteSettings\b/],['Microsoft Clarity',/clarity\.ms\/tag|function\(c,l,a,r,i,t,y\)/],['RD Station',/d335luupugsy2\.cloudfront\.net|rdstation\.com\.br\/track|RDStationForms/],['Klaviyo',/static\.klaviyo\.com|klaviyo\.js/],['Mailchimp',/chimpstatic\.com|list-manage\.com\/subscribe/],['ActiveCampaign',/\.activehosted\.com|trackcmp\.net/]],
+ analytics:[['Google Analytics 4',/googletagmanager\.com\/gtag\/js\?id=G-|gtag\(\s*['\"]config['\"]\s*,\s*['\"]G-[A-Z0-9]{6,}/],['Google Tag Manager',/googletagmanager\.com\/gtm\.js|['\"]GTM-[A-Z0-9]{4,8}['\"]/],['Meta Pixel',/connect\.facebook\.net\/[a-z_]+\/fbevents\.js|fbq\(\s*['\"]init|facebook\.com\/tr\?id=/],['Google Ads',/googleadservices\.com\/pagead\/conversion|gtag\(\s*['\"]config['\"]\s*,\s*['\"]AW-|\bAW-\d{9,}/],['TikTok Pixel',/analytics\.tiktok\.com\/i18n\/pixel|ttq\.(load|track|page)\b/],['Pinterest Tag',/\bpintrk\(|s\.pinimg\.com\/ct\/core\.js/],['Hotjar',/static\.hotjar\.com|\bhjSiteSettings\b/],['Microsoft Clarity',/clarity\.ms\/tag|function\(c,l,a,r,i,t,y\)/],['RD Station',/d335luupugsy2\.cloudfront\.net|rdstation\.com\.br\/track|RDStationForms/],['Klaviyo',/static\.klaviyo\.com|klaviyo\.js/],['Mailchimp',/chimpstatic\.com|list-manage\.com\/subscribe/],['ActiveCampaign',/\.activehosted\.com|trackcmp\.net/]],
  atendimento:[['WhatsApp',/wa\.me|api\.whatsapp|whatsapp/i],['Chat online',/jivochat|tawk\.to|zendesk|crisp\.chat|octadesk|movidesk|olark|intercom|zenvia/i],['Chatbot',/chatbot|bot de atendimento|blip\.ai|take\.net/i],['Telefone / SAC visível',/\(\d{2}\)\s?\d{4,5}-?\d{4}|0800/i]],
  prova:[['Avaliações de produto',/trustvox|yourviews|avalia[çc][õo]es|review|estrelas/i],['Depoimentos',/depoiment|o que dizem|clientes satisfeit/i],['Selo de segurança',/site blindado|selo|ssl|seguran[çc]a|google safe/i],['Reclame Aqui',/reclame ?aqui/i],['CNPJ no rodapé',/cnpj/i],['Política de troca e devolução',/troca e devolu|pol[íi]tica de troca|devolu[çc][ãa]o/i]],
  canais:[['Instagram',/instagram\.com/i],['Facebook',/facebook\.com/i],['TikTok',/tiktok\.com/i],['YouTube',/youtube\.com|youtu\.be/i],['Pinterest',/pinterest\./i],['Mercado Livre',/mercadolivre|mercadolibre/i],['Shopee',/shopee\.com/i],['Amazon',/amazon\.com\.br/i],['Magalu',/magazineluiza|magalu/i],['Shein / TikTok Shop',/shein\.com|tiktok ?shop/i]],
@@ -564,13 +560,14 @@ async function fetchJson(url,timeout=9000){
   catch(e){ clearTimeout(t); return null; }
 }
 async function sondar(origin){
-  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false,sitemapsLidos:0,sitemapsTotais:0,parcial:false};
+  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false,sitemapsLidos:0,sitemapsTotais:0,parcial:false,produtoUrl:''};
   if(!origin) return out;
   const ehProduto=l=>/\/(produto|produtos|product|products)\//i.test(l)||/\/p\/[^/]+/i.test(l);
   const ehCategoria=l=>/\/(categoria|categorias|category|categories|collections?|departamento|linha|colecao|cole[çc][ãa]o|marca|marcas)\//i.test(l);
   const contar=(xml)=>{
     const locs=[...(xml||'').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
     out.urls+=locs.length;
+    if(!out.produtoUrl){ const pu=locs.find(ehProduto); if(pu) out.produtoUrl=pu; }
     out.produtos+=locs.filter(ehProduto).length;
     out.categorias+=locs.filter(ehCategoria).length;
     if(locs.some(l=>/\/blog|\/noticias|\/dicas/i.test(l))) out.blog=true;
@@ -910,44 +907,73 @@ function detectarSocial(html,dom,L){
   const waCount=(html.match(/wa\.me\/|api\.whatsapp\.com\/send|whatsapp:\/\//gi)||[]).length;
   const waPrimary=waCount>0 && (L.exp.checkoutExterno||!L.exp.pagamentos.filter(x=>x.ok).length || /comprar pelo whats|peça pelo whats|finalize pelo whats/i.test(html));
   const marketplaces=(L.mkt.canais||[]).filter(c=>/Mercado Livre|Shopee|Amazon|Magalu|Shein|TikTok Shop/i.test(c.nome)&&c.ok).map(c=>c.nome);
-  return {redes,agregador,shopHints,waCount,waPrimary,marketplaces,
+  const reclameAqui=/reclameaqui\.com\.br/i.test(html);
+  return {redes,agregador,shopHints,waCount,waPrimary,marketplaces,reclameAqui,
     auto:{}, /* preenchido por lerRedesSociais (assíncrono, best-effort) */
     manual:{sacolinha:'',bio:'',reclamacoes:'',conteudo:''}};
 }
 /* leitura best-effort de seguidores nos perfis públicos — SÓ aceita número explícito */
 async function lerRedesSociais(social){
   const out={};
-  const parseIgFb=(txt)=>{
-    if(!txt) return null;
-    let m=txt.match(/([\d.,]+\s*(?:mil|mi|k|m|milh[õo]es|mil seguidores)?)\s*(?:seguidores|followers|curtidas|likes|gostam disto|seguidor)/i);
-    if(!m) m=(txt.match(/og:description["']\s+content=["']([^"']*(?:seguidores|followers)[^"']*)/i)||[])[1];
+  // parseia "1.234", "10,5 mil", "1.2K", "3 mi", "2M", "1,2 milhão"
+  const parseNum=(s)=>{
+    if(!s) return null;
+    const m=String(s).match(/([\d][\d.,]*)\s*(mil|mi|milh[õo]es|milh[ãa]o|k|m|b)?/i);
     if(!m) return null;
-    const s=(typeof m==='string'?m:m[1]||m[0]);
-    const n=s.match(/([\d.,]+)\s*(mil|mi|k|m|milh[õo]es)?/i);
-    if(!n) return null;
-    let v=parseFloat(n[1].replace(/\./g,'').replace(',','.')); const u=(n[2]||'').toLowerCase();
-    if(/mil|k/.test(u)) v*=1000; if(/mi|m|milh/.test(u)) v*=1000000;
+    let raw=m[1], u=(m[2]||'').toLowerCase();
+    // se tem sufixo, o número é decimal curto (10,5K); senão é inteiro com separador de milhar (1.234)
+    let v;
+    if(u){ v=parseFloat(raw.replace(/\./g,'').replace(',','.')); }
+    else { v=parseFloat(raw.replace(/[.,]/g,'')); }
+    if(isNaN(v)) return null;
+    if(/mil|k/.test(u)) v*=1000;
+    if(/mi|^m$|milh/.test(u)) v*=1000000;
+    if(u==='b') v*=1000000000;
     return v>=1?Math.round(v):null;
   };
-  const attempts=[
-    ['instagram',social.redes.instagram],
-    ['facebook',social.redes.facebook],
-    ['tiktok',social.redes.tiktok]
-  ];
-  for(const [rede,info] of attempts){
+  const ogDesc=(h)=>{ const m=h.match(/<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)/i)||h.match(/<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)/i); return m?m[1]:''; };
+  const fromDesc=(h)=>{ const d=ogDesc(h); const m=d.match(/([\d][\d.,]*\s*(?:mil|mi|milh[õo]es|milh[ãa]o|k|m)?)\s*(?:seguidores|followers|inscritos|subscribers|curtidas|likes|gostam)/i); return m?parseNum(m[1]):null; };
+
+  const parsers={
+    instagram:(h)=>{
+      let m=h.match(/"edge_followed_by":\s*\{\s*"count":\s*(\d+)/); if(m) return {n:+m[1],f:'perfil'};
+      m=h.match(/"follower_count":\s*(\d+)/); if(m) return {n:+m[1],f:'perfil'};
+      const d=fromDesc(h); if(d) return {n:d,f:'descrição do perfil'};
+      return null;
+    },
+    facebook:(h)=>{
+      let m=h.match(/([\d][\d.,]*\s*(?:mil|mi|k|m)?)\s*(?:curtidas|likes|pessoas curtiram|gostam disto|seguidores|followers)/i);
+      if(m){ const n=parseNum(m[1]); if(n) return {n,f:'página'}; }
+      const d=fromDesc(h); if(d) return {n:d,f:'descrição da página'};
+      return null;
+    },
+    tiktok:(h)=>{
+      let m=h.match(/"followerCount":\s*(\d+)/); if(m) return {n:+m[1],f:'perfil'};
+      m=h.match(/"stats":\{[^}]*"followerCount":(\d+)/); if(m) return {n:+m[1],f:'perfil'};
+      const d=fromDesc(h); if(d) return {n:d,f:'descrição do perfil'};
+      return null;
+    },
+    youtube:(h)=>{
+      let m=h.match(/"subscriberCountText":\s*\{[^}]*"simpleText":"([^"]+)"/)||h.match(/"subscriberCountText":\s*\{[^}]*"content":"([^"]+)"/);
+      if(m){ const n=parseNum(m[1].replace(/\u00a0/g,' ')); if(n) return {n,f:'canal'}; }
+      m=h.match(/"subscriberCount":"(\d+)"/); if(m) return {n:+m[1],f:'canal'};
+      const d=fromDesc(h); if(d) return {n:d,f:'descrição do canal'};
+      return null;
+    },
+    pinterest:(h)=>{
+      let m=h.match(/"follower_count":\s*(\d+)/); if(m) return {n:+m[1],f:'perfil'};
+      const d=fromDesc(h); if(d) return {n:d,f:'descrição do perfil'};
+      return null;
+    }
+  };
+  const ordem=['instagram','tiktok','youtube','facebook','pinterest'];
+  for(const rede of ordem){
+    const info=social.redes[rede];
     if(!info||!info.ativo||!info.url) continue;
     try{
-      const h=await fetchText(info.url,11000);
-      let seg=null,fonte='';
-      if(rede==='tiktok'){
-        const m=h.match(/"followerCount":\s*(\d+)/); if(m){ seg=parseInt(m[1],10); fonte='perfil'; }
-        if(seg==null){ const d=(h.match(/og:description["']\s+content=["']([^"']+)/i)||[])[1]; const mm=d&&d.match(/([\d.,]+[KMmilhõesi ]*)\s*(?:Followers|seguidores)/i); if(mm){ seg=parseIgFb(mm[0]); fonte='descrição'; } }
-      } else {
-        const d=(h.match(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)/i)||h.match(/<meta[^>]+content=["']([^"']*(?:seguidores|followers)[^"']*)["'][^>]*property=["']og:description/i)||[])[1];
-        seg=parseIgFb(d||''); fonte='descrição do perfil';
-        if(seg==null){ const j=h.match(/"edge_followed_by":\s*\{\s*"count":\s*(\d+)/); if(j){ seg=parseInt(j[1],10); fonte='perfil'; } }
-      }
-      out[rede]= seg!=null? {seguidores:seg,fonte,lido:true} : {seguidores:null,fonte:'perfil não retornou o número (login/JS)',lido:false};
+      const h=await fetchText(info.url,12000);
+      const r=parsers[rede]?parsers[rede](h):null;
+      out[rede]= r&&r.n? {seguidores:r.n,fonte:r.f,lido:true} : {seguidores:null,fonte:'perfil exige login/JS — não retornou o número',lido:false};
     }catch(e){ out[rede]={seguidores:null,fonte:'não acessível pelo relay',lido:false}; }
   }
   return out;
@@ -1002,6 +1028,95 @@ function montarScore(L){
   eixos.push({nome:'Confiança e atendimento',valor:pct(100*(sat(m.prova.filter(x=>x.ok).length,4)*0.65+sat(m.atendimento.filter(x=>x.ok).length,2)*0.35))});
   const total=pct(eixos.reduce((a,x)=>a+x.valor,0)/eixos.length);
   return {eixos,total,rotulo: total>=75?'madura':total>=55?'em evolução':total>=35?'com lacunas':'no básico'};
+}
+
+/* ---------- análise de uma página de produto (amostra) ---------- */
+function acharProdutoUrl(dom, extras, origin){
+  if(extras&&extras.produtoUrl) return extras.produtoUrl;
+  const re=/\/(produto|produtos|product|products)\/|\/p\/[^/]+/i;
+  const links=[...dom.querySelectorAll('a[href]')].map(a=>a.getAttribute('href')||'').filter(h=>re.test(h));
+  if(!links.length) return '';
+  let u=links.find(h=>/^https?:/i.test(h))||links[0];
+  if(u&&!/^https?:/i.test(u)){ try{ u=new URL(u,origin||'https://loja').href; }catch(e){} }
+  return u||'';
+}
+function analisarProduto(html,url){
+  const out={ok:false,url:url||'',nome:'',preco:'',precoNum:0,parcelamento:'',pixDesc:false,
+    disponibilidade:'',rating:null,reviews:null,imagens:0,variacoes:false,varTipo:[],
+    comprar:false,carrinho:false,frete:false,descricaoTam:0,breadcrumb:false,relacionados:false,
+    avaliacaoWidget:false,selos:false};
+  if(!html||html.length<400) return out;
+  let dom; try{ dom=new DOMParser().parseFromString(html,'text/html'); }catch(e){ return out; }
+  const meta=n=>{ const el=dom.querySelector('meta[property="'+n+'"],meta[name="'+n+'"]'); return el?el.getAttribute('content'):''; };
+  const txt=(dom.body?dom.body.textContent:html).replace(/\s+/g,' ');
+  // JSON-LD Product
+  let ld=null;
+  dom.querySelectorAll('script[type="application/ld+json"]').forEach(s=>{ if(ld) return; try{ const j=JSON.parse(s.textContent); const arr=Array.isArray(j)?j:(j['@graph']||[j]); const pr=arr.find(x=>x&&/product/i.test([].concat(x['@type']||'').join(' '))); if(pr) ld=pr; }catch(e){} });
+  out.nome=(ld&&ld.name)||meta('og:title')||(dom.querySelector('h1')?dom.querySelector('h1').textContent.trim():'')||'';
+  out.nome=out.nome.replace(/\s+/g,' ').trim().slice(0,90);
+  // preço
+  const pcs=[]; if(typeof _ldWalk==='function'&&ld) _ldWalk(ld,pcs,false);
+  if(pcs.length){ out.precoNum=Math.min(...pcs.filter(n=>n>0)); }
+  if(!out.precoNum){ const m=txt.match(/R\$\s*([\d.]+),(\d{2})/); if(m) out.precoNum=parseFloat(m[1].replace(/\./g,'')+'.'+m[2]); }
+  if(out.precoNum) out.preco='R$ '+out.precoNum.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+  const mp=txt.match(/(\d{1,2})\s*x\s*(?:de\s*)?R\$\s*[\d.]+,\d{2}/i); if(mp) out.parcelamento=mp[0].replace(/\s+/g,' ');
+  out.pixDesc=/pix[^.]{0,30}(desconto|off|%|à vista)|desconto[^.]{0,20}pix/i.test(txt);
+  // disponibilidade
+  const av=(ld&&ld.offers&&([].concat(ld.offers)[0]||{}).availability)||'';
+  if(/InStock/i.test(av)||/em estoque|dispon[íi]vel|comprar/i.test(txt)) out.disponibilidade='em estoque';
+  if(/OutOfStock/i.test(av)||/esgotado|indispon[íi]vel|sem estoque|avise-me/i.test(txt)) out.disponibilidade='esgotado';
+  // avaliações
+  const ar=ld&&ld.aggregateRating;
+  if(ar){ if(ar.ratingValue!=null) out.rating=parseFloat(String(ar.ratingValue).replace(',','.')); if(ar.reviewCount!=null||ar.ratingCount!=null) out.reviews=parseInt(ar.reviewCount||ar.ratingCount,10); }
+  if(out.reviews==null){ const mr=txt.match(/(\d{1,5})\s*(?:avalia[çc][õo]es|reviews|coment[áa]rios)/i); if(mr) out.reviews=parseInt(mr[1],10); }
+  out.avaliacaoWidget=/trustvox|yourviews|konfidency|avaliacao|avalia[çc][ãa]o|estrela|star-rating|rating/i.test(html);
+  // imagens do produto
+  out.imagens=(html.match(/<img\b/gi)||[]).length;
+  // variações
+  out.variacoes=/variacao|varia[çc][ãa]o|sku-selector|swatch|select[^>]*(tamanho|cor|size|color)|data-variant|product-option/i.test(html);
+  if(/tamanho|\bsize\b/i.test(html)) out.varTipo.push('tamanho');
+  if(/\bcor\b|\bcolor\b/i.test(html)) out.varTipo.push('cor');
+  // ações
+  out.comprar=/comprar agora|comprar\b|finalizar compra|buy now/i.test(txt);
+  out.carrinho=/adicionar ao carrinho|add to cart|colocar no carrinho|adicionar à sacola/i.test(txt);
+  out.frete=/calcular frete|calcule o frete|\bcep\b|frete e prazo|simular frete|shipping-calc/i.test(txt+' '+html);
+  out.relacionados=/produtos relacionados|voc[êe] tamb[ée]m|quem viu.*comprou|compre junto|relacionados|recomendados/i.test(txt);
+  out.selos=/site seguro|site blindado|ssl|selo|reclame aqui|compra segura|loja protegida/i.test(html);
+  // descrição
+  const desc=(ld&&ld.description)||meta('og:description')||'';
+  out.descricaoTam=Math.max(desc.length, (txt.match(/descri[çc][ãa]o do produto([\s\S]{0,1200})/i)||['',''])[1].length);
+  out.breadcrumb=/breadcrumb|\bvoc[êe] est[áa] em\b|home\s*[»>\/]\s*/i.test(html);
+  out.ok=!!(out.nome||out.precoNum);
+  return out;
+}
+/* ---------- relevância no mercado (só com evidência concreta; nunca achismo) ---------- */
+function relevanciaMercado(L){
+  const ev=[]; let pontos=0;
+  // seguidores (lidos automaticamente OU informados manualmente pelo vendedor)
+  const S=L.social||{redes:{},auto:{},manual:{}};
+  const man=(S.manual&&S.manual.seguidores)||{};
+  let seg=0, temSeg=false;
+  Object.keys(S.redes||{}).forEach(k=>{ if(!S.redes[k]||!S.redes[k].ativo) return;
+    const a=S.auto&&S.auto[k]; const v=parseInt(String(man[k]||'').replace(/\D/g,''),10)|| (a&&a.lido?a.seguidores:0);
+    if(v>0){ seg+=v; temSeg=true; } });
+  if(temSeg){ ev.push(seg.toLocaleString('pt-BR')+' seguidores somados nas redes'); pontos += seg>=100000?3:seg>=30000?2:seg>=5000?1:0; }
+  // avaliações no produto amostrado
+  const rev=L.produto&&L.produto.ok?L.produto.reviews:null;
+  if(rev!=null&&rev>0){ ev.push(rev+' avaliações no produto analisado'); pontos += rev>=500?3:rev>=100?2:rev>=20?1:0; }
+  // catálogo real
+  if(L.seo.produtosFonte==='sitemap'&&L.perfil.produtos>0){ ev.push(L.perfil.produtos+' produtos no catálogo'); pontos += L.perfil.produtos>=2000?2:L.perfil.produtos>=500?1:0; }
+  // marketplaces / canais
+  const mkt=(L.social&&L.social.marketplaces)||[];
+  if(mkt.length){ ev.push('presença em marketplace ('+mkt.join(', ')+')'); pontos+=1; }
+  // Reclame Aqui (sinal de operação com volume)
+  if(L.social&&L.social.reclameAqui){ ev.push('perfil no Reclame Aqui'); pontos+=1; }
+  let nivel, determinavel=true;
+  if(!ev.length){ determinavel=false; nivel='não determinável'; }
+  else if(pontos>=5) nivel='alta — loja consolidada';
+  else if(pontos>=3) nivel='média — presença relevante';
+  else if(pontos>=1) nivel='inicial — presença em construção';
+  else { determinavel=false; nivel='não determinável'; }
+  return {nivel,determinavel,evidencias:ev,pontos};
 }
 
 /* ---------- 5. plano da Tray, dores e argumentos ---------- */
@@ -1204,9 +1319,8 @@ let state={loja:null,dores:[],args:null,guia:null};
 let vendedor={nome:'',fone:''};
 const statusEl=document.getElementById('status'),alertEl=document.getElementById('alert'),
       runBtn=document.getElementById('run-btn'),resultsEl=document.getElementById('results'),
-      manualToggle=document.getElementById('manual-toggle'),deepToggle=document.getElementById('deep-toggle');
+      deepToggle=document.getElementById('deep-toggle');
 
-manualToggle.addEventListener('change',()=>{ document.querySelectorAll('textarea.paste').forEach(t=>t.classList.toggle('on',manualToggle.checked)); });
 document.getElementById('ex-btn').addEventListener('click',()=>{
   document.getElementById('loja-url').value='https://www.lojasrenner.com.br';
 });
@@ -1218,14 +1332,13 @@ runBtn.addEventListener('click',run);
 async function run(){
   alertEl.className='alert'; resultsEl.className=''; resultsEl.innerHTML='';
   const lojaUrl=normUrl(document.getElementById('loja-url').value);
-  const lojaPaste=document.getElementById('loja-paste').value.trim();
-  if(!lojaUrl&&!lojaPaste){ alertEl.className='alert on'; alertEl.textContent='Informe o endereço da loja do lojista para começar a análise.'; return; }
+  if(!lojaUrl){ alertEl.className='alert on'; alertEl.textContent='Informe o endereço da loja do lojista para começar a análise.'; return; }
   runBtn.disabled=true;
-  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Consultando hospedagem (DNS)'},{s:'',t:'Lendo redes sociais do lojista'},{s:'',t:'Montando diagnóstico e discurso'}];
+  const lines=[{s:'load',t:'Lendo '+(shortUrl(lojaUrl)||'o conteúdo colado')+'…'},{s:'',t:'Sondando sitemap e robots'},{s:'',t:'Consultando hospedagem (DNS)'},{s:'',t:'Lendo redes sociais do lojista'},{s:'',t:'Analisando uma página de produto'},{s:'',t:'Montando diagnóstico e discurso'}];
   setStatus(lines);
   let loja=null;
   try{
-    const html=(lojaPaste&&lojaPaste.length>500)?lojaPaste:await fetchText(lojaUrl);
+    const html=await fetchText(lojaUrl);
     lines[0]={s:'ok',t:'Loja lida: '+(shortUrl(lojaUrl)||'conteúdo colado')}; setStatus(lines);
     let extras={};
     if(deepToggle.checked&&lojaUrl){
@@ -1248,13 +1361,25 @@ async function run(){
       lines[3]={s:lidos?'ok':'err',t:lidos?('Redes lidas: '+lidos+' com número de seguidores'):'Redes detectadas — seguidores não puderam ser lidos automaticamente (confira no perfil)'};
     } else lines[3]={s:'',t:'Nenhuma rede social encontrada no site'};
     setStatus(lines);
+    // entra numa página de produto e analisa (pelo menos 1)
+    lines[4]={s:'load',t:'Analisando uma página de produto…'}; setStatus(lines);
+    let produtoHtml='';
+    const prodUrl=acharProdutoUrl(new DOMParser().parseFromString(html,'text/html'),extras,originOf(lojaUrl));
+    if(prodUrl){
+      try{ produtoHtml=await fetchText(prodUrl,13000); loja.produto=analisarProduto(produtoHtml,prodUrl); }catch(e){ loja.produto={ok:false,url:prodUrl}; }
+      // re-detecta Medição e mídia com home + produto (pixels de conversão às vezes só disparam no produto)
+      if(produtoHtml&&produtoHtml.length>400) loja.mkt.analytics=acharSinais(html+' '+produtoHtml,'analytics');
+      lines[4]={s:loja.produto&&loja.produto.ok?'ok':'err',t:loja.produto&&loja.produto.ok?('Produto analisado: '+(loja.produto.nome||shortUrl(prodUrl))):'Página de produto encontrada, mas não pôde ser lida'};
+    } else { loja.produto={ok:false,url:''}; lines[4]={s:'',t:'Nenhuma página de produto localizada para amostra'}; }
+    setStatus(lines);
   }catch(err){
     lines[0]={s:'err',t:'Não consegui ler a loja. Tente de novo ou use o modo de colar conteúdo.'}; setStatus(lines);
-    alertEl.className='alert on'; alertEl.textContent='Não consegui ler a loja pelo relay público. Clique em analisar de novo, ou ative "Colar conteúdo manualmente" e cole o código-fonte da página inicial.';
+    alertEl.className='alert on'; alertEl.textContent='Não consegui ler a loja agora. Verifique o endereço e clique em analisar de novo.';
     runBtn.disabled=false; return;
   }
-  lines[4]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
+  lines[5]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
   try{
+    loja.relevancia=relevanciaMercado(loja);
     const dores=montarDores(loja);
     state={loja,dores,args:montarArgumentos(loja,dores),guia:montarGuia(loja,dores)};
     statusEl.className='status'; statusEl.innerHTML='';
@@ -1310,13 +1435,17 @@ function render(){
    '<div class="line"><span class="k">Ticket aparente</span><span class="v">'+(p.precos.ok?brl(p.precos.mediana)+' · '+p.ticket:'não estimado')+'</span></div></div>'+
    '<div class="ev">O ticket é a mediana dos preços exibidos na página inicial. Use como ordem de grandeza para a conta de venda perdida, não como número oficial.</div></div>'+
    '<div class="card"><div class="ck">Porte da operação</div><h4>'+cap(p.porte)+'</h4><p style="font-size:13.5px;color:var(--ink-2);margin:8px 0 0;line-height:1.55">'+esc(p.porteTxt)+'</p>'+
+   relevanciaHtml(L)+
    '<div class="blk"><div class="h">Perfil típico do segmento</div><ul><li><span class="m chk">✓</span><span>'+esc(p.segmento.perfil)+'</span></li></ul></div></div></div></div>');
 
 
-  /* 2. experiência */
+  /* 2b. página de produto (amostra) */
+  h.push(produtoSectionHtml(L));
+
+  /* 3. experiência */
   const e=L.exp;
   const expChecks=[{nome:'Busca na loja',ok:e.busca},{nome:'Filtros de categoria',ok:e.filtros},{nome:'Menu mobile',ok:e.menuMobile},{nome:'Menu com submenu',ok:e.submenu},{nome:'Carrinho lateral',ok:e.carrinhoLateral},{nome:'Área do cliente',ok:e.contaCliente}];
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">3 · Experiência de compra</span><h2>Navegação, checkout, pagamento e frete</h2></div><p class="sec-sub">Sinais lidos da página inicial. O que depende de login ou do painel do lojista fica para confirmar ao vivo.</p><div class="cards c3">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">4 · Experiência de compra</span><h2>Navegação, checkout, pagamento e frete</h2></div><p class="sec-sub">Sinais lidos da página inicial. O que depende de login ou do painel do lojista fica para confirmar ao vivo.</p><div class="cards c3">'+
    '<div class="card"><div class="ck">Navegação</div>'+chipsHtml(expChecks)+
    (e.itensMenu.length?'<div class="blk"><div class="h">Itens de menu encontrados</div><div class="chips">'+e.itensMenu.map(i=>'<span class="chip">'+esc(i)+'</span>').join('')+'</div></div>':'')+'</div>'+
    '<div class="card"><div class="ck">Pagamento</div>'+chipsHtml(e.pagamentos)+
@@ -1325,7 +1454,7 @@ function render(){
 
   /* 3. performance */
   const t=L.tec;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">4 · Performance e técnico</span><h2>Como a loja carrega</h2></div><p class="sec-sub">Estimativas lidas do código da página inicial — servem para impressão geral, não substituem um teste de velocidade.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · Performance e técnico</span><h2>Como a loja carrega</h2></div><p class="sec-sub">Estimativas lidas do código da página inicial — servem para impressão geral, não substituem um teste de velocidade.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Medidas da página inicial</div><div class="metrics">'+
    '<div class="metric"><b>'+t.pesoKb+' KB</b><span>PESO DO HTML</span></div>'+
    '<div class="metric"><b>'+t.scripts+'</b><span>SCRIPTS</span></div>'+
@@ -1337,7 +1466,7 @@ function render(){
 
   /* 4. SEO */
   const s=L.seo;
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">5 · SEO e conteúdo</span><h2>Como a loja é encontrada</h2></div><p class="sec-sub">Base do tráfego que não depende de anúncio pago.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">6 · SEO e conteúdo</span><h2>Como a loja é encontrada</h2></div><p class="sec-sub">Base do tráfego que não depende de anúncio pago.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Itens de SEO</div>'+chipsHtml([{nome:'Título da página adequado',ok:s.tituloOk},{nome:'Meta descrição',ok:s.descricaoOk},{nome:'Canonical',ok:s.canonical},{nome:'Tags de compartilhamento (OG)',ok:s.og},{nome:'H1 único',ok:s.h1Ok},{nome:'URLs amigáveis',ok:s.urlsAmigaveis},{nome:'Dados estruturados',ok:s.schema.length>0},{nome:'robots.txt',ok:s.robots},{nome:'Sitemap',ok:s.sitemap},{nome:'Blog / conteúdo',ok:s.blog}])+
    (s.titulo?'<div class="ev"><b>Título atual:</b> '+esc(s.titulo.slice(0,120))+'</div>':'')+'</div>'+
    '<div class="card"><div class="ck">Catálogo (contagem real)</div><div class="kv">'+
@@ -1356,7 +1485,7 @@ function render(){
   const temGTM=m.analytics.some(x=>x.nome==='Google Tag Manager'&&x.ok);
   const midiaAtiva=m.analytics.filter(x=>x.ok);
   const evList=midiaAtiva.filter(x=>x.ev).slice(0,4).map(x=>esc(x.nome)+': '+esc(x.ev)).join(' · ');
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">6 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">7 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Medição e mídia ('+midiaAtiva.length+' ativas)</div>'+chipsHtml(m.analytics)+
    (evList?'<div class="ev"><b>Evidências encontradas:</b> '+evList+'</div>':'<div class="ev">Nenhuma tag de medição carregada diretamente na home.</div>')+
    (temGTM?'<div class="ev" style="border-color:var(--gold-line);background:var(--gold-soft);color:#8A6A1E"><b>Observação:</b> o Google Tag Manager está presente. Pixels e tags de conversão podem ser disparados por dentro dele e não aparecer no código — confirme no gerenciador do lojista antes de afirmar que faltam.</div>':'')+'</div>'+
@@ -1368,12 +1497,12 @@ function render(){
   h.push(socialSectionHtml(L));
 
   /* 9. dores */
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">8 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
    '<div class="coll-body" hidden><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
    D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div></div>');
 
   /* 11. argumentos */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">9 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
    A.blocos.map((b,i)=>'<div class="arg"><button class="copy" data-arg="'+i+'">Copiar</button><div class="h">'+esc(b.h)+'</div><p>'+esc(b.t)+'</p></div>').join('')+'</div>'+
    '<div class="arg" style="margin-top:16px"><button class="copy" data-arg="pitch">Copiar</button><div class="h">Resumo em uma mensagem (WhatsApp)</div><p>'+esc(A.pitch)+'</p></div></div>');
 
@@ -1394,6 +1523,45 @@ function render(){
 }
 function fSeg(n){ if(n==null) return '—'; if(n>=1000000) return (n/1000000).toFixed(n%1000000?1:0).replace('.',',')+' mi'; if(n>=1000) return (n/1000).toFixed(n%1000?1:0).replace('.',',')+' mil'; return String(n); }
 const SOCIAL_META={instagram:['Instagram','#C13584'],tiktok:['TikTok','#111'],facebook:['Facebook','#1877F2'],pinterest:['Pinterest','#BD081C'],youtube:['YouTube','#FF0000']};
+function relevanciaHtml(L){
+  const R=L.relevancia||relevanciaMercado(L);
+  if(!R.determinavel){
+    return '<div class="blk"><div class="h">Relevância no mercado</div><p style="font-size:13px;color:var(--muted);margin:0;line-height:1.5">Não há dados públicos suficientes para afirmar se a loja é conhecida no mercado. Não vamos cravar por achismo — confirme com o lojista (seguidores reais, avaliações, volume de vendas).</p></div>';
+  }
+  return '<div class="blk"><div class="h">Relevância no mercado</div><p style="font-size:14px;font-weight:600;color:var(--ink);margin:0 0 6px">'+esc(cap(R.nivel))+'</p><ul>'+R.evidencias.map(e=>'<li><span class="m chk">✓</span><span>'+esc(e)+'</span></li>').join('')+'</ul><p style="font-size:11.5px;color:var(--muted);margin:4px 0 0">Baseado só em evidências públicas medidas — não é estimativa.</p></div>';
+}
+function produtoSectionHtml(L){
+  const pr=L.produto;
+  if(!pr) return '';
+  if(!pr.ok){
+    return '<div class="section"><div class="sec-title"><span class="kicker">3 · Página de produto</span><h2>Amostra de uma página de produto</h2></div><div class="cards c2"><div class="card"><div class="ck">Produto analisado</div><p style="font-size:13.5px;color:var(--muted);margin:0">'+(pr.url?'Encontramos uma página de produto ('+esc(shortUrl(pr.url))+'), mas o relay não conseguiu lê-la agora. Tente analisar de novo.':'Não localizamos uma página de produto para amostrar automaticamente. Abra um produto com o lojista na reunião.')+'</p></div></div></div>';
+  }
+  const chip=(ok,txt)=>'<span class="chip '+(ok?'y':'n')+'">'+(ok?'✓':'·')+' '+esc(txt)+'</span>';
+  const kv=(k,v)=>'<div class="line"><span class="k">'+k+'</span><span class="v">'+esc(v)+'</span></div>';
+  const avalTxt = pr.reviews!=null&&pr.reviews>0 ? (pr.reviews+' avaliações'+(pr.rating?' · nota '+String(pr.rating).replace('.',','):'')) : (pr.avaliacaoWidget?'widget de avaliações presente (sem número lido)':'sem avaliações visíveis');
+  return '<div class="section"><div class="sec-title"><span class="kicker">3 · Página de produto</span><h2>Amostra: '+esc(pr.nome||'um produto da loja')+'</h2></div>'+
+    '<p class="sec-sub">A ferramenta abriu uma página de produto de verdade e leu o que está nela. Fonte: '+esc(pr.url)+'</p>'+
+    '<div class="cards c2">'+
+    '<div class="card"><div class="ck">Ficha do produto</div><div class="kv" style="margin-top:6px">'+
+      kv('Preço', pr.preco||'não lido')+
+      (pr.parcelamento?kv('Parcelamento', pr.parcelamento):'')+
+      kv('Disponibilidade', pr.disponibilidade||'não informada')+
+      kv('Avaliações', avalTxt)+
+      kv('Imagens na página', '~'+pr.imagens)+
+      (pr.descricaoTam?kv('Descrição', pr.descricaoTam>400?'detalhada':'curta'):'')+
+      '</div></div>'+
+    '<div class="card"><div class="ck">Recursos de conversão na página</div><div class="chips" style="margin-top:6px">'+
+      chip(pr.carrinho||pr.comprar,'Botão de compra')+
+      chip(pr.frete,'Cálculo de frete/CEP')+
+      chip(pr.variacoes,'Variações'+(pr.varTipo.length?' ('+pr.varTipo.join('/')+')':''))+
+      chip(pr.pixDesc,'Desconto no Pix')+
+      chip(pr.reviews!=null&&pr.reviews>0||pr.avaliacaoWidget,'Avaliações')+
+      chip(pr.relacionados,'Produtos relacionados')+
+      chip(pr.breadcrumb,'Navegação (breadcrumb)')+
+      chip(pr.selos,'Selos de segurança')+
+    '</div><div class="ev">Isto é lido da própria página do produto no momento da análise. "Confirmar" pontos ausentes com o lojista, pois alguns recursos carregam via app/JS.</div></div>'+
+    '</div></div>';
+}
 function trafegoSectionHtml(L){
   const host=L.host||'';
   const T=(L.trafego||(L.trafego={organico:'',social:'',pago:''}));
@@ -1403,20 +1571,20 @@ function trafegoSectionHtml(L){
   const qual=[];
   qual.push(paidPix.length?('Mídia paga: provável — pixel de anúncio ativo ('+paidPix.join(', ')+').'):'Mídia paga: nenhum pixel de anúncio detectado no código da home.');
   qual.push(seoScore>=60?('Orgânico: base sólida — SEO em '+seoScore+'/100'+(L.seo.sitemap?', com sitemap':'')+(L.seo.blog?' e conteúdo/blog':'')+'.'):('Orgânico: frágil — SEO em '+seoScore+'/100; a loja tende a depender de anúncio para receber visita.'));
-  qual.push(socialOn?'Social: a loja tem perfis de rede ligados (ver seção 7).':'Social: nenhuma rede social ligada à loja foi detectada.');
+  qual.push(socialOn?'Social: a loja tem perfis de rede ligados (ver seção 8).':'Social: nenhuma rede social ligada à loja foi detectada.');
   const o=parseInt(T.organico)||0,s=parseInt(T.social)||0,pg=parseInt(T.pago)||0,tot=o+s+pg;
   const num=(campo,lab,val)=>'<div class="row"><label>'+lab+'</label><input type="number" min="0" max="100" value="'+esc(val||'')+'" oninput="setTrafego(\''+campo+'\',this.value)"/><span style="color:var(--muted);font-size:12px">%</span></div>';
   const bar='<div class="bar" id="traf-bar"><i class="org" style="width:'+o+'%"></i><i class="soc" style="width:'+s+'%"></i><i class="pag" style="width:'+pg+'%"></i></div>';
-  return '<div class="section"><div class="sec-title collap open" onclick="toggColl(this)"><span class="kicker">Tráfego por canal</span><h2>De onde vem a visita da loja</h2><span class="coll-peek">números reais do SimilarWeb — toque para recolher</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
-    '<div class="coll-body"><p class="sec-sub">A ferramenta <b>não estima</b> a divisão de tráfego de outra loja — isso seria chute. Abra o SimilarWeb em um clique, veja a divisão real (orgânico / social / pago) e registre aqui. Ao lado, uma leitura qualitativa honesta a partir do que dá para ver no código.</p>'+
+  return '<div class="section"><div class="sec-title collap open" onclick="toggColl(this)"><span class="kicker">Tráfego por canal</span><h2>De onde vem a visita da loja</h2><span class="coll-peek">números reais do Semrush — toque para recolher</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
+    '<div class="coll-body"><p class="sec-sub">A ferramenta <b>não estima</b> a divisão de tráfego de outra loja — isso seria chute. Abra o Semrush em um clique, veja a divisão real (orgânico / social / pago) e registre aqui. Ao lado, uma leitura qualitativa honesta a partir do que dá para ver no código.</p>'+
     '<div class="cards c2">'+
-    '<div class="card"><div class="ck">Divisão real (informe do SimilarWeb)</div>'+
-    (host?'<a class="lk" href="https://www.similarweb.com/website/'+esc(host)+'/#traffic" target="_blank" rel="noopener">Abrir '+esc(host)+' no SimilarWeb ↗</a>':'<span style="font-size:12.5px;color:var(--muted)">Sem domínio para consultar.</span>')+
+    '<div class="card"><div class="ck">Divisão real (informe do Semrush)</div>'+
+    (host?'<a class="lk" href="https://www.semrush.com/analytics/overview/?q='+encodeURIComponent(host)+'&searchType=domain" target="_blank" rel="noopener">Abrir '+esc(host)+' no Semrush ↗</a>':'<span style="font-size:12.5px;color:var(--muted)">Sem domínio para consultar.</span>')+
     '<div class="traf" style="margin-top:12px">'+num('organico','Orgânico (busca)',T.organico)+num('social','Redes sociais',T.social)+num('pago','Mídia paga',T.pago)+bar+'</div>'+
     '<div class="ev" id="traf-sum" style="'+(tot>0?'':'display:none')+'">'+(tot>0?('Soma: '+tot+'%'+(tot!==100?' — ajuste para 100%':' ✓')):'')+'</div>'+
-    '<div class="ev">Fonte: SimilarWeb, informado pelo vendedor — não é medido nem estimado pela ferramenta.</div></div>'+
+    '<div class="ev">Fonte: Semrush, informado pelo vendedor — não é medido nem estimado pela ferramenta.</div></div>'+
     '<div class="card"><div class="ck">Leitura qualitativa (do código da loja)</div><div class="blk"><ul>'+qual.map(q=>'<li><span class="m chk">›</span><span>'+esc(q)+'</span></li>').join('')+'</ul></div>'+
-    '<div class="ev">Isto indica a <b>tendência</b> de cada canal a partir de sinais técnicos. A porcentagem exata só vem do SimilarWeb ao lado.</div></div>'+
+    '<div class="ev">Isto indica a <b>tendência</b> de cada canal a partir de sinais técnicos. A porcentagem exata só vem do Semrush ao lado.</div></div>'+
     '</div></div></div>';
 }
 function setTrafego(campo,val){
@@ -1465,7 +1633,7 @@ function socialSectionHtml(L){
     grp('bio','Link na bio direciona para…',[['site','O site da loja'],['agregador','Agregador (Linktree etc.)'],['whats','Direto para o WhatsApp'],['outro','Outro / não tem']])+
     grp('reclamacoes','Reclamações recorrentes nos comentários?',[['nao','Não vi reclamações'],['frete','Frete / entrega'],['bugs','Bugs / lentidão do site'],['atendimento','Atendimento / SAC'],['varias','Várias, recorrentes']])+
     grp('conteudo','Estratégia de conteúdo predominante',[['reels','Reels / provador / vídeo'],['estudio','Fotos de estúdio'],['ugc','Influencer / UGC'],['misto','Misto / pouco ativo']])+'</div>';
-  return '<div class="section"><div class="sec-title"><span class="kicker">7 · Redes e social commerce</span><h2>Presença social e conversão pelo perfil</h2></div><p class="sec-sub">A parte automática lê o que o site e os perfis públicos revelam. A parte manual é o que só o olho humano confirma — e é onde mora a análise 100% real de sacolinha, bio, reclamações e conteúdo.</p><div class="cards c2" id="social-cards">'+auto+manual+'</div></div>';
+  return '<div class="section"><div class="sec-title"><span class="kicker">8 · Redes e social commerce</span><h2>Presença social e conversão pelo perfil</h2></div><p class="sec-sub">A parte automática lê o que o site e os perfis públicos revelam. A parte manual é o que só o olho humano confirma — e é onde mora a análise 100% real de sacolinha, bio, reclamações e conteúdo.</p><div class="cards c2" id="social-cards">'+auto+manual+'</div></div>';
 }
 function setSocial(campo,val){
   if(!state.loja||!state.loja.social) return;
@@ -1500,7 +1668,9 @@ function buildSummary(){
   X.push('Plataforma atual: '+L.plataforma.nome+' · maturidade '+L.score.total+'/100 ('+L.score.rotulo+')');
   if(L.hospedagem&&L.hospedagem.ok) X.push('Hospedagem: '+(L.hospedagem.provedor||L.hospedagem.org||'—')+(L.hospedagem.ip?' ('+L.hospedagem.ip+')':''));
   X.push('Segmento: '+L.perfil.segmento.nome+' ('+L.perfil.segConf+') · porte '+L.perfil.porte+' · '+(L.perfil.produtos||'?')+' produtos'+(L.seo.categoriasEstimadas?' · '+L.seo.categoriasEstimadas+' categorias':'')+(L.perfil.precos.ok?' · ticket ~'+brl(L.perfil.precos.mediana):''));
-  const T=L.trafego||{}; if(T.organico||T.social||T.pago) X.push('Tráfego (SimilarWeb): orgânico '+(T.organico||'?')+'% · social '+(T.social||'?')+'% · pago '+(T.pago||'?')+'%');
+  const T=L.trafego||{}; if(T.organico||T.social||T.pago) X.push('Tráfego (Semrush): orgânico '+(T.organico||'?')+'% · social '+(T.social||'?')+'% · pago '+(T.pago||'?')+'%');
+  if(L.produto&&L.produto.ok){ const pr=L.produto; X.push('Produto amostrado: '+(pr.nome||pr.url)+(pr.preco?' · '+pr.preco:'')+(pr.reviews!=null&&pr.reviews>0?' · '+pr.reviews+' avaliações'+(pr.rating?' (nota '+pr.rating+')':''):'')); }
+  const RV=L.relevancia||{}; if(RV.determinavel) X.push('Relevância no mercado: '+RV.nivel+' — '+(RV.evidencias||[]).join('; ')); else X.push('Relevância no mercado: não determinável com dados públicos');
   const S=L.social||{redes:{},manual:{}};
   const F=(S.manual&&S.manual.seguidores)||{};
   const rn=Object.keys(S.redes||{}).filter(k=>S.redes[k].ativo).map(k=>{const a=S.auto&&S.auto[k]; const seg=F[k]||(a&&a.lido?a.seguidores:''); return k+(seg?' ('+seg+' seg.)':'');});
@@ -1620,7 +1790,23 @@ function generatePDF(){
       'Medição e mídia: '+(an.length?listPt(an):'nenhuma ferramenta identificada')+'.',
       'Canais e marketplaces: '+(cn.length?listPt(cn):'nenhum canal externo identificado')+'.',
       'Prova social e confiança: '+(pv.length?listPt(pv):'poucos sinais na página inicial')+'.'
-    ],'dot');
+    ],'dot'); y+=4;
+    /* amostra de produto */
+    if(L.produto&&L.produto.ok){ const pr=L.produto;
+      sub('Amostra de uma página de produto');
+      bullets([
+        (pr.nome||'Produto')+(pr.preco?' — '+pr.preco:'')+(pr.parcelamento?' ('+pr.parcelamento+')':'')+'.',
+        'Avaliações: '+(pr.reviews!=null&&pr.reviews>0?pr.reviews+(pr.rating?' (nota '+pr.rating+')':''):(pr.avaliacaoWidget?'widget presente, sem número':'não visíveis'))+'. Disponibilidade: '+(pr.disponibilidade||'não informada')+'.',
+        'Na página: '+listPt([(pr.carrinho||pr.comprar)?'botão de compra':'',pr.frete?'cálculo de frete':'',pr.variacoes?'variações':'',pr.pixDesc?'desconto no Pix':'',pr.relacionados?'produtos relacionados':''].filter(Boolean))+'.'
+      ],'dot'); y+=4;
+    }
+    /* relevância no mercado */
+    { const RV=L.relevancia||{};
+      sub('Relevância no mercado');
+      if(RV.determinavel){ para(cap(RV.nivel)+'.',10,INK,'bold',13); bullets(RV.evidencias,'check'); }
+      else para('Não há dados públicos suficientes para afirmar a relevância da loja — confirmar com o lojista.',9.5,MUT,'normal',13);
+      y+=4;
+    }
 
     /* dores */
     doc.addPage(); y=P.mT;
