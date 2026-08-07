@@ -6,9 +6,7 @@
 <title>Raio-X da Loja Migração · Time de Vendas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
@@ -26,7 +24,7 @@
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{font-family:'Satoshi','Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
-  h1,h2,h3,h4{font-family:'Diodrum','Poppins','Satoshi',sans-serif;letter-spacing:-.01em}
+  h1,h2,h3,h4{font-family:'Diodrum','Poppins','Segoe UI',sans-serif;letter-spacing:-.01em}
   .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
   .topbar{background:linear-gradient(90deg,#252D69,#2551A0);color:#fff;padding:15px 0;box-shadow:0 2px 14px rgba(37,45,105,.22)}
   .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -240,6 +238,20 @@
   .traf .lk:hover{border-color:var(--teal)}
   .foll-in{width:96px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font:inherit;font-size:13px;background:var(--surface-2)}
   .foll-in:focus{outline:none;border-color:var(--teal);background:#fff}
+
+  /* --- pilares de IA/SEO --- */
+  .pilar{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;gap:10px}
+  .pilar .ph{display:flex;align-items:flex-start;gap:12px}
+  .pilar .pn{flex:none;width:34px;height:34px;border-radius:9px;background:var(--teal-soft);color:var(--teal-deep);font-weight:700;display:grid;place-items:center;font-family:'Diodrum','Poppins';font-size:15px}
+  .pilar .pt{font-family:'Diodrum','Poppins';font-weight:600;font-size:15px;color:var(--ink);line-height:1.25}
+  .pilar .st{margin-left:auto;flex:none;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:999px;white-space:nowrap}
+  .st.ok{background:#E3F7EE;color:#128A5B} .st.parcial{background:var(--gold-soft);color:#8A5A12} .st.gap{background:var(--red-soft);color:#A5433D} .st.indef{background:var(--surface-2);color:var(--muted)}
+  .pilar .lab{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .pilar ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+  .pilar li{display:flex;gap:8px;font-size:13px;color:var(--ink-2);line-height:1.45}
+  .pilar li .m{flex:none;margin-top:1px;color:var(--teal-deep)}
+  .pilar .garg{font-size:12.5px;color:#8A5A12;background:#FFF9EC;border:1px solid #F1E2BE;border-radius:9px;padding:8px 11px;line-height:1.45}
+  .pilar .solve{font-size:13px;color:var(--teal-deep);background:var(--teal-soft);border-radius:9px;padding:9px 12px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -561,7 +573,7 @@ async function fetchJson(url,timeout=9000){
   catch(e){ clearTimeout(t); return null; }
 }
 async function sondar(origin){
-  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false,sitemapsLidos:0,sitemapsTotais:0,parcial:false,produtoUrl:''};
+  const out={robots:false,sitemap:false,sitemapUrl:'',urls:0,produtos:0,categorias:0,blog:false,sitemapsLidos:0,sitemapsTotais:0,parcial:false,produtoUrl:'',categoriaUrl:''};
   if(!origin) return out;
   const ehProduto=l=>/\/(produto|produtos|product|products)\//i.test(l)||/\/p\/[^/]+/i.test(l);
   const ehCategoria=l=>/\/(categoria|categorias|category|categories|collections?|departamento|linha|colecao|cole[çc][ãa]o|marca|marcas)\//i.test(l);
@@ -569,6 +581,7 @@ async function sondar(origin){
     const locs=[...(xml||'').matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)].map(m=>m[1]);
     out.urls+=locs.length;
     if(!out.produtoUrl){ const pu=locs.find(ehProduto); if(pu) out.produtoUrl=pu; }
+    if(!out.categoriaUrl){ const cu=locs.find(ehCategoria); if(cu) out.categoriaUrl=cu; }
     out.produtos+=locs.filter(ehProduto).length;
     out.categorias+=locs.filter(ehCategoria).length;
     if(locs.some(l=>/\/blog|\/noticias|\/dicas/i.test(l))) out.blog=true;
@@ -859,6 +872,7 @@ function analisarLoja(html,url,extras){
   /* marketing e integrações */
   L.mkt={analytics:acharSinais(html,'analytics'),atendimento:acharSinais(html,'atendimento'),prova:acharSinais(html,'prova'),canais:acharSinais(html,'canais')};
   L.social=detectarSocial(html,dom,L);
+  L.busca=analisarBuscaInterna(html,dom);
   /* perfil do negócio */
   const catsTxt=[...dom.querySelectorAll('nav a,header a,[class*="menu"] a,[class*="categor"] a,[class*="breadcrumb"] a,[class*="departamento"] a')].map(a=>(a.textContent||'').replace(/\s+/g,' ').trim()).filter(t=>t.length>1&&t.length<40).join(' ');
   const kw=meta('keywords')||'';
@@ -1087,8 +1101,72 @@ function analisarProduto(html,url){
   const desc=(ld&&ld.description)||meta('og:description')||'';
   out.descricaoTam=Math.max(desc.length, (txt.match(/descri[çc][ãa]o do produto([\s\S]{0,1200})/i)||['',''])[1].length);
   out.breadcrumb=/breadcrumb|\bvoc[êe] est[áa] em\b|home\s*[»>\/]\s*/i.test(html);
+  // ----- Pilar 1: completude do Schema.org (dados estruturados do produto) -----
+  const brandOf=b=> b? (typeof b==='string'?b:(b.name||'')) : '';
+  const hasLd=!!ld;
+  const specs = ld&&ld.additionalProperty ? [].concat(ld.additionalProperty).length : 0;
+  const gtin = ld ? (ld.gtin13||ld.gtin14||ld.gtin8||ld.gtin||ld.mpn||'') : '';
+  let breadcrumbLd=false;
+  try{ dom.querySelectorAll('script[type="application/ld+json"]').forEach(s=>{ if(/BreadcrumbList/i.test(s.textContent)) breadcrumbLd=true; }); }catch(e){}
+  out.schema={ present:hasLd,
+    name: !!(ld&&ld.name),
+    price: out.precoNum>0,
+    availability: !!(ld&&ld.offers&&([].concat(ld.offers)[0]||{}).availability),
+    brand: !!brandOf(ld&&ld.brand),
+    sku: !!(ld&&ld.sku),
+    gtin: !!gtin,
+    rating: out.rating!=null,
+    reviewCount: out.reviews!=null&&out.reviews>0,
+    specs: specs,
+    image: !!(ld&&ld.image),
+    breadcrumb: breadcrumbLd };
+  const campos=['name','price','availability','brand','sku','gtin','rating','reviewCount','image'];
+  out.schema.completos = hasLd ? campos.filter(k=>out.schema[k]).length : 0;
+  out.schema.total = campos.length;
+  // ----- Pilar 2: meta da página de produto -----
+  out.metaTitle=(dom.querySelector('title')?dom.querySelector('title').textContent.trim():'');
+  out.metaDesc=meta('description')||'';
+  out.metaTitleLen=out.metaTitle.length; out.metaDescLen=out.metaDesc.length;
+  out.descRica = out.descricaoTam>=400;
   out.ok=!!(out.nome||out.precoNum);
   return out;
+}
+/* ---------- busca interna (Pilar 3) ---------- */
+function analisarBuscaInterna(html,dom){
+  const out={temBusca:false,inteligente:false,provider:'',autocomplete:false};
+  try{
+    out.temBusca = !!dom.querySelector('input[type="search"],input[name*="busca" i],input[name*="search" i],input[placeholder*="busc" i],form[role="search"],[class*="search" i] input,[id*="search" i] input');
+  }catch(e){ out.temBusca=/type=["']?search|name=["']?(busca|q|search)|placeholder=["'][^"']*busc/i.test(html); }
+  const PROV=[['SmartHint',/smarthint/i],['Linx Impulse',/linximpulse|chaordic|linx-impulse/i],['Algolia',/algolia/i],['Doofinder',/doofinder/i],['Wine\/Bis2Bis',/bis2bis/i],['FastSimon\/Instant Search',/fastsimon|instant-?search/i],['Nuvem/Tiny Search',/nosto/i]];
+  for(const [n,rx] of PROV){ if(rx.test(html)){ out.inteligente=true; out.provider=n.replace('\\',''); break; } }
+  out.autocomplete=/autocomplete|typeahead|sugest|suggest|predictive/i.test(html);
+  return out;
+}
+/* ---------- categoria (Pilar 2) ---------- */
+function acharCategoriaUrl(dom,extras,origin){
+  if(extras&&extras.categoriaUrl) return extras.categoriaUrl;
+  const re=/\/(categoria|categorias|category|categories|collections?|departamento|c\/)\//i;
+  const links=[...dom.querySelectorAll('a[href]')].map(a=>a.getAttribute('href')||'').filter(h=>re.test(h));
+  if(!links.length) return '';
+  let u=links.find(h=>/^https?:/i.test(h))||links[0];
+  if(u&&!/^https?:/i.test(u)){ try{ u=new URL(u,origin||'https://loja').href; }catch(e){} }
+  return u||'';
+}
+function analisarCategoria(html,url){
+  const out={ok:false,url:url||'',metaTitle:'',metaDesc:'',metaTitleOk:false,metaDescOk:false,textoDescritivo:false};
+  if(!html||html.length<400) return out;
+  let dom; try{ dom=new DOMParser().parseFromString(html,'text/html'); }catch(e){ return out; }
+  const meta=n=>{ const el=dom.querySelector('meta[name="'+n+'"],meta[property="'+n+'"]'); return el?el.getAttribute('content'):''; };
+  out.metaTitle=(dom.querySelector('title')?dom.querySelector('title').textContent.trim():'');
+  out.metaDesc=meta('description')||'';
+  out.metaTitleOk=out.metaTitle.length>=20&&out.metaTitle.length<=70;
+  out.metaDescOk=out.metaDesc.length>=70;
+  // texto descritivo: um parágrafo relevante fora da vitrine
+  try{
+    const ps=[...dom.querySelectorAll('p, .description, [class*="descricao" i], [class*="seo" i]')].map(e=>(e.textContent||'').replace(/\s+/g,' ').trim());
+    out.textoDescritivo = ps.some(t=>t.length>=220);
+  }catch(e){ out.textoDescritivo=false; }
+  out.ok=true; return out;
 }
 /* ---------- relevância no mercado (só com evidência concreta; nunca achismo) ---------- */
 function relevanciaMercado(L){
@@ -1173,6 +1251,19 @@ function montarDores(L,plano){
     const recs=fixKeys.map(k=>TRAY_RECURSOS[k]).filter(Boolean);
     dores.push({titulo:t,curto:curto,evidencia:ev,solucao:fixTexto,recursos:recs.map(r=>r.nome)});
   };
+  // dor de legibilidade para IA (GEO) — puxada do diagnóstico dos pilares
+  if(L.pilares&&L.pilares.pilares){
+    const p1=L.pilares.pilares[0]; // GEO
+    if(p1&&(p1.status==='gap'||p1.status==='parcial')){
+      const pr=L.produto||{};
+      const evid = pr.ok? (pr.schema&&pr.schema.present? ('A página de produto tem Schema.org, mas só '+pr.schema.completos+' de '+pr.schema.total+' campos-chave — a IA não confia numa ficha incompleta.') : 'A página de produto não tem dados estruturados (Schema.org) de produto — para a IA, o catálogo fica ilegível.') : 'Não foi possível confirmar os dados estruturados; vale checar o código da página de produto ao vivo.';
+      dores.push({titulo:'Loja invisível para as buscas por IA (ChatGPT, Perplexity, Google AI)',
+        curto:'a loja não está pronta para ser lida pelas IAs de busca',
+        evidencia:evid,
+        solucao:'Na Tray, o código já sai com tags semânticas e Schema.org padronizado, e um Assistente de IA enriquece descrições e SEO. A loja passa a ser legível — e citável — pelos motores de IA.',
+        recursos:['Estrutura nativa com Schema.org','Assistente de IA para descrições e SEO']});
+    }
+  }
   // dor específica do segmento: recursos que uma loja daquele ramo precisa e não tem
   const segFalta=(L.recursos||[]).filter(r=>r.seg&&r.estado==='nao');
   if(segFalta.length){
@@ -1226,6 +1317,80 @@ function montarDores(L,plano){
   const vistos=new Set();
   return dores.filter(d=>{ const k=norm(d.titulo); if(vistos.has(k)) return false; vistos.add(k); return true; }).slice(0,5);
 }
+function analisarPilaresIA(L){
+  const pr=L.produto||{}, sc=(pr.schema)||{present:false,completos:0,total:9,specs:0}, cat=L.categoria||{}, bs=L.busca||{}, seo=L.seo||{};
+  const mkts=(L.social&&L.social.marketplaces)||[];
+  const temGoogleAds=(L.mkt.analytics||[]).some(a=>a.ok&&/Google Ads/i.test(a.nome));
+  const pilares=[];
+
+  // ---- Pilar 1: Legibilidade para IA (GEO & dados estruturados) ----
+  (function(){
+    let status,achados=[];
+    if(!pr.ok){ status='indef'; achados.push('Não foi possível abrir uma página de produto para inspecionar o código.'); }
+    else if(!sc.present){ status='gap'; achados.push('A página de produto não tem marcação Schema.org (JSON-LD) de produto — para a IA, o catálogo fica ilegível.'); }
+    else {
+      const faltando=[];
+      if(!sc.price) faltando.push('preço'); if(!sc.availability) faltando.push('disponibilidade');
+      if(!sc.brand) faltando.push('marca'); if(!sc.rating||!sc.reviewCount) faltando.push('avaliações');
+      if(!sc.gtin&&!sc.sku) faltando.push('código do produto (GTIN/SKU)');
+      if(!sc.specs) faltando.push('especificações técnicas');
+      achados.push('Schema.org presente com '+sc.completos+' de '+sc.total+' campos-chave preenchidos'+(sc.specs?(' e '+sc.specs+' especificações'):'')+'.');
+      if(faltando.length){ achados.push('Faltam campos que a IA usa para confiar na loja: '+listPt(faltando)+'.'); }
+      if(sc.breadcrumb) achados.push('Tem BreadcrumbList estruturado — bom sinal de hierarquia para os crawlers.');
+      status = (sc.completos>=7&&!faltando.length)?'ok':(sc.completos>=4?'parcial':'gap');
+    }
+    pilares.push({n:1,titulo:'Legibilidade para motores de IA (GEO & dados estruturados)',status,achados,
+      gargalo:'Plataformas legadas entregam HTML poluído ou sem dados estruturados padronizados. Os crawlers de IA não leem o catálogo e a loja fica de fora das respostas do ChatGPT, do Perplexity e dos resumos do Google AI.',
+      tray:'A Tray entrega estrutura nativa com tags semânticas e Schema.org padronizado, para que os modelos de IA entendam a loja como autoridade confiável e citem seus produtos nas buscas por IA.'});
+  })();
+
+  // ---- Pilar 2: Enriquecimento de conteúdo e SEO ----
+  (function(){
+    let status,achados=[];
+    const descProd = pr.ok ? (pr.descRica?'rica':'curta/genérica') : 'não avaliada';
+    if(pr.ok) achados.push('Descrição do produto analisado: '+descProd+(pr.descricaoTam?(' (~'+pr.descricaoTam+' caracteres)'):'')+'.');
+    achados.push('Home: meta title '+(seo.tituloOk?'ok':'fraco/ausente')+' · meta description '+(seo.descricaoOk?'ok':'fraca/ausente')+'.');
+    if(cat.ok){ achados.push('Categoria analisada: meta title '+(cat.metaTitleOk?'ok':'fraco')+' · description '+(cat.metaDescOk?'ok':'fraca')+' · texto descritivo '+(cat.textoDescritivo?'presente':'ausente')+'.'); }
+    else achados.push('Não foi possível abrir uma página de categoria para inspecionar SEO — confirmar na reunião.');
+    const gaps=[!seo.tituloOk,!seo.descricaoOk,pr.ok&&!pr.descRica,cat.ok&&!cat.textoDescritivo].filter(Boolean).length;
+    status = gaps>=3?'gap':gaps>=1?'parcial':'ok';
+    pilares.push({n:2,titulo:'Enriquecimento de conteúdo e SEO por IA',status,achados,
+      gargalo:'Cadastrar centenas de produtos com SEO individual exige tempo enorme ou equipe dedicada. Sem esse conteúdo, o e-commerce perde posição no Google e não gera o ganho de informação que a IA valoriza.',
+      tray:'A Tray tem um Assistente de IA nativo que gera descrições completas de produtos e otimiza metadados de SEO de categorias e da loja em poucos cliques. Para escala, integra-se a apps como o SEOver, automatizando o SEO de ponta a ponta.'});
+  })();
+
+  // ---- Pilar 3: Busca interna (on-site AI & semântica) ----
+  (function(){
+    let status,achados=[];
+    if(!bs.temBusca){ status='gap'; achados.push('Não identificamos um campo de busca interna na loja — o cliente não consegue procurar por conta própria.'); }
+    else {
+      achados.push('Campo de busca interna presente.'+(bs.autocomplete?' Com indícios de autocomplete/sugestões.':' Sem sinais de autocomplete.'));
+      if(bs.inteligente){ achados.push('Detectamos uma busca inteligente ('+bs.provider+') — bom para tolerância a erro de digitação e sinônimos.'); status='ok'; }
+      else { achados.push('A busca parece nativa/tradicional: tende a retornar "nenhum produto" para erro de digitação, plural ou sinônimo.'); status='parcial'; }
+    }
+    achados.push('Teste rápido na reunião: digite um termo com erro ("tenis corrida") e um sinônimo — veja se a loja ainda acha o produto.');
+    pilares.push({n:3,titulo:'Experiência da busca interna (on-site AI & semântica)',status,achados,
+      gargalo:'Buscas internas antigas retornam "nenhum produto encontrado" quando a digitação não é exata, gerando abandono imediato e perda de até 30% das vendas.',
+      tray:'A Tray é preparada para busca inteligente e integra-se a ferramentas de busca e recomendação por IA que entendem a intenção, corrigem erros de digitação e mostram produtos relevantes em tempo real.'});
+  })();
+
+  // ---- Pilar 4: Feeds e anúncios por IA (Google PMax & marketplaces) ----
+  (function(){
+    let status,achados=[];
+    const feedFields=[]; if(pr.ok){ if(!pr.schema||!pr.schema.gtin&&!pr.schema.sku) feedFields.push('GTIN/SKU'); if(!pr.schema||!pr.schema.brand) feedFields.push('marca'); if(!pr.schema||!pr.schema.availability) feedFields.push('disponibilidade'); if(!pr.schema||!pr.schema.image) feedFields.push('imagem estruturada'); }
+    achados.push(mkts.length?('Já vende em marketplace: '+listPt(mkts)+'.'):'Não identificamos integração com marketplaces (Mercado Livre, Shopee, Amazon…).');
+    achados.push(temGoogleAds?'Google Ads/PMax detectado no código — a loja já investe em mídia.':'Não detectamos tag do Google Ads/PMax na loja.');
+    if(pr.ok){ achados.push(feedFields.length?('Ficha do produto sem campos que os feeds exigem: '+listPt(feedFields)+' — risco de reprovação e CPC mais alto.'):'Ficha do produto tem os campos essenciais para os feeds (marca, código, disponibilidade e imagem).'); }
+    status = (mkts.length&&pr.ok&&!feedFields.length)?'ok':((mkts.length||temGoogleAds)?'parcial':'gap');
+    pilares.push({n:4,titulo:'Feeds e anúncios alimentados por IA (Google PMax & marketplaces)',status,achados,
+      gargalo:'Dados faltantes nas fichas técnicas causam rejeição de produtos pelas IAs dos marketplaces e aumentam o custo por clique em campanhas como o Google PMax.',
+      tray:'A IA nativa da Tray identifica e corrige campos obrigatórios das fichas antes de publicar em marketplaces (Shopee, Amazon) e oferece integração de alta performance com o Google PMax para maximizar conversões automaticamente.'});
+  })();
+
+  const gaps=pilares.filter(x=>x.status==='gap').length, parciais=pilares.filter(x=>x.status==='parcial').length;
+  const resumo = gaps>=2 ? 'A loja tem lacunas sérias de legibilidade para IA e SEO.' : (gaps+parciais>=2 ? 'A loja tem pontos de atenção em IA e SEO que custam visibilidade.' : 'A loja está razoável em IA e SEO, mas há espaço para ganhar com a Tray.');
+  return {pilares,gaps,parciais,resumo};
+}
 function montarBeneficios(L,plano,dores){
   const loja=L.nomeLoja||'esta loja', seg=(L.perfil.segmento.nome||'varejo').toLowerCase();
   const out=[]; const vistos=new Set();
@@ -1277,6 +1442,7 @@ function montarGuia(L,dores){
   steps.push({n:1,t:'Chegue com o diagnóstico pronto, mas comece perguntando',b:[
     'Abra dizendo que você olhou a loja antes da reunião. Isso muda a conversa de vendedor para consultor em dez segundos.',
     'Pergunte primeiro: "o que hoje mais te incomoda na sua loja?" — e cale a boca. A resposta dele define qual das dores deste relatório você vai puxar.',
+    'Gatilho de IA (quebra de padrão): "Se hoje um cliente perguntar ao ChatGPT ou ao Google AI qual a melhor opção de '+lower1(seg)+' na região dele, a sua loja tem os dados estruturados para ser a resposta escolhida?" — abre espaço para o diagnóstico dos 4 pilares.',
     'Confirme três números com ele: quantos produtos tem, quanto das visitas vem do celular e quanto ele fatura por mês. Servem para dimensionar a operação e afinar o discurso.'],
     say:'"Dei uma olhada na sua loja antes de vir. Antes de eu te mostrar o que vi, me conta: o que você sente que está travando as vendas hoje?"'});
   steps.push({n:2,t:'Mostre a loja dele antes de mostrar a Tray',b:[
@@ -1372,6 +1538,9 @@ async function run(){
       if(produtoHtml&&produtoHtml.length>400) loja.mkt.analytics=acharSinais(html+' '+produtoHtml,'analytics');
       lines[4]={s:loja.produto&&loja.produto.ok?'ok':'err',t:loja.produto&&loja.produto.ok?('Produto analisado: '+(loja.produto.nome||shortUrl(prodUrl))):'Página de produto encontrada, mas não pôde ser lida'};
     } else { loja.produto={ok:false,url:''}; lines[4]={s:'',t:'Nenhuma página de produto localizada para amostra'}; }
+    // uma página de categoria (para o diagnóstico de SEO por IA)
+    try{ const catUrl=acharCategoriaUrl(new DOMParser().parseFromString(html,'text/html'),extras,originOf(lojaUrl));
+      if(catUrl){ const ch=await fetchText(catUrl,12000); loja.categoria=analisarCategoria(ch,catUrl); } }catch(e){}
     setStatus(lines);
   }catch(err){
     lines[0]={s:'err',t:'Não consegui ler a loja. Tente de novo ou use o modo de colar conteúdo.'}; setStatus(lines);
@@ -1381,6 +1550,7 @@ async function run(){
   lines[5]={s:'load',t:'Montando diagnóstico e discurso…'}; setStatus(lines);
   try{
     loja.relevancia=relevanciaMercado(loja);
+    loja.pilares=analisarPilaresIA(loja);
     const dores=montarDores(loja);
     state={loja,dores,args:montarArgumentos(loja,dores),guia:montarGuia(loja,dores)};
     statusEl.className='status'; statusEl.innerHTML='';
@@ -1481,12 +1651,15 @@ function render(){
   /* 5b. tráfego por canal (dado real, não inventado) */
   h.push(trafegoSectionHtml(L));
 
+  /* 6b. pilares de IA e SEO */
+  h.push(pilaresSectionHtml(L));
+
   /* 5. marketing */
   const m=L.mkt;
   const temGTM=m.analytics.some(x=>x.nome==='Google Tag Manager'&&x.ok);
   const midiaAtiva=m.analytics.filter(x=>x.ok);
   const evList=midiaAtiva.filter(x=>x.ev).slice(0,4).map(x=>esc(x.nome)+': '+esc(x.ev)).join(' · ');
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">7 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">8 · Marketing e integrações</span><h2>O que já está instalado na loja</h2></div><p class="sec-sub">Detecção por assinatura de carregamento de cada ferramenta — não por menção solta ao nome, para evitar falso positivo. Cada item marcado traz a evidência que o confirma.</p><div class="cards c2">'+
    '<div class="card"><div class="ck">Medição e mídia ('+midiaAtiva.length+' ativas)</div>'+chipsHtml(m.analytics)+
    (evList?'<div class="ev"><b>Evidências encontradas:</b> '+evList+'</div>':'<div class="ev">Nenhuma tag de medição carregada diretamente na home.</div>')+
    (temGTM?'<div class="ev" style="border-color:var(--gold-line);background:var(--gold-soft);color:#8A6A1E"><b>Observação:</b> o Google Tag Manager está presente. Pixels e tags de conversão podem ser disparados por dentro dele e não aparecer no código — confirme no gerenciador do lojista antes de afirmar que faltam.</div>':'')+'</div>'+
@@ -1498,12 +1671,12 @@ function render(){
   h.push(socialSectionHtml(L));
 
   /* 9. dores */
-  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">9 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
+  h.push('<div class="section"><div class="sec-title collap" onclick="toggColl(this)"><span class="kicker">10 · Dores e gatilhos</span><h2>Por que migrar, na ordem que dói</h2><span class="coll-peek">'+D.length+' ponto'+(D.length>1?'s':'')+' priorizado'+(D.length>1?'s':'')+' para esta loja — toque para abrir</span><span class="chev"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div>'+
    '<div class="coll-body" hidden><p class="sec-sub">Cada dor com a evidência que a sustenta e o recurso da Tray que resolve.</p><div class="cards c2">'+
    D.map(d=>'<div class="pain"><h4>'+esc(d.titulo)+'</h4><div class="why">'+esc(d.evidencia)+'</div><div class="fix">'+esc(d.solucao)+(d.recursos&&d.recursos.length?'<br/><br/><b>Recursos:</b> '+esc(d.recursos.join(' · ')):'')+'</div></div>').join('')+'</div></div></div>');
 
   /* 11. argumentos */
-  h.push('<div class="section"><div class="sec-title"><span class="kicker">10 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
+  h.push('<div class="section"><div class="sec-title"><span class="kicker">11 · Argumentos prontos</span><h2>Para usar na reunião, na ordem</h2></div><p class="sec-sub">Escrito para ser falado. Clique em copiar para levar no celular ou colar no WhatsApp.</p><div class="cards c2">'+
    A.blocos.map((b,i)=>'<div class="arg"><button class="copy" data-arg="'+i+'">Copiar</button><div class="h">'+esc(b.h)+'</div><p>'+esc(b.t)+'</p></div>').join('')+'</div>'+
    '<div class="arg" style="margin-top:16px"><button class="copy" data-arg="pitch">Copiar</button><div class="h">Resumo em uma mensagem (WhatsApp)</div><p>'+esc(A.pitch)+'</p></div></div>');
 
@@ -1563,6 +1736,17 @@ function produtoSectionHtml(L){
     '</div><div class="ev">Isto é lido da própria página do produto no momento da análise. "Confirmar" pontos ausentes com o lojista, pois alguns recursos carregam via app/JS.</div></div>'+
     '</div></div>';
 }
+function pilaresSectionHtml(L){
+  const P=L.pilares; if(!P||!P.pilares) return '';
+  const stLabel={ok:'Forte',parcial:'Atenção',gap:'Lacuna',indef:'A confirmar'};
+  const card=x=>'<div class="pilar"><div class="ph"><span class="pn">'+x.n+'</span><span class="pt">'+esc(x.titulo)+'</span><span class="st '+x.status+'">'+stLabel[x.status]+'</span></div>'+
+    '<div><div class="lab">O que encontramos</div><ul>'+x.achados.map(a=>'<li><span class="m">›</span><span>'+esc(a)+'</span></li>').join('')+'</ul></div>'+
+    '<div><div class="lab">Gargalo típico</div><div class="garg">'+esc(x.gargalo)+'</div></div>'+
+    '<div><div class="lab">Como a Tray resolve</div><div class="solve">'+esc(x.tray)+'</div></div></div>';
+  return '<div class="section"><div class="sec-title"><span class="kicker">7 · Diagnóstico de IA e SEO</span><h2>Os 4 pilares da era das buscas por IA</h2></div>'+
+    '<p class="sec-sub">'+esc(P.resumo)+' Hoje o consumidor pergunta ao ChatGPT, ao Perplexity e ao Google AI — e só aparece quem tem o código e o conteúdo prontos para a IA ler.</p>'+
+    '<div class="pc">'+P.pilares.map(card).join('')+'</div></div>';
+}
 function trafegoSectionHtml(L){
   const host=L.host||'';
   const T=(L.trafego||(L.trafego={organico:'',social:'',pago:''}));
@@ -1572,7 +1756,7 @@ function trafegoSectionHtml(L){
   const qual=[];
   qual.push(paidPix.length?('Mídia paga: provável — pixel de anúncio ativo ('+paidPix.join(', ')+').'):'Mídia paga: nenhum pixel de anúncio detectado no código da home.');
   qual.push(seoScore>=60?('Orgânico: base sólida — SEO em '+seoScore+'/100'+(L.seo.sitemap?', com sitemap':'')+(L.seo.blog?' e conteúdo/blog':'')+'.'):('Orgânico: frágil — SEO em '+seoScore+'/100; a loja tende a depender de anúncio para receber visita.'));
-  qual.push(socialOn?'Social: a loja tem perfis de rede ligados (ver seção 8).':'Social: nenhuma rede social ligada à loja foi detectada.');
+  qual.push(socialOn?'Social: a loja tem perfis de rede ligados (ver seção 9).':'Social: nenhuma rede social ligada à loja foi detectada.');
   const o=parseInt(T.organico)||0,s=parseInt(T.social)||0,pg=parseInt(T.pago)||0,tot=o+s+pg;
   const num=(campo,lab,val)=>'<div class="row"><label>'+lab+'</label><input type="number" min="0" max="100" value="'+esc(val||'')+'" oninput="setTrafego(\''+campo+'\',this.value)"/><span style="color:var(--muted);font-size:12px">%</span></div>';
   const bar='<div class="bar" id="traf-bar"><i class="org" style="width:'+o+'%"></i><i class="soc" style="width:'+s+'%"></i><i class="pag" style="width:'+pg+'%"></i></div>';
@@ -1634,7 +1818,7 @@ function socialSectionHtml(L){
     grp('bio','Link na bio direciona para…',[['site','O site da loja'],['agregador','Agregador (Linktree etc.)'],['whats','Direto para o WhatsApp'],['outro','Outro / não tem']])+
     grp('reclamacoes','Reclamações recorrentes nos comentários?',[['nao','Não vi reclamações'],['frete','Frete / entrega'],['bugs','Bugs / lentidão do site'],['atendimento','Atendimento / SAC'],['varias','Várias, recorrentes']])+
     grp('conteudo','Estratégia de conteúdo predominante',[['reels','Reels / provador / vídeo'],['estudio','Fotos de estúdio'],['ugc','Influencer / UGC'],['misto','Misto / pouco ativo']])+'</div>';
-  return '<div class="section"><div class="sec-title"><span class="kicker">8 · Redes e social commerce</span><h2>Presença social e conversão pelo perfil</h2></div><p class="sec-sub">A parte automática lê o que o site e os perfis públicos revelam. A parte manual é o que só o olho humano confirma — e é onde mora a análise 100% real de sacolinha, bio, reclamações e conteúdo.</p><div class="cards c2" id="social-cards">'+auto+manual+'</div></div>';
+  return '<div class="section"><div class="sec-title"><span class="kicker">9 · Redes e social commerce</span><h2>Presença social e conversão pelo perfil</h2></div><p class="sec-sub">A parte automática lê o que o site e os perfis públicos revelam. A parte manual é o que só o olho humano confirma — e é onde mora a análise 100% real de sacolinha, bio, reclamações e conteúdo.</p><div class="cards c2" id="social-cards">'+auto+manual+'</div></div>';
 }
 function setSocial(campo,val){
   if(!state.loja||!state.loja.social) return;
@@ -1672,6 +1856,8 @@ function buildSummary(){
   const T=L.trafego||{}; if(T.organico||T.social||T.pago) X.push('Tráfego (Semrush): orgânico '+(T.organico||'?')+'% · social '+(T.social||'?')+'% · pago '+(T.pago||'?')+'%');
   if(L.produto&&L.produto.ok){ const pr=L.produto; X.push('Produto amostrado: '+(pr.nome||pr.url)+(pr.preco?' · '+pr.preco:'')+(pr.reviews!=null&&pr.reviews>0?' · '+pr.reviews+' avaliações'+(pr.rating?' (nota '+pr.rating+')':''):'')); }
   const RV=L.relevancia||{}; if(RV.determinavel) X.push('Relevância no mercado: '+RV.nivel+' — '+(RV.evidencias||[]).join('; ')); else X.push('Relevância no mercado: não determinável com dados públicos');
+  if(L.pilares&&L.pilares.pilares){ X.push(''); X.push('DIAGNÓSTICO DE IA E SEO (4 PILARES)'); const st={ok:'forte',parcial:'atenção',gap:'lacuna',indef:'a confirmar'};
+    L.pilares.pilares.forEach(x=>X.push('- P'+x.n+' '+x.titulo.split('(')[0].trim()+': '+st[x.status])); }
   const S=L.social||{redes:{},manual:{}};
   const F=(S.manual&&S.manual.seguidores)||{};
   const rn=Object.keys(S.redes||{}).filter(k=>S.redes[k].ativo).map(k=>{const a=S.auto&&S.auto[k]; const seg=F[k]||(a&&a.lido?a.seguidores:''); return k+(seg?' ('+seg+' seg.)':'');});
@@ -1821,6 +2007,21 @@ function generatePDF(){
       let py=y+13; ls.forEach(l=>{doc.text(l,P.mL+14,py);py+=13;}); y+=bh+8;
       if(d.recursos&&d.recursos.length){ F('bold',8.5); T(TEALd); need(13); doc.text('Recursos Tray: '+d.recursos.join(' · '),P.mL,y); y+=16; }
     });
+
+    /* pilares de IA e SEO */
+    if(L.pilares&&L.pilares.pilares){
+      doc.addPage(); y=P.mT;
+      h2('Diagnóstico de IA e SEO — os 4 pilares');
+      para(L.pilares.resumo+' Hoje o consumidor pergunta ao ChatGPT, ao Perplexity e ao Google AI; aparece quem tem o código e o conteúdo prontos para a IA ler.',10,MUT,'normal',14); y+=4;
+      const stTxt={ok:'Forte',parcial:'Atenção',gap:'Lacuna',indef:'A confirmar'};
+      L.pilares.pilares.forEach(x=>{
+        need(66); F('bold',11); T(INK); doc.text(doc.splitTextToSize(x.n+'. '+x.titulo+'  ['+stTxt[x.status]+']',CW)[0],P.mL,y); y+=14;
+        bullets(x.achados,'dot');
+        const ls=doc.splitTextToSize('Como a Tray resolve: '+x.tray,CW-28); const bh=ls.length*12.5+18; need(bh+6);
+        Fl([227,247,242]); doc.roundedRect(P.mL,y-2,CW,bh,7,7,'F'); T(INK); F('normal',9.5);
+        let py=y+13; ls.forEach(l=>{doc.text(l,P.mL+14,py);py+=12.5;}); y+=bh+10;
+      });
+    }
 
     /* assinatura (Conclusão, Argumentos e Guia ficam de fora do PDF, por opção) */
     need(110); y+=10; Dr(LINE); doc.setLineWidth(1); doc.line(P.mL,y,P.mL+CW,y); y+=20;
